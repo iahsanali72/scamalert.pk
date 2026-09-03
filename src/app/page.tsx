@@ -309,6 +309,23 @@ export default function ScamAlertApp() {
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
 
   const [pendingReportDraft, setPendingReportDraft] = useState<any>(null);
+const savePendingReportDraft = () => {
+  const draft = {
+    reportBrandName,
+    reportHandle,
+    reportPlatform,
+    reportOrderNumber,
+    reportBrandEmail,
+    reportBrandWhatsapp,
+    reportOrderDate,
+    reportAmount,
+    reportPaymentMethod,
+    reportDescription,
+  };
+
+  localStorage.setItem('scamalert_pending_report', JSON.stringify(draft));
+  setPendingReportDraft(draft);
+};
   const [showAuthRequiredModal, setShowAuthRequiredModal] = useState(false);
   const [reportSuccessMessage, setReportSuccessMessage] = useState('');
 
@@ -391,7 +408,31 @@ export default function ScamAlertApp() {
     }));
     setUserTickets(tickets);
   };
+const restorePendingReportDraft = () => {
+  const saved = localStorage.getItem('scamalert_pending_report');
+  if (!saved) return false;
 
+  try {
+    const draft = JSON.parse(saved);
+
+    setReportBrandName(draft.reportBrandName || '');
+    setReportHandle(draft.reportHandle || '');
+    setReportPlatform(draft.reportPlatform || 'Instagram');
+    setReportOrderNumber(draft.reportOrderNumber || '');
+    setReportBrandEmail(draft.reportBrandEmail || '');
+    setReportBrandWhatsapp(draft.reportBrandWhatsapp || '');
+    setReportOrderDate(draft.reportOrderDate || '');
+    setReportAmount(draft.reportAmount || '');
+    setReportPaymentMethod(draft.reportPaymentMethod || 'JazzCash');
+    setReportDescription(draft.reportDescription || '');
+    setPendingReportDraft(draft);
+
+    return true;
+  } catch {
+    localStorage.removeItem('scamalert_pending_report');
+    return false;
+  }
+};
   useEffect(() => {
     let isMounted = true;
 
@@ -402,6 +443,7 @@ export default function ScamAlertApp() {
         setIsLoggedIn(true);
         setLoggedInUser(displayName);
         await loadUserReports(user.id);
+        restorePendingReportDraft();
       } else {
         setIsLoggedIn(false);
         setLoggedInUser('');
@@ -431,6 +473,18 @@ export default function ScamAlertApp() {
     });
     return () => { isMounted = false; subscription.unsubscribe(); };
   }, [supabase]);
+  useEffect(() => {
+  if (!isLoggedIn || !pendingReportDraft) return;
+
+  const saved = localStorage.getItem('scamalert_pending_report');
+  if (!saved) return;
+
+  const timer = setTimeout(() => {
+    void submitReport();
+  }, 100);
+
+  return () => clearTimeout(timer);
+}, [isLoggedIn, pendingReportDraft]);
 
   const handleTabClick = (tab: string) => {
     setAuthError('');
@@ -490,6 +544,7 @@ export default function ScamAlertApp() {
 
     setReportBrandName(''); setReportHandle(''); setReportOrderNumber(''); setReportBrandEmail(''); setReportBrandWhatsapp('');
     setReportOrderDate(''); setReportAmount(''); setReportDescription(''); setReportFiles([]); setPendingReportDraft(null);
+    localStorage.removeItem('scamalert_pending_report');
     setReportSuccessMessage(`Report ${created.report_number} filed. The 72-hour review window has started. ${notice}`);
     setSystemNotifications(prev => [`[Report ${created.report_number}] 72-hour review window started. ${notice}`, ...prev]);
     await Promise.all([loadUserReports(user.id), loadPublicData()]);
@@ -668,7 +723,7 @@ export default function ScamAlertApp() {
     e.preventDefault();
     if (isSubmittingReport) return;
     if (!isLoggedIn) {
-      setPendingReportDraft({ hasDraft: true });
+      savePendingReportDraft();
       setShowAuthRequiredModal(true);
       return;
     }
