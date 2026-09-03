@@ -732,6 +732,7 @@ const restorePendingReportDraft = () => {
     setShowUserDropdown(false);
     setAuthError('');
     setAuthMessage('');
+    setReportSuccessMessage('');
     setActiveTab('overview');
   };
 
