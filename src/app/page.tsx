@@ -599,7 +599,7 @@ export default function ScamAlertApp() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
@@ -681,7 +681,7 @@ export default function ScamAlertApp() {
       email,
       password: passwordInput,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
         data: {
           username,
           first_name: firstName.trim(),
