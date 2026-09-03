@@ -307,7 +307,9 @@ export default function ScamAlertApp() {
   const [reportDescription, setReportDescription] = useState('');
   const [reportFiles, setReportFiles] = useState<File[]>([]);
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
-
+  const [resolvingReportId, setResolvingReportId] = useState<string | null>(null);
+const [deletingReportId, setDeletingReportId] = useState<string | null>(null);
+const [reportPendingDelete, setReportPendingDelete] = useState<string | null>(null);
   const [pendingReportDraft, setPendingReportDraft] = useState<any>(null);
 const savePendingReportDraft = () => {
   const draft = {
@@ -805,31 +807,91 @@ if (restoredDraft) {
     setAuthError('');
     setAuthMessage('');
     setReportSuccessMessage('');
+    setReportBrandName('');
+    setReportHandle('');
+    setReportOrderNumber('');
+    setReportBrandEmail('');
+    setReportBrandWhatsapp('');
+    setReportOrderDate('');
+    setReportAmount('');
+    setReportDescription('');
+    setReportFiles([]);
+    setPendingReportDraft(null);
+
+localStorage.removeItem('scamalert_pending_report');
+await clearPendingReportFiles();
     setActiveTab('overview');
   };
 
-  const handleMarkResolved = async (id: string) => {
-    const ticket = userTickets.find((t) => t.id === id);
-    if (!ticket) return;
-    const { error } = await supabase.from('reports').update({ status: 'resolved', resolved_at: new Date().toISOString() }).eq('id', ticket.dbId);
-    if (error) { setAuthError(error.message); return; }
+const handleMarkResolved = async (id: string) => {
+  const ticket = userTickets.find((t) => t.id === id);
+  if (!ticket || resolvingReportId === id) return;
+
+  setResolvingReportId(id);
+  setAuthError('');
+
+  try {
+    const { error } = await supabase
+      .from('reports')
+      .update({
+        status: 'resolved',
+        resolved_at: new Date().toISOString(),
+      })
+      .eq('id', ticket.dbId);
+
+    if (error) {
+      setAuthError(error.message);
+      return;
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
-    if (user) await loadUserReports(user.id);
+
+    if (user) {
+      await loadUserReports(user.id);
+    }
+
     await loadPublicData();
-    setReportSuccessMessage(`Report ${id} marked resolved. Its unresolved public listing has been removed.`);
-  };
+
+    setReportSuccessMessage(
+      `Report ${id} marked resolved. Its unresolved public listing has been removed.`
+    );
+  } finally {
+    setResolvingReportId(null);
+  }
+};
 
   const handleDeleteTicket = async (id: string) => {
-    const ticket = userTickets.find((t) => t.id === id);
-    if (!ticket) return;
-    if (!window.confirm(`Delete report ${id}? This cannot be undone.`)) return;
-    const { error } = await supabase.from('reports').delete().eq('id', ticket.dbId);
-    if (error) { setAuthError(error.message); return; }
+  const ticket = userTickets.find((t) => t.id === id);
+  if (!ticket || deletingReportId === id) return;
+
+  setDeletingReportId(id);
+  setAuthError('');
+
+  try {
+    const { error } = await supabase
+      .from('reports')
+      .delete()
+      .eq('id', ticket.dbId);
+
+    if (error) {
+      setAuthError(error.message);
+      return;
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
-    if (user) await loadUserReports(user.id);
+
+    if (user) {
+      await loadUserReports(user.id);
+    }
+
     await loadPublicData();
+
     setReportSuccessMessage(`Report ${id} deleted.`);
-  };
+    setReportPendingDelete(null);
+  } finally {
+    setDeletingReportId(null);
+  }
+};
 
   const activeSearchTerm = appliedSearch || searchQuery;
 
@@ -2069,24 +2131,55 @@ if (restoredDraft) {
                         Logged on: {ticket.date}
                       </span>
 
-                      <div className="flex items-center gap-2">
+                      <div className="relative flex items-center gap-2">
                         {ticket.status !== 'Resolved by customer' && (
                           <button
-                            onClick={() => handleMarkResolved(ticket.id)}
-                            className="bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg font-semibold transition cursor-pointer"
+                             onClick={() => handleMarkResolved(ticket.id)}
+                             disabled={resolvingReportId === ticket.id}
+                             className="bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg font-semibold transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                           >
-                            ✓ Mark Resolved
+                            {resolvingReportId === ticket.id ? 'Resolving...' : '🖊 Mark Resolved'}
                           </button>
                         )}
 
                         <button
-                          onClick={() =>
-                            handleDeleteTicket(ticket.id)
-                          }
+                          onClick={() => setReportPendingDelete(ticket.id)}
+              
                           className="bg-zinc-800 hover:bg-red-950/40 border border-zinc-700 hover:border-red-500/40 text-zinc-300 hover:text-red-400 px-3 py-1.5 rounded-lg font-semibold transition cursor-pointer"
                         >
                           Delete
                         </button>
+                        {reportPendingDelete === ticket.id && (
+  <div className="absolute z-50 mt-2 right-0 w-72 rounded-xl border border-red-500/30 bg-zinc-950 p-4 shadow-xl">
+    <p className="text-sm font-semibold text-white">
+      Delete report {ticket.id}?
+    </p>
+
+    <p className="mt-1 text-xs text-zinc-400">
+      This action cannot be undone.
+    </p>
+
+    <div className="mt-4 flex justify-end gap-2">
+      <button
+        type="button"
+        onClick={() => setReportPendingDelete(null)}
+        disabled={deletingReportId === ticket.id}
+        className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 disabled:opacity-60"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        onClick={() => handleDeleteTicket(ticket.id)}
+        disabled={deletingReportId === ticket.id}
+        className="rounded-lg border border-red-500/40 bg-red-950/40 px-3 py-1.5 text-xs font-semibold text-red-300 disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {deletingReportId === ticket.id ? 'Deleting...' : 'Delete Report'}
+      </button>
+    </div>
+  </div>
+)}
                       </div>
                     </div>
                   </div>
