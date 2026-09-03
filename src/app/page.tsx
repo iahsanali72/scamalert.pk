@@ -526,7 +526,8 @@ if (restoredDraft) {
       const params = new URLSearchParams(window.location.search);
       if (params.get('verified') === 'true' && user) {
         setAuthMessage('Email verified successfully. You are now signed in.');
-        setActiveTab('dashboard');
+        const hasPendingReport = !!localStorage.getItem('scamalert_pending_report');
+        setActiveTab(hasPendingReport ? 'file-report' : 'dashboard');
         window.history.replaceState({}, document.title, window.location.pathname);
       }
       if (params.get('auth_error')) {
@@ -780,7 +781,8 @@ if (restoredDraft) {
     setZipcode('');
     setPhone('');
     setUsernameStatus('idle');
-    setActiveTab('dashboard');
+   const hasPendingReport = !!localStorage.getItem('scamalert_pending_report');
+   setActiveTab(hasPendingReport ? 'file-report' : 'dashboard');
   };
 
   const handleFileNewReportSubmit = async (e: React.FormEvent) => {
