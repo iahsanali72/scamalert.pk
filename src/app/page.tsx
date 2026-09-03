@@ -297,6 +297,10 @@ export default function ScamAlertApp() {
   const [reportBrandName, setReportBrandName] = useState('');
   const [reportHandle, setReportHandle] = useState('');
   const [reportPlatform, setReportPlatform] = useState('Instagram');
+  const [reportOrderNumber, setReportOrderNumber] = useState('');
+  const [reportBrandEmail, setReportBrandEmail] = useState('');
+  const [reportBrandWhatsapp, setReportBrandWhatsapp] = useState('');
+  const [reportOrderDate, setReportOrderDate] = useState('');
   const [reportAmount, setReportAmount] = useState('');
   const [reportPaymentMethod, setReportPaymentMethod] =
     useState('JazzCash');
@@ -310,168 +314,122 @@ export default function ScamAlertApp() {
 
   const [newReportSearch, setNewReportSearch] = useState('');
 
-  const [systemNotifications, setSystemNotifications] = useState<string[]>([
-    '[Automated Notice]: Official Dispute Notice sent to @Luxe_Fashions_PK. 72h countdown initiated.',
-  ]);
+  const [systemNotifications, setSystemNotifications] = useState<string[]>([]);
 
-  const [submittedReportsFeed, setSubmittedReportsFeed] = useState([
-    {
-      id: '1',
-      brand: 'Luxe Fashions PK',
-      handle: '@luxe_fashions_pk',
-      platform: 'Instagram',
-      reportCount: 4,
-    },
-    {
-      id: '2',
-      brand: 'TrendyWear_PK',
-      handle: '@trendywears_pk',
-      platform: 'Instagram',
-      reportCount: 12,
-    },
-    {
-      id: '3',
-      brand: 'Crypto Yield Pros',
-      handle: '@cryptoyield_scam',
-      platform: 'Telegram',
-      reportCount: 25,
-    },
-    {
-      id: '4',
-      brand: 'UrbanTrends_PK',
-      handle: '@urbantrends_pk',
-      platform: 'Facebook',
-      reportCount: 7,
-    },
-    {
-      id: '5',
-      brand: 'Gadget Vault Pakistan',
-      handle: '@gadgetvault_pk',
-      platform: 'WhatsApp',
-      reportCount: 2,
-    },
-  ]);
+  const [submittedReportsFeed, setSubmittedReportsFeed] = useState<any[]>([]);
+  const [expiredPublicReports, setExpiredPublicReports] = useState<any[]>([]);
+  const [publicEvidence, setPublicEvidence] = useState<Record<string, any[]>>({});
+  const [userTickets, setUserTickets] = useState<any[]>([]);
+  const [brandList, setBrandList] = useState<any[]>([]);
+  const [blacklistedBrands, setBlacklistedBrands] = useState<any[]>([]);
 
-  const [userTickets, setUserTickets] = useState([
-    {
-      id: 'REP-84920',
-      brand: 'Luxe Fashions PK',
-      handle: '@luxe_fashions_pk',
-      platform: 'Instagram',
-      status: 'Pending Brand Response (72h Timer Active)',
-      timeLeft: '72 hours remaining',
-      date: '2026-08-30',
-    },
-  ]);
+  const formatTimeLeft = (publicAt: string, status: string) => {
+    if (status === 'resolved') return 'Resolved';
+    const diff = new Date(publicAt).getTime() - Date.now();
+    if (diff <= 0) return '72-hour window expired — details are public';
+    const hours = Math.floor(diff / 3_600_000);
+    const minutes = Math.floor((diff % 3_600_000) / 60_000);
+    return `${hours}h ${minutes}m remaining`;
+  };
 
-  const [brandList, setBrandList] = useState([
-    {
-      name: 'Khaadi Official',
-      handle: '@khaadi',
-      platform: 'Website',
-      score: 95,
-      verified: true,
-      resolvedCases: 142,
-      openDisputes: 0,
-    },
-    {
-      name: 'Gul Ahmed Store',
-      handle: '@gulahmed',
-      platform: 'Website',
-      score: 92,
-      verified: true,
-      resolvedCases: 98,
-      openDisputes: 1,
-    },
-    {
-      name: 'UrbanTrends_PK',
-      handle: '@urbantrends_pk',
-      platform: 'Instagram',
-      score: 65,
-      verified: false,
-      resolvedCases: 12,
-      openDisputes: 3,
-    },
-    {
-      name: 'Luxe Fashions PK',
-      handle: '@luxe_fashions_pk',
-      platform: 'Instagram',
-      score: 40,
-      verified: false,
-      resolvedCases: 2,
-      openDisputes: 1,
-    },
-  ]);
+  const loadPublicData = async () => {
+    const [feedResult, expiredResult, evidenceResult, directoryResult, blacklistResult] = await Promise.all([
+      supabase.rpc('public_report_feed'),
+      supabase.rpc('public_expired_reports'),
+      supabase.rpc('public_expired_evidence'),
+      supabase.rpc('public_brand_directory'),
+      supabase.rpc('public_blacklist'),
+    ]);
 
-  const [blacklistedBrands, setBlacklistedBrands] = useState([
-    {
-      id: 'REP-83104',
-      brand: 'Crypto Yield Pros',
-      handle: '@cryptoyield_scam',
-      platform: 'Telegram',
-      reason: '72h Timer Expired Without Resolution (Scam Confirmed)',
-      dateBlacklisted: '2026-08-20',
-      trustScore: '0 / 100',
-    },
-  ]);
+    if (!feedResult.error) {
+      setSubmittedReportsFeed((feedResult.data || []).map((row: any) => ({
+        id: row.feed_key, brand: row.brand, handle: row.handle, platform: row.platform, reportCount: Number(row.report_count),
+      })));
+    }
+    if (!expiredResult.error) setExpiredPublicReports(expiredResult.data || []);
+    if (!evidenceResult.error) {
+      const grouped: Record<string, any[]> = {};
+      for (const ev of evidenceResult.data || []) {
+        const signed = await supabase.storage.from('report-evidence').createSignedUrl(ev.storage_path, 3600);
+        if (!grouped[ev.report_id]) grouped[ev.report_id] = [];
+        grouped[ev.report_id].push({ ...ev, url: signed.data?.signedUrl || null });
+      }
+      setPublicEvidence(grouped);
+    }
+    if (!directoryResult.error) {
+      setBrandList((directoryResult.data || []).map((row: any) => ({
+        name: row.name, handle: row.handle, platform: row.platform, score: Number(row.score), verified: Boolean(row.verified),
+        resolvedCases: Number(row.resolved_cases), openDisputes: Number(row.open_disputes),
+      })));
+    }
+    if (!blacklistResult.error) {
+      setBlacklistedBrands((blacklistResult.data || []).map((row: any) => ({
+        id: row.id, brand: row.brand, handle: row.handle, platform: row.platform, reason: row.reason,
+        dateBlacklisted: row.date_blacklisted, trustScore: row.trust_score,
+      })));
+    }
+  };
+
+  const loadUserReports = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('reports')
+      .select('id, report_number, brand_name, handle, platform, status, public_at, created_at, order_number, brand_email, brand_whatsapp, amount_paid, payment_method, description, email_notification_status, whatsapp_notification_status, business_responded_at, business_responses(response_text,response_type,tracking_number,refund_reference,created_at), report_evidence(storage_path,file_name,mime_type)')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    if (error) { setAuthError(error.message); return; }
+    const tickets = await Promise.all((data || []).map(async (r: any) => {
+      const evidence = await Promise.all((r.report_evidence || []).map(async (ev: any) => {
+        const signed = await supabase.storage.from('report-evidence').createSignedUrl(ev.storage_path, 3600);
+        return { ...ev, url: signed.data?.signedUrl || null };
+      }));
+      return {
+        dbId: r.id, id: r.report_number, brand: r.brand_name, handle: r.handle, platform: r.platform, status: r.status === 'resolved' ? 'Resolved by customer' : (new Date(r.public_at) <= new Date() ? 'Unresolved — Public' : 'Pending Brand Response'),
+        timeLeft: formatTimeLeft(r.public_at, r.status), date: new Date(r.created_at).toLocaleDateString('en-PK'), publicAt: r.public_at,
+        orderNumber: r.order_number, brandEmail: r.brand_email, brandWhatsapp: r.brand_whatsapp, amount: r.amount_paid, paymentMethod: r.payment_method, description: r.description,
+        emailStatus: r.email_notification_status, whatsappStatus: r.whatsapp_notification_status, businessResponse: Array.isArray(r.business_responses) ? r.business_responses[0] : r.business_responses, evidence,
+      };
+    }));
+    setUserTickets(tickets);
+  };
 
   useEffect(() => {
     let isMounted = true;
 
-    const applyUser = (user: any) => {
+    const applyUser = async (user: any) => {
       if (!isMounted) return;
-
       if (user) {
-        const displayName =
-          user.user_metadata?.username ||
-          user.user_metadata?.full_name ||
-          user.email?.split('@')[0] ||
-          'User';
-
+        const displayName = user.user_metadata?.username || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
         setIsLoggedIn(true);
         setLoggedInUser(displayName);
+        await loadUserReports(user.id);
       } else {
         setIsLoggedIn(false);
         setLoggedInUser('');
+        setUserTickets([]);
       }
     };
 
-    const finishAuthRedirect = async () => {
+    const initialize = async () => {
+      await loadPublicData();
+      const { data: { user } } = await supabase.auth.getUser();
+      await applyUser(user);
       const params = new URLSearchParams(window.location.search);
-      const code = params.get('code');
-
-      if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-        if (error) {
-          setAuthError(error.message);
-        } else {
-          setAuthMessage('Email verified successfully. You are now signed in.');
-          setActiveTab('dashboard');
-        }
-
+      if (params.get('verified') === 'true' && user) {
+        setAuthMessage('Email verified successfully. You are now signed in.');
+        setActiveTab('dashboard');
         window.history.replaceState({}, document.title, window.location.pathname);
       }
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      applyUser(user);
+      if (params.get('auth_error')) {
+        setAuthError('Authentication could not be completed. Please try again.');
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
     };
+    void initialize();
 
-    void finishAuthRedirect();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      applyUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      void applyUser(session?.user ?? null);
     });
-
-    return () => {
-      isMounted = false;
-      subscription.unsubscribe();
-    };
+    return () => { isMounted = false; subscription.unsubscribe(); };
   }, [supabase]);
 
   const handleTabClick = (tab: string) => {
@@ -486,57 +444,56 @@ export default function ScamAlertApp() {
     setActiveTab('brands');
   };
 
-  const finalizeAndSubmitReport = (
-    brandName: string,
-    handle: string,
-    platform: string,
-    amount: string,
-    desc: string
-  ) => {
-    const newTicketId = `REP-${Math.floor(
-      10000 + Math.random() * 90000
-    )}`;
+  const submitReport = async () => {
+    setIsSubmittingReport(true);
+    setReportSuccessMessage('');
+    setAuthError('');
 
-    const normalizedHandle = handle.startsWith('@')
-      ? handle
-      : `@${handle}`;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setIsSubmittingReport(false); setShowAuthRequiredModal(true); return; }
 
-    const newFeedItem = {
-      id: String(submittedReportsFeed.length + 1),
-      brand: brandName,
-      handle: normalizedHandle,
-      platform,
-      reportCount: 1,
-    };
+    const { data, error } = await supabase.rpc('create_report', {
+      p_brand_name: reportBrandName.trim(),
+      p_order_number: reportOrderNumber.trim(),
+      p_brand_email: reportBrandEmail.trim() || null,
+      p_brand_whatsapp: reportBrandWhatsapp.trim() || null,
+      p_platform: reportPlatform,
+      p_handle: reportHandle.trim(),
+      p_order_date: reportOrderDate || null,
+      p_amount_paid: Number(reportAmount),
+      p_payment_method: reportPaymentMethod,
+      p_description: reportDescription.trim(),
+    });
 
-    const newUserTicket = {
-      id: newTicketId,
-      brand: brandName,
-      handle: normalizedHandle,
-      platform,
-      status: 'Pending Brand Response (72h Timer Active)',
-      timeLeft: '72 hours remaining',
-      date: new Date().toISOString().split('T')[0],
-    };
+    if (error || !data?.length) {
+      setIsSubmittingReport(false);
+      setAuthError(error?.message || 'Could not create report.');
+      return;
+    }
 
-    setSubmittedReportsFeed([
-      newFeedItem,
-      ...submittedReportsFeed,
-    ]);
+    const created = data[0];
+    for (const file of reportFiles) {
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `${user.id}/${created.id}/${crypto.randomUUID()}-${safeName}`;
+      const upload = await supabase.storage.from('report-evidence').upload(path, file, { contentType: file.type, upsert: false });
+      if (!upload.error) {
+        await supabase.from('report_evidence').insert({ report_id: created.id, user_id: user.id, storage_path: path, file_name: file.name, mime_type: file.type, size_bytes: file.size });
+      }
+    }
 
-    setUserTickets([newUserTicket, ...userTickets]);
+    let notice = 'Business notification not configured.';
+    try {
+      const response = await fetch('/api/notify-business', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reportId: created.id, responseToken: created.response_token }) });
+      const result = await response.json();
+      notice = result.email === 'sent' ? 'Business email notification sent.' : result.email === 'not_provided' ? 'No business email was provided.' : 'Business email notification is not configured yet.';
+    } catch { /* report remains valid even when notification provider is unavailable */ }
 
-    setReportBrandName('');
-    setReportHandle('');
-    setReportAmount('');
-    setReportDescription('');
-    setReportFiles([]);
-    setPendingReportDraft(null);
-
-    setReportSuccessMessage(
-      `Report successfully filed! Ticket ID: ${newTicketId}. 72-hour automated dispute notice initiated.`
-    );
-
+    setReportBrandName(''); setReportHandle(''); setReportOrderNumber(''); setReportBrandEmail(''); setReportBrandWhatsapp('');
+    setReportOrderDate(''); setReportAmount(''); setReportDescription(''); setReportFiles([]); setPendingReportDraft(null);
+    setReportSuccessMessage(`Report ${created.report_number} filed. The 72-hour review window has started. ${notice}`);
+    setSystemNotifications(prev => [`[Report ${created.report_number}] 72-hour review window started. ${notice}`, ...prev]);
+    await Promise.all([loadUserReports(user.id), loadPublicData()]);
+    setIsSubmittingReport(false);
     setActiveTab('dashboard');
   };
 
@@ -579,17 +536,7 @@ export default function ScamAlertApp() {
     setUsernameInput('');
     setPasswordInput('');
 
-    if (pendingReportDraft) {
-      finalizeAndSubmitReport(
-        pendingReportDraft.brandName,
-        pendingReportDraft.handle,
-        pendingReportDraft.platform,
-        pendingReportDraft.amount,
-        pendingReportDraft.description
-      );
-    } else {
-      setActiveTab('dashboard');
-    }
+    setActiveTab(pendingReportDraft ? 'file-report' : 'dashboard');
   };
 
   const handleGoogleSignIn = async () => {
@@ -608,17 +555,16 @@ export default function ScamAlertApp() {
     }
   };
 
-  const handleForgotPasswordSubmit = (e: React.FormEvent) => {
+  const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (isSendingReset) return;
-
-    setIsSendingReset(true);
-
-    setTimeout(() => {
-      setIsSendingReset(false);
-      setResetEmailSent(true);
-    }, 1000);
+    setIsSendingReset(true); setAuthError('');
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmailInput.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setIsSendingReset(false);
+    if (error) { setAuthError(error.message); return; }
+    setResetEmailSent(true);
   };
 
   const handleCloseForgotPassword = () => {
@@ -634,35 +580,17 @@ export default function ScamAlertApp() {
     setActiveTab('login');
   };
 
-  const handleUsernameChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-
     setUsernameInput(val);
-
-    if (val.length < 3) {
-      setUsernameStatus('idle');
-      return;
-    }
-
+    if (val.trim().length < 3) { setUsernameStatus('idle'); return; }
     setUsernameStatus('checking');
-
-    setTimeout(() => {
-      const takenNames = [
-        'admin',
-        'buyer',
-        'user',
-        'scamalert',
-        'customer',
-      ];
-
-      if (takenNames.includes(val.toLowerCase())) {
-        setUsernameStatus('taken');
-      } else {
-        setUsernameStatus('available');
-      }
-    }, 600);
+    const candidate = val.trim();
+    window.setTimeout(async () => {
+      const { data, error } = await supabase.rpc('username_available', { candidate });
+      if (error) setUsernameStatus('idle');
+      else setUsernameStatus(data ? 'available' : 'taken');
+    }, 350);
   };
 
   const handleSignupSubmit = async (e: React.FormEvent) => {
@@ -736,37 +664,15 @@ export default function ScamAlertApp() {
     setActiveTab('dashboard');
   };
 
-  const handleFileNewReportSubmit = (e: React.FormEvent) => {
+  const handleFileNewReportSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (isSubmittingReport) return;
-
     if (!isLoggedIn) {
-      setPendingReportDraft({
-        brandName: reportBrandName,
-        handle: reportHandle,
-        platform: reportPlatform,
-        amount: reportAmount,
-        description: reportDescription,
-      });
-
+      setPendingReportDraft({ hasDraft: true });
       setShowAuthRequiredModal(true);
       return;
     }
-
-    setIsSubmittingReport(true);
-
-    setTimeout(() => {
-      setIsSubmittingReport(false);
-
-      finalizeAndSubmitReport(
-        reportBrandName,
-        reportHandle,
-        reportPlatform,
-        reportAmount,
-        reportDescription
-      );
-    }, 1000);
+    await submitReport();
   };
 
   const handleLogout = async () => {
@@ -779,23 +685,27 @@ export default function ScamAlertApp() {
     setActiveTab('overview');
   };
 
-  const handleMarkResolved = (id: string) => {
-    const resolvedTicket = userTickets.find((t) => t.id === id);
-
-    if (resolvedTicket) {
-      setUserTickets(userTickets.filter((t) => t.id !== id));
-
-      setSystemNotifications([
-        `[Resolved]: Ticket ${id} for ${resolvedTicket.brand} marked as resolved by customer.`,
-        ...systemNotifications,
-      ]);
-
-      alert(`Ticket ${id} has been successfully marked as Resolved.`);
-    }
+  const handleMarkResolved = async (id: string) => {
+    const ticket = userTickets.find((t) => t.id === id);
+    if (!ticket) return;
+    const { error } = await supabase.from('reports').update({ status: 'resolved', resolved_at: new Date().toISOString() }).eq('id', ticket.dbId);
+    if (error) { setAuthError(error.message); return; }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) await loadUserReports(user.id);
+    await loadPublicData();
+    setReportSuccessMessage(`Report ${id} marked resolved. Its unresolved public listing has been removed.`);
   };
 
-  const handleDeleteTicket = (id: string) => {
-    setUserTickets(userTickets.filter((t) => t.id !== id));
+  const handleDeleteTicket = async (id: string) => {
+    const ticket = userTickets.find((t) => t.id === id);
+    if (!ticket) return;
+    if (!window.confirm(`Delete report ${id}? This cannot be undone.`)) return;
+    const { error } = await supabase.from('reports').delete().eq('id', ticket.dbId);
+    if (error) { setAuthError(error.message); return; }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) await loadUserReports(user.id);
+    await loadPublicData();
+    setReportSuccessMessage(`Report ${id} deleted.`);
   };
 
   const activeSearchTerm = appliedSearch || searchQuery;
@@ -1709,7 +1619,7 @@ export default function ScamAlertApp() {
             <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl shadow-xl space-y-6">
               <div className="space-y-2 border-b border-zinc-800 pb-4">
                 <span className="text-xs font-mono font-bold text-red-400 uppercase tracking-wider">
-                  Automated Enforcement Registry
+                  Customer Dispute Registry
                 </span>
 
                 <h2 className="text-2xl font-bold text-white">
@@ -1717,13 +1627,11 @@ export default function ScamAlertApp() {
                 </h2>
 
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Submitting this report initiates an official{' '}
+                  Submitting this report starts a{' '}
                   <strong className="text-zinc-200">
-                    72-hour dispute window
+                    72-hour response window
                   </strong>{' '}
-                  against the seller. If the seller fails to provide
-                  proof of delivery or issue a refund within 72 hours,
-                  their handle is automatically blacklisted.
+                  for the business. During that window the public feed shows only the seller identity and report count. If the complaint remains unresolved after 72 hours, its submitted report details become public.
                 </p>
               </div>
 
@@ -1766,6 +1674,30 @@ export default function ScamAlertApp() {
                       placeholder="e.g. @urbanvogue_pk"
                       className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
                     />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-zinc-300 font-semibold block">Order # <span className="text-red-500">*</span></label>
+                    <input type="text" required value={reportOrderNumber} onChange={(e) => setReportOrderNumber(e.target.value)} placeholder="e.g. PK-10482" className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-zinc-300 font-semibold block">Order Date</label>
+                    <input type="date" value={reportOrderDate} onChange={(e) => setReportOrderDate(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500 [color-scheme:dark]" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-zinc-300 font-semibold block">Brand Email</label>
+                    <input type="email" value={reportBrandEmail} onChange={(e) => setReportBrandEmail(e.target.value)} placeholder="support@brand.com" className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500" />
+                    <p className="text-[10px] text-zinc-500">Used only to send this business a neutral complaint notice and response link.</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-zinc-300 font-semibold block">Brand WhatsApp #</label>
+                    <input type="tel" value={reportBrandWhatsapp} onChange={(e) => setReportBrandWhatsapp(e.target.value)} placeholder="+92 300 1234567" className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500" />
+                    <p className="text-[10px] text-zinc-500">Stored for notification use once a WhatsApp Business provider is connected.</p>
                   </div>
                 </div>
 
@@ -1913,7 +1845,7 @@ export default function ScamAlertApp() {
                   {isSubmittingReport ? (
                     <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    'Submit Report & Start 72h Countdown'
+                    'Submit Report & Start 72h Response Window'
                   )}
                 </button>
               </form>
@@ -1955,7 +1887,7 @@ export default function ScamAlertApp() {
 
             <div className="space-y-4">
               <h3 className="text-md font-bold text-white">
-                Your Active Complaints & 72h Timer
+                Your Complaints
               </h3>
 
               {userTickets.length === 0 ? (
@@ -1989,6 +1921,24 @@ export default function ScamAlertApp() {
                       <p className="text-xs text-red-400 font-semibold mt-1">
                         ⏳ {ticket.timeLeft}
                       </p>
+                      <div className="mt-3 grid sm:grid-cols-2 gap-2 text-xs text-zinc-400">
+                        <p>Order #: <span className="text-zinc-200">{ticket.orderNumber}</span></p>
+                        <p>Amount: <span className="text-zinc-200">PKR {Number(ticket.amount || 0).toLocaleString()}</span></p>
+                        <p>Email notice: <span className="text-zinc-200">{ticket.emailStatus}</span></p>
+                        <p>WhatsApp notice: <span className="text-zinc-200">{ticket.whatsappStatus}</span></p>
+                      </div>
+                      {ticket.evidence?.length > 0 && (
+                        <div className="mt-3">
+                          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Your evidence</p>
+                          <div className="flex flex-wrap gap-2">{ticket.evidence.map((ev:any) => <a key={ev.storage_path} href={ev.url || '#'} target="_blank" rel="noopener noreferrer" className="text-xs border border-zinc-700 bg-zinc-950 px-3 py-2 rounded-lg hover:border-red-500/40">{ev.file_name}</a>)}</div>
+                        </div>
+                      )}
+                      {ticket.businessResponse && (
+                        <div className="mt-3 bg-zinc-950 border border-zinc-800 rounded-xl p-3">
+                          <p className="text-[10px] uppercase tracking-wider text-emerald-400 font-bold">Business response</p>
+                          <p className="text-xs text-zinc-300 mt-1 whitespace-pre-wrap">{ticket.businessResponse.response_text}</p>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-center justify-between pt-3 border-t border-zinc-800 text-xs">
@@ -1997,14 +1947,14 @@ export default function ScamAlertApp() {
                       </span>
 
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() =>
-                            handleMarkResolved(ticket.id)
-                          }
-                          className="bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg font-semibold transition cursor-pointer"
-                        >
-                          ✓ Mark Resolved
-                        </button>
+                        {ticket.status !== 'Resolved by customer' && (
+                          <button
+                            onClick={() => handleMarkResolved(ticket.id)}
+                            className="bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg font-semibold transition cursor-pointer"
+                          >
+                            ✓ Mark Resolved
+                          </button>
+                        )}
 
                         <button
                           onClick={() =>
@@ -2033,8 +1983,7 @@ export default function ScamAlertApp() {
                 </h2>
 
                 <p className="text-xs text-zinc-400 mt-1">
-                  Browse submitted reports against brands, platform
-                  channels, and their active report counts.
+                  During each 72-hour window, only seller identity and aggregate report counts are shown. Unresolved complaint details appear below after the deadline.
                 </p>
               </div>
 
@@ -2091,6 +2040,20 @@ export default function ScamAlertApp() {
                 ))
               )}
             </div>
+            {expiredPublicReports.length > 0 && (
+              <div className="space-y-3 pt-4">
+                <h3 className="text-sm font-bold text-white">Unresolved reports past 72 hours</h3>
+                {expiredPublicReports.map((report: any) => (
+                  <div key={report.id} className="bg-zinc-900 border border-red-500/30 p-5 rounded-2xl space-y-3">
+                    <div className="flex items-center justify-between gap-3"><div><span className="font-mono text-xs text-red-400 font-bold">{report.report_number}</span><h4 className="font-bold text-white mt-1">{report.brand_name}</h4><PlatformLink platform={report.platform} handle={report.handle} className="mt-1" /></div><span className="text-[10px] px-2 py-1 rounded bg-red-500/10 border border-red-500/30 text-red-300">72H EXPIRED · UNRESOLVED</span></div>
+                    <div className="grid sm:grid-cols-2 gap-2 text-xs text-zinc-400"><p>Order #: <span className="text-zinc-200">{report.order_number}</span></p><p>Amount: <span className="text-zinc-200">PKR {Number(report.amount_paid).toLocaleString()}</span></p><p>Payment: <span className="text-zinc-200">{report.payment_method}</span></p><p>Order date: <span className="text-zinc-200">{report.order_date || 'Not provided'}</span></p>{report.brand_email && <p>Brand email: <span className="text-zinc-200">{report.brand_email}</span></p>}{report.brand_whatsapp && <p>Brand WhatsApp: <span className="text-zinc-200">{report.brand_whatsapp}</span></p>}</div>
+                    <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-3"><p className="text-[10px] uppercase tracking-wider text-zinc-500">Customer report details</p><p className="text-xs text-zinc-300 mt-1 whitespace-pre-wrap">{report.description}</p></div>
+                    {publicEvidence[report.id]?.length > 0 && <div><p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Evidence</p><div className="flex flex-wrap gap-2">{publicEvidence[report.id].map((ev:any)=><a key={ev.storage_path} href={ev.url || '#'} target="_blank" rel="noopener noreferrer" className="text-xs border border-zinc-700 bg-zinc-950 hover:border-red-500/40 px-3 py-2 rounded-lg">{ev.file_name}</a>)}</div></div>}
+                    {report.business_response_text && <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-xl p-3"><p className="text-[10px] uppercase tracking-wider text-emerald-400 font-bold">Business response</p><p className="text-xs text-zinc-300 mt-1 whitespace-pre-wrap">{report.business_response_text}</p></div>}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -2118,6 +2081,7 @@ export default function ScamAlertApp() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredBrands.length === 0 && <div className="md:col-span-2 bg-zinc-900 border border-zinc-800 p-8 rounded-2xl text-center text-zinc-400 text-sm">No real report data matches this search yet.</div>}
               {filteredBrands.map((brand, idx) => (
                 <div
                   key={idx}
@@ -2159,13 +2123,11 @@ export default function ScamAlertApp() {
             <div className="bg-red-950/20 border border-red-500/30 p-6 rounded-2xl flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold text-white">
-                  Official Blacklisted Entities
+                  Unresolved 72h Registry
                 </h2>
 
                 <p className="text-xs text-red-300/80 mt-1">
-                  Reports that finish their 72-hour timer without
-                  brand resolution automatically transition into this
-                  blacklist registry.
+                  Complaints that remain unresolved after the 72-hour response window are listed here with their public report details. This is a complaint-status registry, not an independent finding of fraud.
                 </p>
               </div>
 
@@ -2178,6 +2140,7 @@ export default function ScamAlertApp() {
             </div>
 
             <div className="space-y-4">
+              {blacklistedBrands.length === 0 && <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl text-center text-zinc-400 text-sm">No unresolved reports have passed the 72-hour window.</div>}
               {blacklistedBrands.map((item, idx) => (
                 <div
                   key={idx}
@@ -2189,7 +2152,7 @@ export default function ScamAlertApp() {
                     </span>
 
                     <span className="text-xs bg-red-600 text-white px-2.5 py-0.5 rounded font-mono font-bold">
-                      0/100 BLACKLISTED
+                      UNRESOLVED
                     </span>
                   </div>
 
@@ -2212,7 +2175,7 @@ export default function ScamAlertApp() {
                     </span>
 
                     <span className="text-red-400 font-semibold">
-                      Status: Permanently Flagged
+                      Status: Unresolved after 72h
                     </span>
                   </div>
                 </div>
