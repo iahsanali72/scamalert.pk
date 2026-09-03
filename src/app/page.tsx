@@ -433,6 +433,70 @@ const restorePendingReportDraft = () => {
     return false;
   }
 };
+const PENDING_REPORT_DB = 'scamalert_pending_report_db';
+const PENDING_REPORT_STORE = 'pending_files';
+const PENDING_REPORT_FILES_KEY = 'evidence';
+
+const openPendingReportDb = (): Promise<IDBDatabase> => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(PENDING_REPORT_DB, 1);
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+
+      if (!db.objectStoreNames.contains(PENDING_REPORT_STORE)) {
+        db.createObjectStore(PENDING_REPORT_STORE);
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+};
+
+const savePendingReportFiles = async (files: File[]) => {
+  const db = await openPendingReportDb();
+
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(PENDING_REPORT_STORE, 'readwrite');
+    tx.objectStore(PENDING_REPORT_STORE).put(files, PENDING_REPORT_FILES_KEY);
+
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+
+  db.close();
+};
+
+const restorePendingReportFiles = async () => {
+  const db = await openPendingReportDb();
+
+  const files = await new Promise<File[]>((resolve, reject) => {
+    const tx = db.transaction(PENDING_REPORT_STORE, 'readonly');
+    const request = tx.objectStore(PENDING_REPORT_STORE).get(PENDING_REPORT_FILES_KEY);
+
+    request.onsuccess = () => resolve((request.result as File[] | undefined) ?? []);
+    request.onerror = () => reject(request.error);
+  });
+
+  db.close();
+
+  setReportFiles(files);
+};
+
+const clearPendingReportFiles = async () => {
+  const db = await openPendingReportDb();
+
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(PENDING_REPORT_STORE, 'readwrite');
+    tx.objectStore(PENDING_REPORT_STORE).delete(PENDING_REPORT_FILES_KEY);
+
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+
+  db.close();
+};
   useEffect(() => {
     let isMounted = true;
 
@@ -443,7 +507,11 @@ const restorePendingReportDraft = () => {
         setIsLoggedIn(true);
         setLoggedInUser(displayName);
         await loadUserReports(user.id);
-        restorePendingReportDraft();
+       const restoredDraft = restorePendingReportDraft();
+
+if (restoredDraft) {
+  await restorePendingReportFiles();
+} 
       } else {
         setIsLoggedIn(false);
         setLoggedInUser('');
@@ -479,7 +547,7 @@ const restorePendingReportDraft = () => {
   const saved = localStorage.getItem('scamalert_pending_report');
   if (!saved) return;
 
-  setActiveTab('report');
+  setActiveTab('file-report');
 }, [isLoggedIn, pendingReportDraft]);
   const handleTabClick = (tab: string) => {
     setAuthError('');
@@ -540,6 +608,7 @@ const restorePendingReportDraft = () => {
     setReportBrandName(''); setReportHandle(''); setReportOrderNumber(''); setReportBrandEmail(''); setReportBrandWhatsapp('');
     setReportOrderDate(''); setReportAmount(''); setReportDescription(''); setReportFiles([]); setPendingReportDraft(null);
     localStorage.removeItem('scamalert_pending_report');
+    await clearPendingReportFiles();
     setReportSuccessMessage(`Report ${created.report_number} filed. The 72-hour review window has started. ${notice}`);
     setSystemNotifications(prev => [`[Report ${created.report_number}] 72-hour review window started. ${notice}`, ...prev]);
     await Promise.all([loadUserReports(user.id), loadPublicData()]);
@@ -718,10 +787,11 @@ const restorePendingReportDraft = () => {
     e.preventDefault();
     if (isSubmittingReport) return;
     if (!isLoggedIn) {
-      savePendingReportDraft();
-      setShowAuthRequiredModal(true);
-      return;
-    }
+  savePendingReportDraft();
+  await savePendingReportFiles(reportFiles);
+  setShowAuthRequiredModal(true);
+  return;
+}
     await submitReport();
   };
 
