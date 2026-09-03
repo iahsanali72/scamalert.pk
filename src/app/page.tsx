@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createClient } from '../utils/supabase/client';
 
 function ScamAlertLogo({ onClick }: { onClick: () => void }) {
   return (
@@ -258,6 +259,7 @@ function ScamMeterBadge({
 }
 
 export default function ScamAlertApp() {
+  const [supabase] = useState(() => createClient());
   const [activeTab, setActiveTab] = useState('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
@@ -271,6 +273,8 @@ export default function ScamAlertApp() {
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [emailInput, setEmailInput] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [authMessage, setAuthMessage] = useState('');
 
   const [showForgotPasswordModal, setShowForgotPasswordModal] =
     useState(false);
@@ -411,7 +415,68 @@ export default function ScamAlertApp() {
     },
   ]);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const applyUser = (user: any) => {
+      if (!isMounted) return;
+
+      if (user) {
+        const displayName =
+          user.user_metadata?.username ||
+          user.user_metadata?.full_name ||
+          user.email?.split('@')[0] ||
+          'User';
+
+        setIsLoggedIn(true);
+        setLoggedInUser(displayName);
+      } else {
+        setIsLoggedIn(false);
+        setLoggedInUser('');
+      }
+    };
+
+    const finishAuthRedirect = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+        if (error) {
+          setAuthError(error.message);
+        } else {
+          setAuthMessage('Email verified successfully. You are now signed in.');
+          setActiveTab('dashboard');
+        }
+
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      applyUser(user);
+    };
+
+    void finishAuthRedirect();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      applyUser(session?.user ?? null);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
+
   const handleTabClick = (tab: string) => {
+    setAuthError('');
+    setAuthMessage('');
     setActiveTab(tab);
   };
 
@@ -475,33 +540,72 @@ export default function ScamAlertApp() {
     setActiveTab('dashboard');
   };
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (isLoggingIn) return;
 
     setIsLoggingIn(true);
+    setAuthError('');
+    setAuthMessage('');
 
-    setTimeout(() => {
-      setIsLoggingIn(false);
-      setIsLoggedIn(true);
-      setLoggedInUser(usernameInput.trim() || 'CustomerDemo');
+    const email = usernameInput.trim();
 
-      setUsernameInput('');
-      setPasswordInput('');
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password: passwordInput,
+    });
 
-      if (pendingReportDraft) {
-        finalizeAndSubmitReport(
-          pendingReportDraft.brandName,
-          pendingReportDraft.handle,
-          pendingReportDraft.platform,
-          pendingReportDraft.amount,
-          pendingReportDraft.description
-        );
+    setIsLoggingIn(false);
+
+    if (error) {
+      if (error.message.toLowerCase().includes('email not confirmed')) {
+        setAuthError('Please verify your email address before signing in. Check your inbox for the confirmation email.');
       } else {
-        setActiveTab('dashboard');
+        setAuthError(error.message);
       }
-    }, 800);
+      return;
+    }
+
+    const user = data.user;
+    const displayName =
+      user?.user_metadata?.username ||
+      user?.user_metadata?.full_name ||
+      user?.email?.split('@')[0] ||
+      'User';
+
+    setIsLoggedIn(true);
+    setLoggedInUser(displayName);
+    setUsernameInput('');
+    setPasswordInput('');
+
+    if (pendingReportDraft) {
+      finalizeAndSubmitReport(
+        pendingReportDraft.brandName,
+        pendingReportDraft.handle,
+        pendingReportDraft.platform,
+        pendingReportDraft.amount,
+        pendingReportDraft.description
+      );
+    } else {
+      setActiveTab('dashboard');
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setAuthError('');
+    setAuthMessage('');
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      setAuthError(error.message);
+    }
   };
 
   const handleForgotPasswordSubmit = (e: React.FormEvent) => {
@@ -561,42 +665,75 @@ export default function ScamAlertApp() {
     }, 600);
   };
 
-  const handleSignupSubmit = (e: React.FormEvent) => {
+  const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (isLoggingIn || usernameStatus === 'taken') return;
 
     setIsLoggingIn(true);
+    setAuthError('');
+    setAuthMessage('');
 
-    setTimeout(() => {
-      setIsLoggingIn(false);
-      setIsLoggedIn(true);
-      setLoggedInUser(usernameInput.trim() || 'NewUser');
+    const username = usernameInput.trim();
+    const email = emailInput.trim();
 
-      setUsernameInput('');
-      setEmailInput('');
-      setPasswordInput('');
-      setFirstName('');
-      setLastName('');
-      setDob('');
-      setProvince('');
-      setCity('');
-      setZipcode('');
-      setPhone('');
-      setUsernameStatus('idle');
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: passwordInput,
+      options: {
+        emailRedirectTo: window.location.origin,
+        data: {
+          username,
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          full_name: `${firstName.trim()} ${lastName.trim()}`.trim(),
+          dob,
+          province,
+          city: city.trim(),
+          zipcode: zipcode.trim(),
+          phone: phone.trim(),
+        },
+      },
+    });
 
-      if (pendingReportDraft) {
-        finalizeAndSubmitReport(
-          pendingReportDraft.brandName,
-          pendingReportDraft.handle,
-          pendingReportDraft.platform,
-          pendingReportDraft.amount,
-          pendingReportDraft.description
-        );
-      } else {
-        setActiveTab('dashboard');
-      }
-    }, 1200);
+    setIsLoggingIn(false);
+
+    if (error) {
+      setAuthError(error.message);
+      return;
+    }
+
+    setPasswordInput('');
+
+    if (!data.session) {
+      setAuthMessage(
+        `Verification email sent to ${email}. Please open that email and click “Confirm email address” before signing in.`
+      );
+      setActiveTab('login');
+      setUsernameInput(email);
+      return;
+    }
+
+    const user = data.user;
+    const displayName =
+      user?.user_metadata?.username ||
+      user?.email?.split('@')[0] ||
+      username ||
+      'User';
+
+    setIsLoggedIn(true);
+    setLoggedInUser(displayName);
+    setUsernameInput('');
+    setEmailInput('');
+    setFirstName('');
+    setLastName('');
+    setDob('');
+    setProvince('');
+    setCity('');
+    setZipcode('');
+    setPhone('');
+    setUsernameStatus('idle');
+    setActiveTab('dashboard');
   };
 
   const handleFileNewReportSubmit = (e: React.FormEvent) => {
@@ -632,10 +769,13 @@ export default function ScamAlertApp() {
     }, 1000);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setIsLoggedIn(false);
     setLoggedInUser('');
     setShowUserDropdown(false);
+    setAuthError('');
+    setAuthMessage('');
     setActiveTab('overview');
   };
 
@@ -983,23 +1123,35 @@ export default function ScamAlertApp() {
                 </p>
               </div>
 
+              {authError && (
+                <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-300">
+                  {authError}
+                </div>
+              )}
+
+              {authMessage && (
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs leading-relaxed text-emerald-300">
+                  {authMessage}
+                </div>
+              )}
+
               <form
                 onSubmit={handleLoginSubmit}
                 className="space-y-4"
               >
                 <div className="space-y-1">
                   <label className="text-xs text-zinc-300 font-semibold block">
-                    Username or Email
+                    Email Address
                   </label>
 
                   <input
-                    type="text"
+                    type="email"
                     required
                     value={usernameInput}
                     onChange={(e) =>
                       setUsernameInput(e.target.value)
                     }
-                    placeholder="e.g. CustomerDemo"
+                    placeholder="you@example.com"
                     className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
                   />
                 </div>
@@ -1047,6 +1199,21 @@ export default function ScamAlertApp() {
                   )}
                 </button>
               </form>
+
+              <div className="flex items-center gap-3">
+                <div className="h-px flex-1 bg-zinc-800" />
+                <span className="text-[10px] uppercase tracking-wider text-zinc-500">or</span>
+                <div className="h-px flex-1 bg-zinc-800" />
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                className="w-full bg-white hover:bg-zinc-100 text-zinc-900 font-semibold py-3 rounded-xl text-sm transition cursor-pointer flex items-center justify-center gap-3"
+              >
+                <span className="text-lg font-bold">G</span>
+                Continue with Google
+              </button>
 
               <div className="text-center pt-2 border-t border-zinc-800">
                 <span className="text-xs text-zinc-400">
@@ -1196,6 +1363,33 @@ export default function ScamAlertApp() {
                   Register with your full details to submit verified
                   fraud evidence and launch disputes.
                 </p>
+              </div>
+
+              {authError && (
+                <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-300">
+                  {authError}
+                </div>
+              )}
+
+              {authMessage && (
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs leading-relaxed text-emerald-300">
+                  {authMessage}
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                className="w-full bg-white hover:bg-zinc-100 text-zinc-900 font-semibold py-3 rounded-xl text-sm transition cursor-pointer flex items-center justify-center gap-3"
+              >
+                <span className="text-lg font-bold">G</span>
+                Continue with Google
+              </button>
+
+              <div className="flex items-center gap-3">
+                <div className="h-px flex-1 bg-zinc-800" />
+                <span className="text-[10px] uppercase tracking-wider text-zinc-500">or sign up with email</span>
+                <div className="h-px flex-1 bg-zinc-800" />
               </div>
 
               <form
