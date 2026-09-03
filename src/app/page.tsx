@@ -473,19 +473,14 @@ const restorePendingReportDraft = () => {
     });
     return () => { isMounted = false; subscription.unsubscribe(); };
   }, [supabase]);
-  useEffect(() => {
+ useEffect(() => {
   if (!isLoggedIn || !pendingReportDraft) return;
 
   const saved = localStorage.getItem('scamalert_pending_report');
   if (!saved) return;
 
-  const timer = setTimeout(() => {
-    void submitReport();
-  }, 100);
-
-  return () => clearTimeout(timer);
+  setActiveTab('report');
 }, [isLoggedIn, pendingReportDraft]);
-
   const handleTabClick = (tab: string) => {
     setAuthError('');
     setAuthMessage('');
