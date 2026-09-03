@@ -224,20 +224,30 @@ function ScamMeterBadge({
   }
 
   let colorClass = 'bg-red-500/10 text-red-400 border-red-500/30';
-  let label = 'HIGH RISK';
-  let barColor = 'bg-red-500';
+let label = 'VERY POOR';
+let barColor = 'bg-red-500';
 
-  if (score >= 80) {
-    colorClass =
-      'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
-    label = 'SAFE';
-    barColor = 'bg-emerald-500';
-  } else if (score >= 50) {
-    colorClass =
-      'bg-yellow-500/10 text-yellow-400 border-yellow-500/30';
-    label = 'MODERATE';
-    barColor = 'bg-yellow-500';
-  }
+if (score >= 90) {
+  colorClass =
+    'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
+  label = 'EXCELLENT';
+  barColor = 'bg-emerald-500';
+} else if (score >= 75) {
+  colorClass =
+    'bg-green-500/10 text-green-400 border-green-500/30';
+  label = 'GOOD';
+  barColor = 'bg-green-500';
+} else if (score >= 60) {
+  colorClass =
+    'bg-yellow-500/10 text-yellow-400 border-yellow-500/30';
+  label = 'FAIR';
+  barColor = 'bg-yellow-500';
+} else if (score >= 40) {
+  colorClass =
+    'bg-orange-500/10 text-orange-400 border-orange-500/30';
+  label = 'POOR';
+  barColor = 'bg-orange-500';
+}
 
   return (
     <div className="flex flex-col items-end gap-1">
@@ -2279,12 +2289,11 @@ const handleMarkResolved = async (id: string) => {
             <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-bold text-white">
-                  Verified & Rated Brand Directory
+                  Brand Reputation Directory
                 </h2>
 
                 <p className="text-xs text-zinc-400 mt-1">
-                  Browse trust scores and open dispute counts for
-                  Pakistani online sellers.
+                  Browse reputation scores based on completed complaint outcomes and resolution history.
                 </p>
               </div>
 
