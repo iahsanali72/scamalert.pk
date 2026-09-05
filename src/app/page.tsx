@@ -344,7 +344,7 @@ const savePendingReportDraft = () => {
   const [newReportSearch, setNewReportSearch] = useState('');
 
   const [systemNotifications, setSystemNotifications] = useState<string[]>([]);
-
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [submittedReportsFeed, setSubmittedReportsFeed] = useState<any[]>([]);
   const [expiredPublicReports, setExpiredPublicReports] = useState<any[]>([]);
   const [publicEvidence, setPublicEvidence] = useState<Record<string, any[]>>({});
@@ -402,7 +402,42 @@ const savePendingReportDraft = () => {
   const loadUserReports = async (userId: string) => {
     const { data, error } = await supabase
       .from('reports')
-      .select('id, report_number, brand_name, handle, platform, status, public_at, created_at, order_number, brand_email, brand_whatsapp, amount_paid, payment_method, description, email_notification_status, whatsapp_notification_status, business_responded_at, business_responses(response_text,response_type,tracking_number,refund_reference,created_at), report_evidence(storage_path,file_name,mime_type)')
+      .select(`
+  id,
+  report_number,
+  brand_name,
+  handle,
+  platform,
+  status,
+  public_at,
+  created_at,
+  order_number,
+  brand_email,
+  brand_whatsapp,
+  amount_paid,
+  payment_method,
+  description,
+  email_notification_status,
+  whatsapp_notification_status,
+  business_responded_at,
+  business_responses(
+    response_text,
+    response_type,
+    tracking_number,
+    refund_reference,
+    created_at
+  ),
+  customer_final_responses(
+    response_text,
+    resolution_choice,
+    created_at
+  ),
+  report_evidence(
+    storage_path,
+    file_name,
+    mime_type
+  )
+`)
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
     if (error) { setAuthError(error.message); return; }
@@ -412,10 +447,32 @@ const savePendingReportDraft = () => {
         return { ...ev, url: signed.data?.signedUrl || null };
       }));
       return {
-        dbId: r.id, id: r.report_number, brand: r.brand_name, handle: r.handle, platform: r.platform, status: r.status === 'resolved' ? 'Resolved by customer' : (new Date(r.public_at) <= new Date() ? 'Unresolved — Public' : 'Pending Brand Response'),
+        dbId: r.id, id: r.report_number, brand: r.brand_name, handle: r.handle, platform: r.platform, 
+        status:
+  r.status === 'resolved'
+    ? 'Resolved by customer'
+    : (
+    Array.isArray(r.customer_final_responses)
+      ? r.customer_final_responses.length > 0
+      : Boolean(r.customer_final_responses)
+  )
+  ? 'Customer Replied · Report Active'
+      : new Date(r.public_at) <= new Date()
+        ? 'Unresolved — Public'
+        : r.business_responded_at
+          ? 'Brand Responded · Awaiting Your Review'
+          : 'Pending Brand Response',
         timeLeft: formatTimeLeft(r.public_at, r.status), date: new Date(r.created_at).toLocaleDateString('en-PK'), publicAt: r.public_at,
         orderNumber: r.order_number, brandEmail: r.brand_email, brandWhatsapp: r.brand_whatsapp, amount: r.amount_paid, paymentMethod: r.payment_method, description: r.description,
-        emailStatus: r.email_notification_status, whatsappStatus: r.whatsapp_notification_status, businessResponse: Array.isArray(r.business_responses) ? r.business_responses[0] : r.business_responses, evidence,
+        emailStatus: r.email_notification_status, whatsappStatus: r.whatsapp_notification_status, businessResponse: Array.isArray(r.business_responses)
+  ? r.business_responses[0]
+  : r.business_responses,
+
+customerFinalResponse: Array.isArray(r.customer_final_responses)
+  ? r.customer_final_responses[0]
+  : r.customer_final_responses,
+
+evidence,
       };
     }));
     setUserTickets(tickets);
@@ -988,9 +1045,84 @@ const handleMarkResolved = async (id: string) => {
                   </button>
                 </>
               ) : (
-                <span className="text-xs font-bold text-red-400 bg-zinc-900 border border-zinc-700 px-3 py-1.5 rounded-lg">
-                  @{loggedInUser}
-                </span>
+                <div className="flex items-center gap-2 relative">
+  <button
+    type="button"
+    onClick={() => setNotificationsOpen(!notificationsOpen)}
+    className="relative bg-zinc-900 border border-zinc-700 w-9 h-9 rounded-lg flex items-center justify-center hover:border-red-500 transition cursor-pointer"
+    title="Notifications"
+  >
+    <span className="text-lg">🔔</span>
+
+    {userTickets.filter(
+      (ticket: any) =>
+        ticket.businessResponse &&
+        !ticket.customerFinalResponse &&
+        ticket.status !== 'Resolved by customer'
+    ).length > 0 && (
+      <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold min-w-5 h-5 px-1 rounded-full flex items-center justify-center">
+        {userTickets.filter(
+          (ticket: any) =>
+            ticket.businessResponse &&
+            !ticket.customerFinalResponse &&
+            ticket.status !== 'Resolved by customer'
+        ).length}
+      </span>
+    )}
+
+    {notificationsOpen && (
+      <div className="absolute right-0 top-11 w-80 bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl z-50 p-3 text-left">
+        <p className="text-xs font-bold text-white mb-3">
+          Notifications
+        </p>
+
+        {userTickets.filter(
+          (ticket: any) =>
+            ticket.businessResponse &&
+            !ticket.customerFinalResponse &&
+            ticket.status !== 'Resolved by customer'
+        ).length === 0 ? (
+          <p className="text-xs text-zinc-500 py-3">
+            No new notifications.
+          </p>
+        ) : (
+          userTickets
+            .filter(
+              (ticket: any) =>
+                ticket.businessResponse &&
+                !ticket.customerFinalResponse &&
+                ticket.status !== 'Resolved by customer'
+            )
+            .map((ticket: any) => (
+              <div
+                key={ticket.dbId}
+                onClick={() =>
+                  router.push(`/case/${encodeURIComponent(ticket.id)}`)
+                }
+                className="border-t border-zinc-800 py-3 cursor-pointer hover:bg-zinc-800/50 px-2 rounded-lg"
+              >
+                <p className="text-xs font-bold text-red-400">
+                  Brand responded
+                </p>
+
+                <p className="text-xs text-white mt-1">
+                  {ticket.brand} responded to your complaint.
+                </p>
+
+                <p className="text-[10px] text-zinc-500 mt-1">
+                  {ticket.id} · Click to review
+                </p>
+              </div>
+            ))
+        )}
+      </div>
+    )}
+  </button>
+
+  <span className="text-xs font-bold text-red-400 bg-zinc-900 border border-zinc-700 px-3 py-1.5 rounded-lg">
+    @{loggedInUser}
+  </span>
+</div>
               )}
             </div>
           </div>
@@ -1060,7 +1192,85 @@ const handleMarkResolved = async (id: string) => {
                 </button>
               </>
             ) : (
-              <div className="relative">
+  <>
+   <div className="relative">
+  <button
+    type="button"
+    onClick={() => setNotificationsOpen((open) => !open)}
+    className="relative border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer"
+    title="Notifications"
+  >
+    <span className="text-lg">🔔</span>
+
+    {userTickets.filter(
+      (ticket: any) =>
+        ticket.businessResponse &&
+        !ticket.customerFinalResponse &&
+        ticket.status !== 'Resolved by customer'
+    ).length > 0 && (
+      <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold min-w-5 h-5 px-1 rounded-full flex items-center justify-center">
+        {userTickets.filter(
+          (ticket: any) =>
+            ticket.businessResponse &&
+            !ticket.customerFinalResponse &&
+            ticket.status !== 'Resolved by customer'
+        ).length}
+      </span>
+    )}
+  </button>
+
+  {notificationsOpen && (
+    <div className="absolute right-0 top-11 w-80 bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl z-50 p-3 text-left">
+      <p className="text-xs font-bold text-white mb-3">
+        Notifications
+      </p>
+
+      {userTickets.filter(
+        (ticket: any) =>
+          ticket.businessResponse &&
+          !ticket.customerFinalResponse &&
+          ticket.status !== 'Resolved by customer'
+      ).length === 0 ? (
+        <p className="text-xs text-zinc-500 py-3">
+          No new notifications.
+        </p>
+      ) : (
+        userTickets
+          .filter(
+            (ticket: any) =>
+              ticket.businessResponse &&
+              !ticket.customerFinalResponse &&
+              ticket.status !== 'Resolved by customer'
+          )
+          .map((ticket: any) => (
+            <button
+              key={ticket.dbId}
+              type="button"
+              onClick={() => {
+                setNotificationsOpen(false);
+                window.location.href = `/case/${encodeURIComponent(ticket.id)}`;
+              }}
+              className="w-full text-left border-t border-zinc-800 py-3 hover:bg-zinc-800/50 px-2 rounded-lg cursor-pointer"
+            >
+              <p className="text-xs font-bold text-red-400">
+                Brand responded
+              </p>
+
+              <p className="text-xs text-white mt-1">
+                {ticket.brand} responded to your complaint.
+              </p>
+
+              <p className="text-[10px] text-zinc-500 mt-1">
+                {ticket.id} · Click to review
+              </p>
+            </button>
+          ))
+      )}
+    </div>
+  )}
+</div>
+
+    <div className="relative">
                 <button
                   onClick={() =>
                     setShowUserDropdown(!showUserDropdown)
@@ -1104,11 +1314,12 @@ const handleMarkResolved = async (id: string) => {
                       🚪 Sign Out
                     </button>
                   </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+           )}
+</div>
+</>
+)}
+</div>
+</div>
 
         <div className="border-t border-zinc-800 bg-zinc-950/80">
           <div className="max-w-7xl mx-auto px-4 flex items-center gap-2 overflow-x-auto">
@@ -2096,10 +2307,15 @@ const handleMarkResolved = async (id: string) => {
                     className="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl space-y-3"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs text-yellow-400 font-bold">
-                        {ticket.id}
-                      </span>
-
+                    <button
+  type="button"
+  onClick={() => {
+    window.location.href = `/case/${encodeURIComponent(ticket.id)}`;
+  }}
+  className="font-mono text-xs text-yellow-400 font-bold hover:text-yellow-300 hover:underline cursor-pointer"
+>
+  {ticket.id}
+</button>
                       <span className="text-xs bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 px-2.5 py-1 rounded font-medium">
                         {ticket.status}
                       </span>

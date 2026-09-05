@@ -18,6 +18,7 @@ export default function BusinessResponsePage() {
   const [refundReference, setRefundReference] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [proofFile, setProofFile] = useState<File | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -31,20 +32,56 @@ export default function BusinessResponsePage() {
   }, [reportNumber, token, supabase]);
 
   const submit = async (e: React.FormEvent) => {
-    e.preventDefault(); setSaving(true); setError('');
-    const { data, error: rpcError } = await supabase.rpc('submit_business_response', {
-      p_report_number: reportNumber,
-      p_token: token,
-      p_response_text: responseText,
-      p_response_type: responseType,
-      p_tracking_number: trackingNumber || null,
-      p_refund_reference: refundReference || null,
-    });
-    setSaving(false);
-    if (rpcError || !data) { setError(rpcError?.message || 'Unable to submit response.'); return; }
-    setSubmitted(true);
-  };
+  e.preventDefault();
+  setSaving(true);
+  setError('');
 
+  try {
+    if (proofFile) {
+      const formData = new FormData();
+      formData.append('file', proofFile);
+      formData.append('reportNumber', reportNumber);
+      formData.append('token', token);
+
+      const uploadResponse = await fetch('/api/business-proof', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const uploadResult = await uploadResponse.json();
+
+      if (!uploadResponse.ok) {
+        setSaving(false);
+        setError(uploadResult?.error || 'Unable to upload proof.');
+        return;
+      }
+    }
+
+    const { data, error: rpcError } = await supabase.rpc(
+      'submit_business_response',
+      {
+        p_report_number: reportNumber,
+        p_token: token,
+        p_response_text: responseText,
+        p_response_type: responseType,
+        p_tracking_number: trackingNumber || null,
+        p_refund_reference: refundReference || null,
+      }
+    );
+
+    setSaving(false);
+
+    if (rpcError || !data) {
+      setError(rpcError?.message || 'Unable to submit response.');
+      return;
+    }
+
+    setSubmitted(true);
+  } catch (err: any) {
+    setSaving(false);
+    setError(err?.message || 'Unable to submit response.');
+  }
+};
   return <main className="min-h-screen bg-zinc-950 text-zinc-100 p-4 md:p-8">
     <div className="max-w-2xl mx-auto bg-zinc-900 border border-zinc-800 rounded-2xl p-6 md:p-8 space-y-6">
       <div><p className="text-xs font-mono text-red-400">SCAMALERT.PK BUSINESS RESPONSE</p><h1 className="text-2xl font-bold mt-1">Respond to complaint {reportNumber}</h1><p className="text-xs text-zinc-400 mt-2">This page gives temporary access to this complaint only. No business account is required.</p></div>
@@ -64,6 +101,24 @@ export default function BusinessResponsePage() {
           </select>
           <textarea required minLength={5} rows={6} value={responseText} onChange={e=>setResponseText(e.target.value)} placeholder="Explain your response to this complaint..." className="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-3" />
           <div className="grid sm:grid-cols-2 gap-3"><input value={trackingNumber} onChange={e=>setTrackingNumber(e.target.value)} placeholder="Tracking number (optional)" className="bg-zinc-950 border border-zinc-700 rounded-lg p-3"/><input value={refundReference} onChange={e=>setRefundReference(e.target.value)} placeholder="Refund reference (optional)" className="bg-zinc-950 border border-zinc-700 rounded-lg p-3"/></div>
+          <div className="space-y-2">
+  <label className="block text-xs font-semibold text-zinc-300">
+    Attach Proof <span className="text-zinc-500">(optional)</span>
+  </label>
+
+  <input
+    type="file"
+    accept="image/*,.pdf"
+    onChange={(e) => setProofFile(e.target.files?.[0] || null)}
+    className="block w-full text-xs text-zinc-400 file:mr-3 file:rounded-lg file:border-0 file:bg-zinc-800 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-zinc-700"
+  />
+
+  {proofFile && (
+    <p className="text-xs text-emerald-400">
+      Selected: {proofFile.name}
+    </p>
+  )}
+</div>
           <button disabled={saving} className="w-full bg-red-600 hover:bg-red-700 rounded-xl py-3 font-bold disabled:opacity-50">{saving ? 'Submitting...' : 'Submit response'}</button>
         </form>}
       </>}
