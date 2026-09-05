@@ -2489,7 +2489,36 @@ const handleMarkResolved = async (id: string) => {
                 <h3 className="text-sm font-bold text-white">Unresolved reports past 72 hours</h3>
                 {expiredPublicReports.map((report: any) => (
                   <div key={report.id} className="bg-zinc-900 border border-red-500/30 p-5 rounded-2xl space-y-3">
-                    <div className="flex items-center justify-between gap-3"><div><span className="font-mono text-xs text-red-400 font-bold">{report.report_number}</span><h4 className="font-bold text-white mt-1">{report.brand_name}</h4><PlatformLink platform={report.platform} handle={report.handle} className="mt-1" /></div><span className="text-[10px] px-2 py-1 rounded bg-red-500/10 border border-red-500/30 text-red-300">72H EXPIRED · UNRESOLVED</span></div>
+                    <div className="flex items-center justify-between gap-3">
+  <div>
+    <span className="font-mono text-xs text-red-400 font-bold">
+      {report.report_number}
+    </span>
+
+    <h4 className="font-bold text-white mt-1">
+      {report.brand_name}
+    </h4>
+
+    <PlatformLink
+      platform={report.platform}
+      handle={report.handle}
+      className="mt-1"
+    />
+  </div>
+
+  <div className="flex flex-col items-end gap-2">
+    <span className="text-[10px] px-2 py-1 rounded bg-red-500/10 border border-red-500/30 text-red-300">
+      72H EXPIRED · UNRESOLVED
+    </span>
+
+    <a
+      href={`/report/${encodeURIComponent(report.report_number)}`}
+      className="px-3 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold transition"
+    >
+      View Report
+    </a>
+  </div>
+</div>
                     <div className="grid sm:grid-cols-2 gap-2 text-xs text-zinc-400"><p>Order #: <span className="text-zinc-200">{report.order_number}</span></p><p>Amount: <span className="text-zinc-200">PKR {Number(report.amount_paid).toLocaleString()}</span></p><p>Payment: <span className="text-zinc-200">{report.payment_method}</span></p><p>Order date: <span className="text-zinc-200">{report.order_date || 'Not provided'}</span></p>{report.brand_email && <p>Brand email: <span className="text-zinc-200">{report.brand_email}</span></p>}{report.brand_whatsapp && <p>Brand WhatsApp: <span className="text-zinc-200">{report.brand_whatsapp}</span></p>}</div>
                     <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-3"><p className="text-[10px] uppercase tracking-wider text-zinc-500">Customer report details</p><p className="text-xs text-zinc-300 mt-1 whitespace-pre-wrap">{report.description}</p></div>
                     {publicEvidence[report.id]?.length > 0 && <div><p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Evidence</p><div className="flex flex-wrap gap-2">{publicEvidence[report.id].map((ev:any)=><a key={ev.storage_path} href={ev.url || '#'} target="_blank" rel="noopener noreferrer" className="text-xs border border-zinc-700 bg-zinc-950 hover:border-red-500/40 px-3 py-2 rounded-lg">{ev.file_name}</a>)}</div></div>}
