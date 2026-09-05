@@ -75,6 +75,20 @@ export default function BusinessResponsePage() {
       setError(rpcError?.message || 'Unable to submit response.');
       return;
     }
+      try {
+        await fetch('/api/notify-customer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            reportNumber,
+            token,
+          }),
+        });
+      } catch (notifyError) {
+        console.error('Customer notification failed:', notifyError);
+      }
 
     setSubmitted(true);
   } catch (err: any) {
