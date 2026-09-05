@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from "next/navigation";
 import { createClient } from '../utils/supabase/client';
 
 function ScamAlertLogo({ onClick }: { onClick: () => void }) {
@@ -269,6 +270,7 @@ if (score >= 90) {
 }
 
 export default function ScamAlertApp() {
+  const router = useRouter();
   const [supabase] = useState(() => createClient());
   const [activeTab, setActiveTab] = useState('overview');
   const [searchQuery, setSearchQuery] = useState('');
