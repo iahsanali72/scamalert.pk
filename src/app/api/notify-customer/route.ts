@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { createHash } from 'crypto'
 import { createAdminClient } from '@/utils/supabase/admin'
 
 export async function POST(request: Request) {
@@ -14,22 +15,6 @@ export async function POST(request: Request) {
 
     const supabase = createAdminClient()
 
-    // Validate the secure brand-response token.
-    const { data: reportRows, error: tokenError } = await supabase.rpc(
-      'get_business_report',
-      {
-        p_report_number: reportNumber,
-        p_token: token,
-      }
-    )
-
-    if (tokenError || !reportRows?.length) {
-      return NextResponse.json(
-        { error: 'Invalid or expired response link' },
-        { status: 403 }
-      )
-    }
-
     const { data: report, error: reportError } = await supabase
       .from('reports')
       .select(`
@@ -37,7 +22,9 @@ export async function POST(request: Request) {
         report_number,
         user_id,
         brand_name,
-        business_responded_at
+        business_responded_at,
+        response_token_hash,
+        response_token_expires_at
       `)
       .eq('report_number', reportNumber)
       .single()
@@ -49,7 +36,30 @@ export async function POST(request: Request) {
       )
     }
 
-    // Never email the customer until the brand response is actually saved.
+    const suppliedTokenHash = createHash('sha256')
+      .update(token)
+      .digest('hex')
+
+    if (
+      !report.response_token_hash ||
+      suppliedTokenHash !== report.response_token_hash
+    ) {
+      return NextResponse.json(
+        { error: 'Invalid response token' },
+        { status: 403 }
+      )
+    }
+
+    if (
+      !report.response_token_expires_at ||
+      new Date(report.response_token_expires_at).getTime() < Date.now()
+    ) {
+      return NextResponse.json(
+        { error: 'Response token has expired' },
+        { status: 403 }
+      )
+    }
+
     if (!report.business_responded_at) {
       return NextResponse.json(
         { error: 'Business response has not been submitted' },
@@ -98,7 +108,7 @@ export async function POST(request: Request) {
         html: `
           <p>
             <strong>${report.brand_name}</strong> has responded to your
-            complaint <strong>${report.report_number}</strong>.
+            report <strong>${report.report_number}</strong>.
           </p>
 
           <p>
@@ -113,17 +123,22 @@ export async function POST(request: Request) {
           </p>
 
           <p>
-            You can mark the complaint as satisfied or not satisfied
-            after reviewing the response.
+            After reviewing the response, you can tell us whether you are
+            satisfied or not satisfied with the outcome.
           </p>
         `,
       }),
     })
 
-    if (!result.ok) {
-      const details = await result.text()
-      console.error('Customer notification email failed:', details)
+    const details = await result.text()
 
+    console.log(
+      'Resend notify-customer response:',
+      result.status,
+      details
+    )
+
+    if (!result.ok) {
       return NextResponse.json(
         { email: 'failed' },
         { status: 500 }
