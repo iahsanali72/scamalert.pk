@@ -57,37 +57,28 @@ export default function BusinessResponsePage() {
       }
     }
 
-    const { data, error: rpcError } = await supabase.rpc(
-      'submit_business_response',
-      {
-        p_report_number: reportNumber,
-        p_token: token,
-        p_response_text: responseText,
-        p_response_type: responseType,
-        p_tracking_number: trackingNumber || null,
-        p_refund_reference: refundReference || null,
-      }
-    );
+      const response = await fetch('/api/submit-business-response', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reportNumber,
+          token,
+          responseText,
+          responseType,
+          trackingNumber: trackingNumber || null,
+          refundReference: refundReference || null,
+        }),
+      });
 
-    setSaving(false);
+      const result = await response.json();
 
-    if (rpcError || !data) {
-      setError(rpcError?.message || 'Unable to submit response.');
-      return;
-    }
-      try {
-        await fetch('/api/notify-customer', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            reportNumber,
-            token,
-          }),
-        });
-      } catch (notifyError) {
-        console.error('Customer notification failed:', notifyError);
+      setSaving(false);
+
+      if (!response.ok || !result?.success) {
+        setError(result?.error || 'Unable to submit response.');
+        return;
       }
 
     setSubmitted(true);
