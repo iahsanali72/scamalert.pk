@@ -670,6 +670,17 @@ if (restoredDraft) {
       }
     }
 
+    // Send report-submission confirmation to the customer.
+    try {
+      await fetch('/api/notify-customer-submitted', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportId: created.id }),
+      });
+    } catch {
+      // Report remains valid even if customer email notification fails.
+    }
+
     let notice = 'Business notification not configured.';
     try {
       const response = await fetch('/api/notify-business', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reportId: created.id, responseToken: created.response_token }) });
