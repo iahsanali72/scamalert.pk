@@ -670,15 +670,24 @@ if (restoredDraft) {
       }
     }
 
+    let customerNotice = 'Customer confirmation email failed.';
+
     // Send report-submission confirmation to the customer.
     try {
-      await fetch('/api/notify-customer-submitted', {
+      const customerResponse = await fetch('/api/notify-customer-submitted', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reportId: created.id }),
       });
+
+      const customerResult = await customerResponse.json();
+
+      customerNotice =
+        customerResult.email === 'sent'
+          ? 'Customer confirmation email sent.'
+          : `Customer confirmation email: ${customerResult.email || customerResult.error || 'failed'}.`;
     } catch {
-      // Report remains valid even if customer email notification fails.
+      customerNotice = 'Customer confirmation email failed.';
     }
 
     let notice = 'Business notification not configured.';
@@ -692,7 +701,7 @@ if (restoredDraft) {
     setReportOrderDate(''); setReportAmount(''); setReportDescription(''); setReportFiles([]); setPendingReportDraft(null);
     localStorage.removeItem('scamalert_pending_report');
     await clearPendingReportFiles();
-    setReportSuccessMessage(`Report ${created.report_number} filed. The 72-hour review window has started. ${notice}`);
+    setReportSuccessMessage(`Report ${created.report_number} filed. The 72-hour review window has started. ${customerNotice} ${notice}`);
     setSystemNotifications(prev => [`[Report ${created.report_number}] 72-hour review window started. ${notice}`, ...prev]);
     await Promise.all([loadUserReports(user.id), loadPublicData()]);
     setIsSubmittingReport(false);
