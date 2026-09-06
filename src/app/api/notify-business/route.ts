@@ -46,7 +46,23 @@ export async function POST(request: Request) {
     body: JSON.stringify(body),
   });
 
+  const resultText = await result.text();
+
+  console.log(
+    'Resend notify-business response:',
+    result.status,
+    resultText
+  );
+
   const status = result.ok ? 'sent' : 'failed';
-  await supabase.from('reports').update({ email_notification_status: status }).eq('id', report.id);
-  return NextResponse.json({ email: status, whatsapp: report.brand_whatsapp ? 'not_configured' : 'not_provided' });
+
+  await supabase
+    .from('reports')
+    .update({ email_notification_status: status })
+    .eq('id', report.id);
+
+  return NextResponse.json({
+    email: status,
+    whatsapp: report.brand_whatsapp ? 'not_configured' : 'not_provided',
+  });
 }
