@@ -60,7 +60,6 @@ export async function POST(request: Request) {
       .single()
 
     if (reportError || !report) {
-      console.error('Business response report lookup failed:', reportError)
       return NextResponse.json({
         success: true,
         email: 'failed',
@@ -73,12 +72,6 @@ export async function POST(request: Request) {
     const customerEmail = customerResult?.user?.email
 
     if (customerError || !customerEmail) {
-      console.error(
-        'Business response customer lookup failed:',
-        customerError,
-        'customerEmail:',
-        customerEmail
-      )
       return NextResponse.json({
         success: true,
         email: 'not_available',
@@ -89,10 +82,6 @@ export async function POST(request: Request) {
     const from = process.env.NOTIFICATION_FROM_EMAIL
 
     if (!resendKey || !from) {
-      console.error(
-        'Business response email config missing:',
-        { resendKey: !!resendKey, from: !!from }
-      )
       return NextResponse.json({
         success: true,
         email: 'not_configured',
