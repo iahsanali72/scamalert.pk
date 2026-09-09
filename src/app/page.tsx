@@ -1073,7 +1073,7 @@ const handleMarkResolved = async (id: string) => {
       `}</style>
 
       <header className="border-b border-[var(--sa-border)] bg-[var(--sa-surface)]/95 backdrop-blur sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 md:gap-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-2 md:py-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-4">
           <div className="flex items-center justify-between gap-2 w-full md:w-auto min-w-0">
             <ScamAlertLogo
               onClick={() =>
@@ -1081,25 +1081,25 @@ const handleMarkResolved = async (id: string) => {
               }
             />
 
-            <div className="flex md:hidden items-center gap-2">
-              {!isLoggedIn ? (
-                <>
-                  <button
-                    onClick={() => setActiveTab('login')}
-                    className="bg-white border border-[var(--sa-border)] text-[var(--sa-ink)] px-3 py-2 rounded-[4px] text-xs font-semibold cursor-pointer hover:bg-[#F2EFE9] transition"
-                  >
-                    Sign In
-                  </button>
+            <div className="flex md:hidden items-center gap-1.5 shrink-0">
+  {!isLoggedIn ? (
+    <>
+      <button
+        onClick={() => setActiveTab('login')}
+        className="bg-white border border-[var(--sa-border)] text-[var(--sa-ink)] px-2.5 h-9 rounded-[4px] text-[11px] font-semibold leading-none whitespace-nowrap shrink-0 flex items-center justify-center cursor-pointer hover:bg-[#F2EFE9] transition"
+      >
+        Sign In
+      </button>
 
-                  <button
-                    onClick={() => setActiveTab('signup')}
-                    className="bg-[var(--sa-red)] text-white px-3 py-2 rounded-[4px] text-xs font-semibold cursor-pointer hover:bg-[var(--sa-red-deep)] transition"
-                  >
-                    Sign Up
-                  </button>
-                </>
-              ) : (
-                <div className="flex items-center gap-2 relative">
+      <button
+        onClick={() => setActiveTab('signup')}
+        className="bg-[var(--sa-red)] text-white px-2.5 h-9 rounded-[4px] text-[11px] font-semibold leading-none cursor-pointer hover:bg-[var(--sa-red-deep)] transition"
+      >
+        Sign Up
+      </button>
+    </>
+  ) : (
+    <div className="flex items-center gap-2 relative">
   <button
     type="button"
     onClick={() => setNotificationsOpen(!notificationsOpen)}
@@ -1183,7 +1183,7 @@ const handleMarkResolved = async (id: string) => {
 
           <form
             onSubmit={handleSearchSubmit}
-            className="grid grid-cols-[minmax(0,1fr)_auto] sm:flex sm:items-center gap-2 w-full md:w-auto flex-1 max-w-xl justify-center"
+            className="grid grid-cols-[minmax(0,1fr)_auto_auto] sm:flex sm:items-center gap-1 md:gap-2 w-full md:w-auto flex-1 max-w-xl justify-center"
           >
             <div className="relative flex-1">
               <input
@@ -1191,14 +1191,14 @@ const handleMarkResolved = async (id: string) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search store handle or domain..."
-                className="w-full bg-white border border-[var(--sa-border)] rounded-[4px] px-3 py-2.5 text-sm focus:outline-none focus:border-[var(--sa-ink)] text-[var(--sa-ink)] placeholder:text-[var(--sa-graphite)] transition"
+                className="w-full bg-white border border-[var(--sa-border)] rounded-[4px] px-3 h-8 md:h-auto md:py-2.5 text-xs md:text-sm focus:outline-none focus:border-[var(--sa-ink)] text-[var(--sa-ink)] placeholder:text-[var(--sa-graphite)] transition"
               />
             </div>
 
             <select
               value={selectedPlatform}
               onChange={(e) => setSelectedPlatform(e.target.value)}
-              className="w-32 sm:w-36 bg-white border border-[var(--sa-border)] rounded-[4px] px-2.5 py-2.5 text-sm focus:outline-none focus:border-[var(--sa-ink)] text-[var(--sa-ink)] cursor-pointer transition"
+              className="w-[112px] sm:w-36 bg-white border border-[var(--sa-border)] rounded-[4px] px-2 h-8 md:h-auto md:py-2.5 text-xs md:text-sm focus:outline-none focus:border-[var(--sa-ink)] text-[var(--sa-ink)] cursor-pointer transition"
             >
               <option value="all">All Channels</option>
               <option value="instagram">Instagram</option>
@@ -1209,7 +1209,7 @@ const handleMarkResolved = async (id: string) => {
 
             <button
               type="submit"
-              className="col-span-2 sm:col-span-1 bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white px-4 py-2.5 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] text-sm font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
+              className="bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white w-9 h-8 md:w-auto md:h-auto md:px-4 md:py-2.5 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] text-sm font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
             >
               <svg
                 className="w-4 h-4"
@@ -1224,26 +1224,26 @@ const handleMarkResolved = async (id: string) => {
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
-              <span>Search</span>
+              <span className="hidden md:inline">Search</span>
             </button>
           </form>
 
           <div className="hidden md:flex items-center gap-2.5 relative">
             {!isLoggedIn ? (
               <>
-                <button
-                  onClick={() => setActiveTab('login')}
-                  className="bg-white hover:bg-[#F2EFE9] border border-[var(--sa-border)] text-[var(--sa-ink)] px-4 py-2.5 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] text-sm font-semibold transition cursor-pointer"
-                >
-                  Sign In
-                </button>
+         <button
+  onClick={() => setActiveTab('login')}
+  className="!bg-white !text-[var(--sa-ink)] border border-[var(--sa-border)] px-2.5 h-9 rounded-[4px] text-[11px] font-semibold leading-none whitespace-nowrap shrink-0 flex items-center justify-center cursor-pointer hover:!bg-[#F2EFE9] transition"
+>
+  Sign In
+</button>
 
-                <button
-                  onClick={() => setActiveTab('signup')}
-                  className="bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white px-4 py-2.5 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] text-sm font-semibold transition cursor-pointer"
-                >
-                  Sign Up
-                </button>
+<button
+  onClick={() => setActiveTab('signup')}
+  className="!bg-[var(--sa-red)] !text-white px-2.5 h-9 rounded-[4px] text-[11px] font-semibold leading-none whitespace-nowrap shrink-0 flex items-center justify-center cursor-pointer hover:!bg-[var(--sa-red-deep)] transition"
+>
+  Sign Up
+</button>
               </>
             ) : (
   <>
@@ -1376,12 +1376,12 @@ const handleMarkResolved = async (id: string) => {
 </div>
 
         <div className="border-t border-[var(--sa-border)] bg-[var(--sa-surface)]">
-          <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 flex items-center gap-0.5 overflow-x-auto scrollbar-hide">
+          <div className="max-w-7xl mx-auto px-1.5 sm:px-4 md:px-6 flex items-center gap-0 overflow-x-auto scrollbar-hide">
             {tabsToRender.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className={`sa-mono px-2.5 sm:px-4 py-3 text-[10px] sm:text-[11px] uppercase tracking-[0.06em] sm:tracking-[0.08em] font-medium border-b-2 transition cursor-pointer whitespace-nowrap shrink-0 ${
+                className={`sa-mono px-2 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-[11px] uppercase tracking-[0.06em] sm:tracking-[0.08em] font-medium border-b-2 transition cursor-pointer whitespace-nowrap shrink-0 ${
                   activeTab === tab.id
                     ? 'border-[var(--sa-red)] text-[var(--sa-ink)] bg-[#FFF8F7]'
                     : 'border-transparent text-[var(--sa-graphite)] hover:text-[var(--sa-ink)] hover:bg-[#F7F5F2]'
@@ -1984,17 +1984,17 @@ const handleMarkResolved = async (id: string) => {
         {/* OVERVIEW */}
         {(activeTab === 'overview' ||
           (activeTab === 'dashboard' && !isLoggedIn)) && (
-          <div className="space-y-8 md:space-y-10 py-4 md:py-6">
+          <div className="space-y-6 md:space-y-10 py-2 md:py-6">
 
             {/* HERO / REGISTRY INTRO */}
             <section className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[18px] overflow-hidden shadow-[0_12px_32px_rgba(23,21,15,0.08)]">
               <div className="relative grid md:grid-cols-[1fr_auto] overflow-hidden">
 
                 <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/pakistan-hero-bg.png')" }} />
-                <div className="absolute inset-0" style={{ backgroundColor: "rgba(255,255,255,0.42)" }} />
+                <div className="absolute inset-0" style={{ backgroundColor: "rgba(255,255,255,0.56)" }} />
 
-                <div className="relative overflow-hidden p-5 sm:p-7 md:p-10 lg:p-12 md:min-h-[330px]">
-                  <div className="relative z-10 max-w-2xl space-y-5">
+                <div className="relative overflow-hidden p-4 sm:p-7 md:p-10 lg:p-12 md:min-h-[330px]">
+                  <div className="relative z-10 max-w-2xl space-y-4 md:space-y-5">
                     <div className="sa-mono text-[11px] uppercase tracking-[0.16em] text-[var(--sa-red-deep)] font-semibold">
                       Pakistan Fraud & Scam Registry
                     </div>
@@ -2013,7 +2013,7 @@ const handleMarkResolved = async (id: string) => {
 
                 </div>
 
-                <div className="relative z-10 border-t md:border-t-0 md:border-l border-[var(--sa-border)] p-5 sm:p-7 md:p-8 lg:p-10 flex items-center">
+                <div className="relative z-10 border-t md:border-t-0 md:border-l border-[var(--sa-border)] p-4 sm:p-7 md:p-8 lg:p-10 flex items-center">
                   <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-[210px]">
                     <button
                       onClick={() => setActiveTab('file-report')}
@@ -2033,7 +2033,7 @@ const handleMarkResolved = async (id: string) => {
 
               </div>
 
-              <div className="border-t border-[var(--sa-border)] bg-[#F2EFE9] px-5 sm:px-7 md:px-10 lg:px-12 py-3.5 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-x-7 gap-y-2">
+              <div className="border-t border-[var(--sa-border)] bg-[#F2EFE9] px-5 sm:px-7 md:px-10 lg:px-12 py-3 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-x-7 gap-y-2">
                 <span className="sa-mono text-[10px] uppercase tracking-[0.12em] text-[var(--sa-graphite)]">
                   Evidence-backed records
                 </span>
