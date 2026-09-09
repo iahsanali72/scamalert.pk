@@ -1581,9 +1581,18 @@ const handleMarkResolved = async (id: string) => {
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                className="w-full bg-white hover:bg-zinc-100 text-zinc-900 font-semibold py-3 rounded-xl text-sm transition cursor-pointer flex items-center justify-center gap-3"
+                className="w-full bg-white hover:bg-zinc-50 text-zinc-900 font-semibold py-3 rounded-xl text-sm transition cursor-pointer flex items-center justify-center gap-3 border border-zinc-300 shadow-sm hover:shadow"
               >
-                <span className="text-lg font-bold">G</span>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5 shrink-0"
+                >
+                  <path fill="#4285F4" d="M21.805 10.023H12v3.955h5.617c-.242 1.273-.969 2.351-2.067 3.074v2.553h3.348c1.96-1.805 3.092-4.465 3.092-7.627 0-.664-.06-1.305-.185-1.955Z" />
+                  <path fill="#34A853" d="M12 22c2.8 0 5.148-.93 6.865-2.395l-3.348-2.553c-.93.625-2.117.996-3.517.996-2.7 0-4.985-1.824-5.8-4.273H2.742v2.633A10 10 0 0 0 12 22Z" />
+                  <path fill="#FBBC05" d="M6.2 13.775A5.998 5.998 0 0 1 5.887 12c0-.617.105-1.215.313-1.775V7.592H2.742A10.004 10.004 0 0 0 2 12c0 1.594.383 3.102 1.062 4.408L6.2 13.775Z" />
+                  <path fill="#EA4335" d="M12 5.952c1.523 0 2.89.523 3.965 1.55l2.97-2.97C17.14 2.86 14.793 2 12 2a10 10 0 0 0-9.258 5.592L6.2 10.225C7.015 7.776 9.3 5.952 12 5.952Z" />
+                </svg>
                 Continue with Google
               </button>
 
@@ -1752,9 +1761,18 @@ const handleMarkResolved = async (id: string) => {
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                className="w-full bg-white hover:bg-zinc-100 text-zinc-900 font-semibold py-3 rounded-xl text-sm transition cursor-pointer flex items-center justify-center gap-3"
+                className="w-full bg-white hover:bg-zinc-50 text-zinc-900 font-semibold py-3 rounded-xl text-sm transition cursor-pointer flex items-center justify-center gap-3 border border-zinc-300 shadow-sm hover:shadow"
               >
-                <span className="text-lg font-bold">G</span>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5 shrink-0"
+                >
+                  <path fill="#4285F4" d="M21.805 10.023H12v3.955h5.617c-.242 1.273-.969 2.351-2.067 3.074v2.553h3.348c1.96-1.805 3.092-4.465 3.092-7.627 0-.664-.06-1.305-.185-1.955Z" />
+                  <path fill="#34A853" d="M12 22c2.8 0 5.148-.93 6.865-2.395l-3.348-2.553c-.93.625-2.117.996-3.517.996-2.7 0-4.985-1.824-5.8-4.273H2.742v2.633A10 10 0 0 0 12 22Z" />
+                  <path fill="#FBBC05" d="M6.2 13.775A5.998 5.998 0 0 1 5.887 12c0-.617.105-1.215.313-1.775V7.592H2.742A10.004 10.004 0 0 0 2 12c0 1.594.383 3.102 1.062 4.408L6.2 13.775Z" />
+                  <path fill="#EA4335" d="M12 5.952c1.523 0 2.89.523 3.965 1.55l2.97-2.97C17.14 2.86 14.793 2 12 2a10 10 0 0 0-9.258 5.592L6.2 10.225C7.015 7.776 9.3 5.952 12 5.952Z" />
+                </svg>
                 Continue with Google
               </button>
 
