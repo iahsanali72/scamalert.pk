@@ -1976,7 +1976,10 @@ const handleMarkResolved = async (id: string) => {
 
             {/* HERO / REGISTRY INTRO */}
             <section className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[18px] overflow-hidden shadow-[0_12px_32px_rgba(23,21,15,0.08)]">
-              <div className="grid md:grid-cols-[1fr_auto]">
+              <div className="relative grid md:grid-cols-[1fr_auto] overflow-hidden">
+
+                <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/pakistan-hero-bg.png')" }} />
+                <div className="absolute inset-0" style={{ backgroundColor: "rgba(255,255,255,0.42)" }} />
 
                 <div className="relative overflow-hidden p-5 sm:p-7 md:p-10 lg:p-12 md:min-h-[330px]">
                   <div className="relative z-10 max-w-2xl space-y-5">
@@ -1998,7 +2001,7 @@ const handleMarkResolved = async (id: string) => {
 
                 </div>
 
-                <div className="border-t md:border-t-0 md:border-l border-[var(--sa-border)] p-5 sm:p-7 md:p-8 lg:p-10 flex items-center">
+                <div className="relative z-10 border-t md:border-t-0 md:border-l border-[var(--sa-border)] p-5 sm:p-7 md:p-8 lg:p-10 flex items-center">
                   <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-[210px]">
                     <button
                       onClick={() => setActiveTab('file-report')}
