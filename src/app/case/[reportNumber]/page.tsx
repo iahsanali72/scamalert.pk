@@ -287,7 +287,7 @@ export default function CustomerCasePage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-zinc-950 text-white p-6">
+      <main className="min-h-screen bg-[var(--sa-paper)] text-[var(--sa-ink)] p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
           Loading report...
         </div>
@@ -297,11 +297,11 @@ export default function CustomerCasePage() {
 
   if (error || !report) {
     return (
-      <main className="min-h-screen bg-zinc-950 text-white p-6">
+      <main className="min-h-screen bg-[var(--sa-paper)] text-[var(--sa-ink)] p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
           <button
             onClick={() => router.push('/')}
-            className="text-sm text-zinc-400 hover:text-white mb-6 cursor-pointer"
+            className="text-sm text-[var(--sa-graphite)] hover:text-[var(--sa-red)] mb-6 cursor-pointer transition"
           >
             ← Back to dashboard
           </button>
@@ -334,35 +334,35 @@ export default function CustomerCasePage() {
           : 'Waiting for Brand Response';
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-100 p-4 md:p-8">
+    <main className="min-h-screen bg-[var(--sa-paper)] text-[var(--sa-ink)] p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-6">
 
         <button
           onClick={() => router.push('/')}
-          className="text-sm text-zinc-400 hover:text-white cursor-pointer"
+          className="text-sm text-[var(--sa-graphite)] hover:text-[var(--sa-red)] cursor-pointer transition"
         >
           ← Back to dashboard
         </button>
 
         {/* REPORT HEADER */}
 
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+        <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[16px] p-5 md:p-6 shadow-[var(--sa-shadow-sm)]">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
-              <p className="font-mono text-xs text-yellow-400 font-bold">
+              <p className="sa-mono text-[11px] text-[var(--sa-red-deep)] font-semibold tracking-wide">
                 {report.report_number}
               </p>
 
-              <h1 className="text-2xl font-bold mt-2">
+              <h1 className="sa-display text-2xl md:text-3xl font-semibold tracking-tight mt-2 text-[var(--sa-ink)]">
                 {report.brand_name}
               </h1>
 
-              <p className="text-sm text-zinc-400 mt-1">
+              <p className="text-sm text-[var(--sa-graphite)] mt-1">
                 {report.platform} · {report.handle}
               </p>
             </div>
 
-            <span className="text-xs px-3 py-2 rounded-lg border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 font-semibold">
+            <span className="text-xs px-3 py-2 rounded-[8px] border border-[#D9A72E]/30 bg-[#FFF7DD] text-[#805D00] font-semibold">
               {caseStatus}
             </span>
           </div>
@@ -396,8 +396,8 @@ export default function CustomerCasePage() {
 
         {/* CUSTOMER COMPLAINT */}
 
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <p className="text-xs uppercase tracking-wider text-zinc-500 font-bold">
+        <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[16px] p-5 md:p-6 shadow-[var(--sa-shadow-sm)]">
+          <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-graphite)] font-semibold">
             Your complaint
           </p>
 
@@ -409,8 +409,8 @@ export default function CustomerCasePage() {
         {/* CUSTOMER ORIGINAL EVIDENCE */}
 
         {report.customerEvidence?.length > 0 && (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-            <p className="text-xs uppercase tracking-wider text-zinc-500 font-bold">
+          <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[16px] p-5 md:p-6 shadow-[var(--sa-shadow-sm)]">
+            <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-graphite)] font-semibold">
               Your evidence
             </p>
 
@@ -430,7 +430,7 @@ export default function CustomerCasePage() {
                       type: ev.mime_type,
                     });
                   }}
-                  className="text-sm border border-zinc-700 bg-zinc-950 hover:border-yellow-500/50 px-3 py-2 rounded-lg cursor-pointer"
+                  className="text-sm border border-[var(--sa-border)] bg-[#F7F5F2] hover:border-[var(--sa-red)]/50 px-3 py-2 rounded-[8px] cursor-pointer text-[var(--sa-ink)] transition"
                 >
                   {ev.file_name}
                 </button>
@@ -442,8 +442,8 @@ export default function CustomerCasePage() {
         {/* BUSINESS RESPONSE */}
 
         {businessResponse ? (
-          <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-2xl p-6">
-            <p className="text-xs uppercase tracking-wider text-emerald-400 font-bold">
+          <div className="bg-[var(--sa-green-soft)] border border-[var(--sa-green)]/25 rounded-[16px] p-5 md:p-6">
+            <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-green)] font-semibold">
               Business response
             </p>
 
@@ -473,7 +473,7 @@ export default function CustomerCasePage() {
 
             {report.businessEvidence?.length > 0 && (
               <div className="mt-5">
-                <p className="text-xs uppercase tracking-wider text-emerald-400 font-bold">
+                <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-green)] font-semibold">
                   Business proof
                 </p>
 
@@ -493,7 +493,7 @@ export default function CustomerCasePage() {
                           type: ev.file_type,
                         });
                       }}
-                      className="text-sm border border-emerald-500/30 bg-zinc-950 hover:border-emerald-400 px-3 py-2 rounded-lg cursor-pointer"
+                      className="text-sm border border-[var(--sa-green)]/25 bg-white hover:border-[var(--sa-green)] px-3 py-2 rounded-[8px] cursor-pointer text-[var(--sa-ink)] transition"
                     >
                       {ev.file_name || 'Open proof'}
                     </button>
@@ -510,8 +510,8 @@ export default function CustomerCasePage() {
             </p>
           </div>
         ) : (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-            <p className="text-sm text-yellow-400">
+          <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[16px] p-5 md:p-6 shadow-[var(--sa-shadow-sm)]">
+            <p className="text-sm font-medium text-[#805D00]">
               Waiting for business response.
             </p>
           </div>
@@ -522,14 +522,14 @@ export default function CustomerCasePage() {
         {businessResponse &&
           !finalResponse &&
           !isResolved && (
-            <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6">
+            <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[16px] p-5 md:p-6 shadow-[var(--sa-shadow-sm)]">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs uppercase tracking-wider text-yellow-400 font-bold">
+                  <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-red-deep)] font-semibold">
                     Your final response
                   </p>
 
-                  <h2 className="text-lg font-bold text-white mt-1">
+                  <h2 className="sa-display text-xl font-semibold text-[var(--sa-ink)] mt-1">
                     Are you satisfied with the business response?
                   </h2>
 
@@ -538,7 +538,7 @@ export default function CustomerCasePage() {
                   </p>
                 </div>
 
-                <span className="text-[10px] border border-red-500/30 bg-red-500/10 text-red-300 rounded-lg px-2 py-1 whitespace-nowrap">
+                <span className="sa-mono text-[9px] border border-[var(--sa-red)]/25 bg-[var(--sa-red-soft)] text-[var(--sa-red-deep)] rounded-[6px] px-2 py-1 whitespace-nowrap">
                   ONE-TIME REPLY
                 </span>
               </div>
@@ -555,11 +555,11 @@ export default function CustomerCasePage() {
                     }
                     className={`text-left rounded-xl border p-4 cursor-pointer transition ${
                       resolutionChoice === 'resolved'
-                        ? 'border-emerald-500 bg-emerald-950/30'
-                        : 'border-zinc-700 bg-zinc-950 hover:border-zinc-600'
+                        ? 'border-[var(--sa-green)] bg-[var(--sa-green-soft)]'
+                        : 'border-[var(--sa-border)] bg-white hover:border-[#B9B2A9]'
                     }`}
                   >
-                    <p className="font-semibold text-sm text-white">
+                    <p className="font-semibold text-sm text-[var(--sa-ink)]">
                       ✓ I am satisfied
                     </p>
 
@@ -575,11 +575,11 @@ export default function CustomerCasePage() {
                     }
                     className={`text-left rounded-xl border p-4 cursor-pointer transition ${
                       resolutionChoice === 'keep_active'
-                        ? 'border-red-500 bg-red-950/20'
-                        : 'border-zinc-700 bg-zinc-950 hover:border-zinc-600'
+                        ? 'border-[var(--sa-red)] bg-[var(--sa-red-soft)]'
+                        : 'border-[var(--sa-border)] bg-white hover:border-[#B9B2A9]'
                     }`}
                   >
-                    <p className="font-semibold text-sm text-white">
+                    <p className="font-semibold text-sm text-[var(--sa-ink)]">
                       Keep report active
                     </p>
 
@@ -602,11 +602,11 @@ export default function CustomerCasePage() {
                       ? 'Explain why you are satisfied with the resolution...'
                       : 'Explain why you are not satisfied and why the report should remain active...'
                   }
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded-xl p-4 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-red-500"
+                  className="w-full bg-white border border-[var(--sa-border)] rounded-[10px] p-4 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                 />
 
                 {finalError && (
-                  <div className="border border-red-500/30 bg-red-950/20 rounded-xl p-3 text-sm text-red-300">
+                  <div className="border border-[var(--sa-red)]/25 bg-[var(--sa-red-soft)] rounded-[10px] p-3 text-sm text-[var(--sa-red-deep)]">
                     {finalError}
                   </div>
                 )}
@@ -614,7 +614,7 @@ export default function CustomerCasePage() {
                 <button
                   type="submit"
                   disabled={finalSubmitting}
-                  className="w-full bg-red-600 hover:bg-red-700 rounded-xl py-3 font-bold text-white disabled:opacity-50 cursor-pointer"
+                  className="w-full bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] rounded-[8px] py-3 font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition"
                 >
                   {finalSubmitting
                     ? 'Submitting...'
@@ -631,14 +631,14 @@ export default function CustomerCasePage() {
         {/* CUSTOMER FINAL RESPONSE ALREADY SUBMITTED */}
 
         {finalResponse && (
-          <div className="bg-blue-950/20 border border-blue-500/30 rounded-2xl p-6">
+          <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[16px] p-5 md:p-6 shadow-[var(--sa-shadow-sm)]">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div>
-                <p className="text-xs uppercase tracking-wider text-blue-400 font-bold">
+                <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-red-deep)] font-semibold">
                   Your final response
                 </p>
 
-                <p className="mt-3 whitespace-pre-wrap text-sm text-zinc-200">
+                <p className="mt-3 whitespace-pre-wrap text-sm text-[var(--sa-ink)]">
                   {finalResponse.response_text}
                 </p>
               </div>

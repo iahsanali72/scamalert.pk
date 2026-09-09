@@ -87,44 +87,44 @@ export default function BusinessResponsePage() {
     setError(err?.message || 'Unable to submit response.');
   }
 };
-  return <main className="min-h-screen bg-zinc-950 text-zinc-100 p-4 md:p-8">
-    <div className="max-w-2xl mx-auto bg-zinc-900 border border-zinc-800 rounded-2xl p-6 md:p-8 space-y-6">
-      <div><p className="text-xs font-mono text-red-400">SCAMALERT.PK BUSINESS RESPONSE</p><h1 className="text-2xl font-bold mt-1">Respond to complaint {reportNumber}</h1><p className="text-xs text-zinc-400 mt-2">This page gives temporary access to this complaint only. No business account is required.</p></div>
-      {error && <div className="border border-red-500/40 bg-red-950/30 text-red-300 rounded-xl p-3 text-sm">{error}</div>}
+  return <main className="min-h-screen bg-[var(--sa-paper)] text-[var(--sa-ink)] p-4 md:p-8">
+    <div className="max-w-2xl mx-auto bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[16px] p-5 md:p-8 space-y-6 shadow-[var(--sa-shadow-md)]">
+      <div><p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-red-deep)] font-semibold">SCAMALERT.PK BUSINESS RESPONSE</p><h1 className="sa-display text-2xl md:text-3xl font-semibold tracking-tight mt-1">Respond to complaint {reportNumber}</h1><p className="text-xs text-[var(--sa-graphite)] mt-2">This page gives temporary access to this complaint only. No business account is required.</p></div>
+      {error && <div className="border border-[var(--sa-red)]/25 bg-[var(--sa-red-soft)] text-[var(--sa-red-deep)] rounded-[10px] p-3 text-sm">{error}</div>}
       {report && <>
-        <div className="grid sm:grid-cols-2 gap-3 text-sm bg-zinc-950 rounded-xl p-4 border border-zinc-800">
-          <div><span className="text-zinc-500">Business</span><p className="font-semibold">{report.brand_name}</p></div>
-          <div><span className="text-zinc-500">Order #</span><p className="font-semibold">{report.order_number}</p></div>
-          <div><span className="text-zinc-500">Platform</span><p>{report.platform} · {report.handle}</p></div>
-          <div><span className="text-zinc-500">Amount</span><p>PKR {Number(report.amount_paid).toLocaleString()}</p></div>
-          <div className="sm:col-span-2"><span className="text-zinc-500">Customer complaint</span><p className="mt-1 whitespace-pre-wrap">{report.description}</p></div>
+        <div className="grid sm:grid-cols-2 gap-3 text-sm bg-[#F7F5F2] rounded-[12px] p-4 border border-[var(--sa-border)]">
+          <div><span className="text-[var(--sa-graphite)]">Business</span><p className="font-semibold">{report.brand_name}</p></div>
+          <div><span className="text-[var(--sa-graphite)]">Order #</span><p className="font-semibold">{report.order_number}</p></div>
+          <div><span className="text-[var(--sa-graphite)]">Platform</span><p>{report.platform} · {report.handle}</p></div>
+          <div><span className="text-[var(--sa-graphite)]">Amount</span><p>PKR {Number(report.amount_paid).toLocaleString()}</p></div>
+          <div className="sm:col-span-2"><span className="text-[var(--sa-graphite)]">Customer complaint</span><p className="mt-1 whitespace-pre-wrap">{report.description}</p></div>
         </div>
-        {submitted ? <div className="border border-emerald-500/40 bg-emerald-950/30 text-emerald-300 rounded-xl p-4">Your response has been recorded. The customer can review it from their dashboard.</div> :
+        {submitted ? <div className="border border-[var(--sa-green)]/25 bg-[var(--sa-green-soft)] text-[var(--sa-green)] rounded-[10px] p-4">Your response has been recorded. The customer can review it from their dashboard.</div> :
         <form onSubmit={submit} className="space-y-4">
-          <select value={responseType} onChange={e=>setResponseType(e.target.value)} className="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-3">
+          <select value={responseType} onChange={e=>setResponseType(e.target.value)} className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] p-3 text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] transition">
             <option value="response">General response</option><option value="refund_issued">Refund issued</option><option value="tracking_provided">Tracking / delivery proof</option><option value="order_not_recognized">Order not recognized</option>
           </select>
-          <textarea required minLength={5} rows={6} value={responseText} onChange={e=>setResponseText(e.target.value)} placeholder="Explain your response to this complaint..." className="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-3" />
-          <div className="grid sm:grid-cols-2 gap-3"><input value={trackingNumber} onChange={e=>setTrackingNumber(e.target.value)} placeholder="Tracking number (optional)" className="bg-zinc-950 border border-zinc-700 rounded-lg p-3"/><input value={refundReference} onChange={e=>setRefundReference(e.target.value)} placeholder="Refund reference (optional)" className="bg-zinc-950 border border-zinc-700 rounded-lg p-3"/></div>
+          <textarea required minLength={5} rows={6} value={responseText} onChange={e=>setResponseText(e.target.value)} placeholder="Explain your response to this complaint..." className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] p-3 text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] transition" />
+          <div className="grid sm:grid-cols-2 gap-3"><input value={trackingNumber} onChange={e=>setTrackingNumber(e.target.value)} placeholder="Tracking number (optional)" className="bg-white border border-[var(--sa-border)] rounded-[8px] p-3 text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] transition"/><input value={refundReference} onChange={e=>setRefundReference(e.target.value)} placeholder="Refund reference (optional)" className="bg-white border border-[var(--sa-border)] rounded-[8px] p-3 text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] transition"/></div>
           <div className="space-y-2">
-  <label className="block text-xs font-semibold text-zinc-300">
-    Attach Proof <span className="text-zinc-500">(optional)</span>
+  <label className="block text-xs font-semibold text-[var(--sa-graphite)]">
+    Attach Proof <span className="text-[var(--sa-graphite)]">(optional)</span>
   </label>
 
   <input
     type="file"
     accept="image/*,.pdf"
     onChange={(e) => setProofFile(e.target.files?.[0] || null)}
-    className="block w-full text-xs text-zinc-400 file:mr-3 file:rounded-lg file:border-0 file:bg-zinc-800 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-zinc-700"
+    className="block w-full text-xs text-[var(--sa-graphite)] file:mr-3 file:rounded-[8px] file:border file:border-[var(--sa-border)] file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-[var(--sa-ink)] hover:file:bg-[#F7F5F2] file:cursor-pointer"
   />
 
   {proofFile && (
-    <p className="text-xs text-emerald-400">
+    <p className="text-xs text-[var(--sa-green)]">
       Selected: {proofFile.name}
     </p>
   )}
 </div>
-          <button disabled={saving} className="w-full bg-red-600 hover:bg-red-700 rounded-xl py-3 font-bold disabled:opacity-50">{saving ? 'Submitting...' : 'Submit response'}</button>
+          <button disabled={saving} className="w-full bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white rounded-[8px] py-3 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer">{saving ? 'Submitting...' : 'Submit response'}</button>
         </form>}
       </>}
     </div>

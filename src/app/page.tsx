@@ -8,30 +8,52 @@ function ScamAlertLogo({ onClick }: { onClick: () => void }) {
   return (
     <div
       onClick={onClick}
-      className="flex items-center gap-3 cursor-pointer group select-none"
+      className="flex items-center gap-3.5 cursor-pointer group select-none"
     >
-      <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-800 flex items-center justify-center shadow-lg shadow-red-950/60 border border-red-400/30 group-hover:scale-105 transition duration-200">
-        <svg
-          className="w-5 h-5 text-white relative z-10"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <path d="M12 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 005 13h14a1 1 0 00.707-1.707L19 11.586V8a6 6 0 00-6-6zM10 18a2 2 0 014 0h-4z" />
-        </svg>
-      </div>
+      <svg
+        width="46"
+        height="46"
+        viewBox="0 0 64 64"
+        aria-label="ScamAlert.pk bell mark"
+        className="shrink-0"
+      >
+        <path
+          d="M32 12c8.3 0 15 6.7 15 15v10l4 6H13l4-6V27c0-8.3 6.7-15 15-15z"
+          fill="#E5342A"
+        />
+        <circle cx="32" cy="49" r="5" fill="#17150F" />
+        <rect
+          x="2"
+          y="20"
+          width="5"
+          height="14"
+          rx="2.5"
+          fill="#17150F"
+          opacity="0.3"
+        />
+        <rect
+          x="57"
+          y="20"
+          width="5"
+          height="14"
+          rx="2.5"
+          fill="#17150F"
+          opacity="0.3"
+        />
+      </svg>
 
       <div className="flex flex-col">
-        <div className="flex items-baseline gap-0.5">
-          <span className="font-black text-white text-lg tracking-tight leading-none">
-            SCAM
+        <div className="flex items-baseline">
+          <span className="sa-display font-bold text-[23px] tracking-[-0.04em] leading-none text-[var(--sa-ink)]">
+            SCAMALERT
           </span>
-          <span className="font-black text-red-500 text-lg tracking-tight leading-none">
-            ALERT<span className="text-zinc-400 font-bold text-sm">.pk</span>
+          <span className="sa-display font-bold text-[23px] tracking-[-0.04em] leading-none text-[var(--sa-red)]">
+            .PK
           </span>
         </div>
 
-        <span className="text-[9px] uppercase tracking-widest text-zinc-400 font-mono mt-0.5">
-          Official Fraud Registry
+        <span className="sa-mono text-[9px] uppercase tracking-[0.16em] text-[var(--sa-graphite)] mt-1">
+          Report today, protect others.
         </span>
       </div>
     </div>
@@ -1018,7 +1040,7 @@ const handleMarkResolved = async (id: string) => {
       ];
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col relative font-sans">
+    <div className="min-h-screen bg-[var(--sa-paper)] text-[var(--sa-ink)] flex flex-col relative font-sans">
       <style jsx global>{`
         @keyframes marquee {
           0% {
@@ -1040,9 +1062,9 @@ const handleMarkResolved = async (id: string) => {
         }
       `}</style>
 
-      <header className="border-b border-zinc-800 bg-zinc-900/40 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center justify-between w-full md:w-auto">
+      <header className="border-b border-[var(--sa-border)] bg-[var(--sa-surface)]/95 backdrop-blur sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 md:gap-4">
+          <div className="flex items-center justify-between gap-2 w-full md:w-auto min-w-0">
             <ScamAlertLogo
               onClick={() =>
                 setActiveTab(isLoggedIn ? 'dashboard' : 'overview')
@@ -1054,14 +1076,14 @@ const handleMarkResolved = async (id: string) => {
                 <>
                   <button
                     onClick={() => setActiveTab('login')}
-                    className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer"
+                    className="bg-white border border-[var(--sa-border)] text-[var(--sa-ink)] px-3 py-2 rounded-[4px] text-xs font-semibold cursor-pointer hover:bg-[#F2EFE9] transition"
                   >
                     Sign In
                   </button>
 
                   <button
                     onClick={() => setActiveTab('signup')}
-                    className="bg-red-600 text-white px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer"
+                    className="bg-[var(--sa-red)] text-white px-3 py-2 rounded-[4px] text-xs font-semibold cursor-pointer hover:bg-[var(--sa-red-deep)] transition"
                   >
                     Sign Up
                   </button>
@@ -1071,7 +1093,7 @@ const handleMarkResolved = async (id: string) => {
   <button
     type="button"
     onClick={() => setNotificationsOpen(!notificationsOpen)}
-    className="relative bg-zinc-900 border border-zinc-700 w-9 h-9 rounded-lg flex items-center justify-center hover:border-red-500 transition cursor-pointer"
+    className="relative bg-white border border-[var(--sa-border)] w-10 h-10 rounded-[4px] flex items-center justify-center hover:border-[var(--sa-ink)] transition cursor-pointer"
     title="Notifications"
   >
     <span className="text-lg">🔔</span>
@@ -1093,8 +1115,8 @@ const handleMarkResolved = async (id: string) => {
     )}
 
     {notificationsOpen && (
-      <div className="absolute right-0 top-11 w-80 bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl z-50 p-3 text-left">
-        <p className="text-xs font-bold text-white mb-3">
+      <div className="absolute right-0 top-11 w-80 bg-white border border-[var(--sa-border)] rounded-[4px] shadow-[0_12px_30px_rgba(23,21,15,0.10)] z-50 p-3 text-left">
+        <p className="sa-display text-sm font-bold text-[var(--sa-ink)] mb-3">
           Notifications
         </p>
 
@@ -1104,7 +1126,7 @@ const handleMarkResolved = async (id: string) => {
             !ticket.customerFinalResponse &&
             ticket.status !== 'Resolved by customer'
         ).length === 0 ? (
-          <p className="text-xs text-zinc-500 py-3">
+          <p className="text-xs text-[var(--sa-graphite)] py-3">
             No new notifications.
           </p>
         ) : (
@@ -1121,17 +1143,17 @@ const handleMarkResolved = async (id: string) => {
                 onClick={() =>
                   router.push(`/case/${encodeURIComponent(ticket.id)}`)
                 }
-                className="border-t border-zinc-800 py-3 cursor-pointer hover:bg-zinc-800/50 px-2 rounded-lg"
+                className="border-t border-[#EAE6DE] py-3 cursor-pointer hover:bg-[#F7F5F2] px-2 rounded-[4px]"
               >
-                <p className="text-xs font-bold text-red-400">
+                <p className="text-xs font-bold text-[var(--sa-red-deep)]">
                   Brand responded
                 </p>
 
-                <p className="text-xs text-white mt-1">
+                <p className="text-xs text-[var(--sa-ink)] mt-1">
                   {ticket.brand} responded to your complaint.
                 </p>
 
-                <p className="text-[10px] text-zinc-500 mt-1">
+                <p className="sa-mono text-[10px] text-[var(--sa-graphite)] mt-1">
                   {ticket.id} · Click to review
                 </p>
               </div>
@@ -1141,7 +1163,7 @@ const handleMarkResolved = async (id: string) => {
     )}
   </button>
 
-  <span className="text-xs font-bold text-red-400 bg-zinc-900 border border-zinc-700 px-3 py-1.5 rounded-lg">
+  <span className="sa-mono text-xs font-semibold text-[var(--sa-red-deep)] bg-white border border-[var(--sa-border)] px-3 py-2 rounded-[4px]">
     @{loggedInUser}
   </span>
 </div>
@@ -1151,7 +1173,7 @@ const handleMarkResolved = async (id: string) => {
 
           <form
             onSubmit={handleSearchSubmit}
-            className="flex items-center gap-2 w-full md:w-auto flex-1 max-w-xl justify-center"
+            className="grid grid-cols-[minmax(0,1fr)_auto] sm:flex sm:items-center gap-2 w-full md:w-auto flex-1 max-w-xl justify-center"
           >
             <div className="relative flex-1">
               <input
@@ -1159,14 +1181,14 @@ const handleMarkResolved = async (id: string) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search store handle or domain..."
-                className="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-500 text-zinc-200 placeholder-zinc-500"
+                className="w-full bg-white border border-[var(--sa-border)] rounded-[4px] px-3 py-2.5 text-sm focus:outline-none focus:border-[var(--sa-ink)] text-[var(--sa-ink)] placeholder:text-[var(--sa-graphite)] transition"
               />
             </div>
 
             <select
               value={selectedPlatform}
               onChange={(e) => setSelectedPlatform(e.target.value)}
-              className="w-32 sm:w-36 bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:border-red-500 text-zinc-300 cursor-pointer"
+              className="w-32 sm:w-36 bg-white border border-[var(--sa-border)] rounded-[4px] px-2.5 py-2.5 text-sm focus:outline-none focus:border-[var(--sa-ink)] text-[var(--sa-ink)] cursor-pointer transition"
             >
               <option value="all">All Channels</option>
               <option value="instagram">Instagram</option>
@@ -1177,7 +1199,7 @@ const handleMarkResolved = async (id: string) => {
 
             <button
               type="submit"
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition cursor-pointer flex items-center gap-1.5 shrink-0"
+              className="col-span-2 sm:col-span-1 bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white px-4 py-2.5 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] text-sm font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
             >
               <svg
                 className="w-4 h-4"
@@ -1201,14 +1223,14 @@ const handleMarkResolved = async (id: string) => {
               <>
                 <button
                   onClick={() => setActiveTab('login')}
-                  className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 px-4 py-2 rounded-lg text-sm font-semibold transition cursor-pointer"
+                  className="bg-white hover:bg-[#F2EFE9] border border-[var(--sa-border)] text-[var(--sa-ink)] px-4 py-2.5 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] text-sm font-semibold transition cursor-pointer"
                 >
                   Sign In
                 </button>
 
                 <button
                   onClick={() => setActiveTab('signup')}
-                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow-md cursor-pointer"
+                  className="bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white px-4 py-2.5 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] text-sm font-semibold transition cursor-pointer"
                 >
                   Sign Up
                 </button>
@@ -1219,7 +1241,7 @@ const handleMarkResolved = async (id: string) => {
   <button
     type="button"
     onClick={() => setNotificationsOpen((open) => !open)}
-    className="relative border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer"
+    className="relative border border-[var(--sa-border)] bg-white hover:bg-[#F2EFE9] w-10 h-10 rounded-[4px] flex items-center justify-center cursor-pointer transition"
     title="Notifications"
   >
     <span className="text-lg">🔔</span>
@@ -1242,8 +1264,8 @@ const handleMarkResolved = async (id: string) => {
   </button>
 
   {notificationsOpen && (
-    <div className="absolute right-0 top-11 w-80 bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl z-50 p-3 text-left">
-      <p className="text-xs font-bold text-white mb-3">
+    <div className="absolute right-0 top-11 w-80 bg-white border border-[var(--sa-border)] rounded-[4px] shadow-[0_12px_30px_rgba(23,21,15,0.10)] z-50 p-3 text-left">
+      <p className="sa-display text-sm font-bold text-[var(--sa-ink)] mb-3">
         Notifications
       </p>
 
@@ -1253,7 +1275,7 @@ const handleMarkResolved = async (id: string) => {
           !ticket.customerFinalResponse &&
           ticket.status !== 'Resolved by customer'
       ).length === 0 ? (
-        <p className="text-xs text-zinc-500 py-3">
+        <p className="text-xs text-[var(--sa-graphite)] py-3">
           No new notifications.
         </p>
       ) : (
@@ -1272,17 +1294,17 @@ const handleMarkResolved = async (id: string) => {
                 setNotificationsOpen(false);
                 window.location.href = `/case/${encodeURIComponent(ticket.id)}`;
               }}
-              className="w-full text-left border-t border-zinc-800 py-3 hover:bg-zinc-800/50 px-2 rounded-lg cursor-pointer"
+              className="w-full text-left border-t border-[#EAE6DE] py-3 hover:bg-[#F7F5F2] px-2 rounded-[4px] cursor-pointer"
             >
-              <p className="text-xs font-bold text-red-400">
+              <p className="text-xs font-bold text-[var(--sa-red-deep)]">
                 Brand responded
               </p>
 
-              <p className="text-xs text-white mt-1">
+              <p className="text-xs text-[var(--sa-ink)] mt-1">
                 {ticket.brand} responded to your complaint.
               </p>
 
-              <p className="text-[10px] text-zinc-500 mt-1">
+              <p className="sa-mono text-[10px] text-[var(--sa-graphite)] mt-1">
                 {ticket.id} · Click to review
               </p>
             </button>
@@ -1297,22 +1319,22 @@ const handleMarkResolved = async (id: string) => {
                   onClick={() =>
                     setShowUserDropdown(!showUserDropdown)
                   }
-                  className="border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition cursor-pointer"
+                  className="border border-[var(--sa-border)] bg-white hover:bg-[#F2EFE9] px-4 py-2.5 rounded-[4px] text-sm font-medium flex items-center gap-2 transition cursor-pointer"
                 >
                   <span className="w-2 h-2 rounded-full bg-green-500" />
-                  <span className="text-zinc-200 font-semibold">
+                  <span className="text-[var(--sa-ink)] font-semibold">
                     @{loggedInUser}
                   </span>
-                  <span className="text-xs text-zinc-400">▼</span>
+                  <span className="text-xs text-[var(--sa-graphite)]">▼</span>
                 </button>
 
                 {showUserDropdown && (
-                  <div className="absolute right-0 mt-2 w-52 bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl overflow-hidden z-50 py-1">
-                    <div className="px-4 py-2 border-b border-zinc-800">
-                      <span className="text-[10px] text-zinc-400 block uppercase tracking-wider">
+                  <div className="absolute right-0 mt-2 w-52 bg-white border border-[var(--sa-border)] rounded-[4px] shadow-[0_12px_30px_rgba(23,21,15,0.10)] overflow-hidden z-50 py-1">
+                    <div className="px-4 py-3 border-b border-[#EAE6DE]">
+                      <span className="sa-mono text-[10px] text-[var(--sa-graphite)] block uppercase tracking-[0.12em]">
                         Signed in as
                       </span>
-                      <span className="text-xs font-bold text-white truncate block">
+                      <span className="text-xs font-bold text-[var(--sa-ink)] truncate block">
                         @{loggedInUser}
                       </span>
                     </div>
@@ -1322,16 +1344,16 @@ const handleMarkResolved = async (id: string) => {
                         setActiveTab('dashboard');
                         setShowUserDropdown(false);
                       }}
-                      className="w-full text-left px-4 py-2 text-xs text-zinc-300 hover:bg-zinc-800 transition cursor-pointer flex items-center gap-2"
+                      className="w-full text-left px-4 py-2.5 text-xs text-[var(--sa-ink)] hover:bg-[#F2EFE9] transition cursor-pointer flex items-center gap-2"
                     >
                       📊 User Dashboard
                     </button>
 
-                    <div className="border-t border-zinc-800 my-1" />
+                    <div className="border-t border-[#EAE6DE] my-1" />
 
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-xs text-red-400 hover:bg-red-500/10 transition cursor-pointer font-medium flex items-center gap-2"
+                      className="w-full text-left px-4 py-2.5 text-xs text-[var(--sa-red-deep)] hover:bg-[var(--sa-red-soft)] transition cursor-pointer font-medium flex items-center gap-2"
                     >
                       🚪 Sign Out
                     </button>
@@ -1343,16 +1365,16 @@ const handleMarkResolved = async (id: string) => {
 </div>
 </div>
 
-        <div className="border-t border-zinc-800 bg-zinc-950/80">
-          <div className="max-w-7xl mx-auto px-4 flex items-center gap-2 overflow-x-auto">
+        <div className="border-t border-[var(--sa-border)] bg-[var(--sa-surface)]">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 flex items-center gap-0.5 overflow-x-auto scrollbar-hide">
             {tabsToRender.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className={`px-5 py-2.5 text-sm font-medium border-b-2 transition cursor-pointer whitespace-nowrap ${
+                className={`sa-mono px-2.5 sm:px-4 py-3 text-[10px] sm:text-[11px] uppercase tracking-[0.06em] sm:tracking-[0.08em] font-medium border-b-2 transition cursor-pointer whitespace-nowrap shrink-0 ${
                   activeTab === tab.id
-                    ? 'border-red-500 text-white bg-zinc-900/50'
-                    : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                    ? 'border-[var(--sa-red)] text-[var(--sa-ink)] bg-[#FFF8F7]'
+                    : 'border-transparent text-[var(--sa-graphite)] hover:text-[var(--sa-ink)] hover:bg-[#F7F5F2]'
                 }`}
               >
                 {tab.label}
@@ -1389,7 +1411,7 @@ const handleMarkResolved = async (id: string) => {
               <button
                 type="button"
                 onClick={() => setReportSuccessMessage('')}
-                className="text-zinc-500 hover:text-white text-sm font-bold cursor-pointer"
+                className="text-[var(--sa-graphite)] hover:text-[var(--sa-red)] text-sm font-semibold cursor-pointer transition"
                 aria-label="Dismiss report confirmation"
               >
                 ✕
@@ -1401,21 +1423,21 @@ const handleMarkResolved = async (id: string) => {
         {/* AUTH REQUIRED MODAL */}
         {showAuthRequiredModal && (
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-            <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-md w-full space-y-4 shadow-2xl">
+            <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] p-6 rounded-[16px] max-w-md w-full space-y-4 shadow-[var(--sa-shadow-lg)]">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-white">
+                <h3 className="sa-display text-lg font-semibold text-[var(--sa-ink)]">
                   Account Required to Submit Report
                 </h3>
 
                 <button
                   onClick={() => setShowAuthRequiredModal(false)}
-                  className="text-zinc-400 hover:text-white text-sm font-bold cursor-pointer"
+                  className="text-[var(--sa-graphite)] hover:text-[var(--sa-red)] text-sm font-semibold cursor-pointer transition"
                 >
                   ✕
                 </button>
               </div>
 
-              <p className="text-xs text-zinc-300 leading-relaxed">
+              <p className="text-xs text-[var(--sa-graphite)] leading-relaxed">
                 To launch a verified 72-hour dispute and protect other
                 shoppers, you need to sign in or create an account. Your
                 report draft has been saved!
@@ -1427,7 +1449,7 @@ const handleMarkResolved = async (id: string) => {
                     setShowAuthRequiredModal(false);
                     setActiveTab('login');
                   }}
-                  className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold py-3 rounded-xl transition cursor-pointer text-center"
+                  className="w-full bg-white hover:bg-[#F7F5F2] border border-[var(--sa-border)] text-[var(--sa-ink)] text-xs font-semibold py-3 rounded-[8px] transition cursor-pointer text-center"
                 >
                   Sign In
                 </button>
@@ -1437,7 +1459,7 @@ const handleMarkResolved = async (id: string) => {
                     setShowAuthRequiredModal(false);
                     setActiveTab('signup');
                   }}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-3 rounded-xl transition cursor-pointer text-center shadow-lg"
+                  className="w-full bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white text-xs font-semibold py-3 rounded-[8px] transition cursor-pointer text-center shadow-[var(--sa-shadow-sm)]"
                 >
                   Create Account
                 </button>
@@ -1449,26 +1471,26 @@ const handleMarkResolved = async (id: string) => {
         {/* SIGN IN */}
         {activeTab === 'login' && !isLoggedIn && (
           <div className="max-w-md mx-auto py-12">
-            <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl shadow-xl space-y-6">
+            <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] p-6 sm:p-8 rounded-[16px] shadow-[var(--sa-shadow-md)] space-y-6">
               <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold text-white">
+                <h2 className="sa-display text-2xl font-semibold tracking-tight text-[var(--sa-ink)]">
                   Sign In to ScamAlert.pk
                 </h2>
 
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[var(--sa-graphite)]">
                   Access your dispute console and track 72-hour
                   enforcement status.
                 </p>
               </div>
 
               {authError && (
-                <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-300">
+                <div className="rounded-[10px] border border-[var(--sa-red)]/25 bg-[var(--sa-red-soft)] px-4 py-3 text-xs text-[var(--sa-red-deep)]">
                   {authError}
                 </div>
               )}
 
               {authMessage && (
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs leading-relaxed text-emerald-300">
+                <div className="rounded-[10px] border border-[var(--sa-green)]/25 bg-[var(--sa-green-soft)] px-4 py-3 text-xs leading-relaxed text-[var(--sa-green)]">
                   {authMessage}
                 </div>
               )}
@@ -1478,7 +1500,7 @@ const handleMarkResolved = async (id: string) => {
                 className="space-y-4"
               >
                 <div className="space-y-1">
-                  <label className="text-xs text-zinc-300 font-semibold block">
+                  <label className="text-xs text-[var(--sa-graphite)] font-semibold block">
                     Email Address
                   </label>
 
@@ -1490,13 +1512,13 @@ const handleMarkResolved = async (id: string) => {
                       setUsernameInput(e.target.value)
                     }
                     placeholder="you@example.com"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                    className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                   />
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-graphite)] font-semibold block">
                       Password
                     </label>
 
@@ -1521,14 +1543,14 @@ const handleMarkResolved = async (id: string) => {
                       setPasswordInput(e.target.value)
                     }
                     placeholder="••••••••"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                    className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isLoggingIn}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl text-sm transition cursor-pointer flex items-center justify-center min-h-[46px]"
+                  className="w-full bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold py-3 rounded-[8px] text-sm transition cursor-pointer flex items-center justify-center min-h-[46px]"
                 >
                   {isLoggingIn ? (
                     <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -1539,9 +1561,9 @@ const handleMarkResolved = async (id: string) => {
               </form>
 
               <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-zinc-800" />
+                <div className="h-px flex-1 bg-[var(--sa-border)]" />
                 <span className="text-[10px] uppercase tracking-wider text-zinc-500">or</span>
-                <div className="h-px flex-1 bg-zinc-800" />
+                <div className="h-px flex-1 bg-[var(--sa-border)]" />
               </div>
 
               <button
@@ -1554,13 +1576,13 @@ const handleMarkResolved = async (id: string) => {
               </button>
 
               <div className="text-center pt-2 border-t border-zinc-800">
-                <span className="text-xs text-zinc-400">
+                <span className="text-xs text-[var(--sa-graphite)]">
                   Don't have an account?{' '}
                 </span>
 
                 <button
                   onClick={() => setActiveTab('signup')}
-                  className="text-xs font-bold text-red-400 hover:underline cursor-pointer"
+                  className="text-xs font-semibold text-[var(--sa-red-deep)] hover:underline cursor-pointer"
                 >
                   Sign Up Here
                 </button>
@@ -1572,23 +1594,23 @@ const handleMarkResolved = async (id: string) => {
         {/* FORGOT PASSWORD */}
         {showForgotPasswordModal && (
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-            <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-sm w-full shadow-2xl">
+            <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] p-6 rounded-[16px] max-w-sm w-full shadow-[var(--sa-shadow-lg)]">
               {!resetEmailSent ? (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-white">
+                    <h3 className="sa-display text-lg font-semibold text-[var(--sa-ink)]">
                       Reset Password
                     </h3>
 
                     <button
                       onClick={handleCloseForgotPassword}
-                      className="text-zinc-400 hover:text-white text-sm font-bold cursor-pointer"
+                      className="text-[var(--sa-graphite)] hover:text-[var(--sa-red)] text-sm font-semibold cursor-pointer transition"
                     >
                       ✕
                     </button>
                   </div>
 
-                  <p className="text-xs text-zinc-400 leading-relaxed">
+                  <p className="text-xs text-[var(--sa-graphite)] leading-relaxed">
                     Enter your registered email address below, and we
                     will send you a secure link to reset your password.
                   </p>
@@ -1598,7 +1620,7 @@ const handleMarkResolved = async (id: string) => {
                     className="space-y-4"
                   >
                     <div className="space-y-1">
-                      <label className="text-xs text-zinc-300 font-semibold block">
+                      <label className="text-xs text-[var(--sa-graphite)] font-semibold block">
                         Email Address
                       </label>
 
@@ -1610,7 +1632,7 @@ const handleMarkResolved = async (id: string) => {
                           setForgotEmailInput(e.target.value)
                         }
                         placeholder="buyer@example.com"
-                        className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                        className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] transition"
                       />
                     </div>
 
@@ -1618,7 +1640,7 @@ const handleMarkResolved = async (id: string) => {
                       <button
                         type="button"
                         onClick={handleCloseForgotPassword}
-                        className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold py-2.5 rounded-xl transition cursor-pointer"
+                        className="flex-1 bg-white hover:bg-[#F7F5F2] border border-[var(--sa-border)] text-[var(--sa-ink)] text-xs font-semibold py-2.5 rounded-[8px] transition cursor-pointer"
                       >
                         Cancel
                       </button>
@@ -1626,7 +1648,7 @@ const handleMarkResolved = async (id: string) => {
                       <button
                         type="submit"
                         disabled={isSendingReset}
-                        className="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center min-h-[38px]"
+                        className="flex-1 bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white text-xs font-semibold py-2.5 rounded-[8px] transition cursor-pointer flex items-center justify-center min-h-[38px]"
                       >
                         {isSendingReset ? (
                           <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -1658,11 +1680,11 @@ const handleMarkResolved = async (id: string) => {
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-white">
+                    <h3 className="sa-display text-xl font-semibold text-[var(--sa-ink)]">
                       Reset Link Sent!
                     </h3>
 
-                    <p className="text-sm text-zinc-300 leading-relaxed">
+                    <p className="text-sm text-[var(--sa-graphite)] leading-relaxed">
                       A password reset link has been sent to:
                     </p>
 
@@ -1678,7 +1700,7 @@ const handleMarkResolved = async (id: string) => {
 
                   <button
                     onClick={handleBackToSignIn}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl text-sm transition cursor-pointer"
+                    className="w-full bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold py-3 rounded-[8px] text-sm transition cursor-pointer"
                   >
                     ← Back to Sign In
                   </button>
@@ -1691,26 +1713,26 @@ const handleMarkResolved = async (id: string) => {
         {/* SIGNUP */}
         {activeTab === 'signup' && !isLoggedIn && (
           <div className="max-w-2xl mx-auto py-8">
-            <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl shadow-xl space-y-6">
+            <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] p-6 sm:p-8 rounded-[16px] shadow-[var(--sa-shadow-md)] space-y-6">
               <div className="text-center space-y-2 pb-2">
-                <h2 className="text-2xl font-bold text-white">
+                <h2 className="sa-display text-2xl font-semibold tracking-tight text-[var(--sa-ink)]">
                   Create Verified Account
                 </h2>
 
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[var(--sa-graphite)]">
                   Register with your full details to submit verified
                   fraud evidence and launch disputes.
                 </p>
               </div>
 
               {authError && (
-                <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-300">
+                <div className="rounded-[10px] border border-[var(--sa-red)]/25 bg-[var(--sa-red-soft)] px-4 py-3 text-xs text-[var(--sa-red-deep)]">
                   {authError}
                 </div>
               )}
 
               {authMessage && (
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs leading-relaxed text-emerald-300">
+                <div className="rounded-[10px] border border-[var(--sa-green)]/25 bg-[var(--sa-green-soft)] px-4 py-3 text-xs leading-relaxed text-[var(--sa-green)]">
                   {authMessage}
                 </div>
               )}
@@ -1725,9 +1747,9 @@ const handleMarkResolved = async (id: string) => {
               </button>
 
               <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-zinc-800" />
+                <div className="h-px flex-1 bg-[var(--sa-border)]" />
                 <span className="text-[10px] uppercase tracking-wider text-zinc-500">or sign up with email</span>
-                <div className="h-px flex-1 bg-zinc-800" />
+                <div className="h-px flex-1 bg-[var(--sa-border)]" />
               </div>
 
               <form
@@ -1736,7 +1758,7 @@ const handleMarkResolved = async (id: string) => {
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-graphite)] font-semibold block">
                       First Name <span className="text-red-500">*</span>
                     </label>
 
@@ -1746,12 +1768,12 @@ const handleMarkResolved = async (id: string) => {
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="Ali"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-graphite)] font-semibold block">
                       Last Name <span className="text-red-500">*</span>
                     </label>
 
@@ -1761,14 +1783,14 @@ const handleMarkResolved = async (id: string) => {
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Khan"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-graphite)] font-semibold block">
                       Date of Birth <span className="text-red-500">*</span>
                     </label>
 
@@ -1777,12 +1799,12 @@ const handleMarkResolved = async (id: string) => {
                       required
                       value={dob}
                       onChange={(e) => setDob(e.target.value)}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500 [color-scheme:dark] cursor-pointer"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition [color-scheme:dark] cursor-pointer"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-graphite)] font-semibold block">
                       Phone Number <span className="text-red-500">*</span>
                     </label>
 
@@ -1792,14 +1814,14 @@ const handleMarkResolved = async (id: string) => {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="0300 1234567"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-graphite)] font-semibold block">
                       Province <span className="text-red-500">*</span>
                     </label>
 
@@ -1807,7 +1829,7 @@ const handleMarkResolved = async (id: string) => {
                       required
                       value={province}
                       onChange={(e) => setProvince(e.target.value)}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500 cursor-pointer"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition cursor-pointer"
                     >
                       <option value="" disabled>
                         Select Province
@@ -1825,7 +1847,7 @@ const handleMarkResolved = async (id: string) => {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-graphite)] font-semibold block">
                       City <span className="text-red-500">*</span>
                     </label>
 
@@ -1835,12 +1857,12 @@ const handleMarkResolved = async (id: string) => {
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="Karachi"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-graphite)] font-semibold block">
                       Zipcode
                     </label>
 
@@ -1849,13 +1871,13 @@ const handleMarkResolved = async (id: string) => {
                       value={zipcode}
                       onChange={(e) => setZipcode(e.target.value)}
                       placeholder="75000"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs text-zinc-300 font-semibold block">
+                  <label className="text-xs text-[var(--sa-graphite)] font-semibold block">
                     Username <span className="text-red-500">*</span>
                   </label>
 
@@ -1865,7 +1887,7 @@ const handleMarkResolved = async (id: string) => {
                     value={usernameInput}
                     onChange={handleUsernameChange}
                     placeholder="e.g. BuyerShield"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                    className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                   />
 
                   {usernameStatus === 'checking' && (
@@ -1889,7 +1911,7 @@ const handleMarkResolved = async (id: string) => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-graphite)] font-semibold block">
                       Email Address <span className="text-red-500">*</span>
                     </label>
 
@@ -1899,12 +1921,12 @@ const handleMarkResolved = async (id: string) => {
                       value={emailInput}
                       onChange={(e) => setEmailInput(e.target.value)}
                       placeholder="buyer@example.com"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-graphite)] font-semibold block">
                       Password <span className="text-red-500">*</span>
                     </label>
 
@@ -1915,7 +1937,7 @@ const handleMarkResolved = async (id: string) => {
                       value={passwordInput}
                       onChange={(e) => setPasswordInput(e.target.value)}
                       placeholder="Min. 8 characters"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                     />
                   </div>
                 </div>
@@ -1923,7 +1945,7 @@ const handleMarkResolved = async (id: string) => {
                 <button
                   type="submit"
                   disabled={isLoggingIn}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl text-sm transition cursor-pointer"
+                  className="w-full bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold py-3.5 rounded-[8px] text-sm transition cursor-pointer"
                 >
                   {isLoggingIn
                     ? 'Creating Account...'
@@ -1932,13 +1954,13 @@ const handleMarkResolved = async (id: string) => {
               </form>
 
               <div className="text-center pt-2 border-t border-zinc-800">
-                <span className="text-xs text-zinc-400">
+                <span className="text-xs text-[var(--sa-graphite)]">
                   Already registered?{' '}
                 </span>
 
                 <button
                   onClick={() => setActiveTab('login')}
-                  className="text-xs font-bold text-red-400 hover:underline cursor-pointer"
+                  className="text-xs font-semibold text-[var(--sa-red-deep)] hover:underline cursor-pointer"
                 >
                   Sign In Here
                 </button>
@@ -1950,113 +1972,157 @@ const handleMarkResolved = async (id: string) => {
         {/* OVERVIEW */}
         {(activeTab === 'overview' ||
           (activeTab === 'dashboard' && !isLoggedIn)) && (
-          <div className="space-y-8 py-4">
-            <div className="bg-gradient-to-r from-zinc-900 to-zinc-900/60 border border-zinc-800 p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="space-y-3 max-w-xl">
-                <span className="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 font-mono text-xs font-bold">
-                  PAKISTAN FRAUD & SCAM REGISTRY
+          <div className="space-y-8 md:space-y-10 py-4 md:py-6">
+
+            {/* HERO / REGISTRY INTRO */}
+            <section className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[18px] overflow-hidden shadow-[0_12px_32px_rgba(23,21,15,0.08)]">
+              <div className="grid md:grid-cols-[1fr_auto]">
+
+                <div className="relative overflow-hidden p-5 sm:p-7 md:p-10 lg:p-12 md:min-h-[330px]">
+                  <div className="relative z-10 max-w-2xl space-y-5">
+                    <div className="sa-mono text-[11px] uppercase tracking-[0.16em] text-[var(--sa-red-deep)] font-semibold">
+                      Pakistan Fraud & Scam Registry
+                    </div>
+
+                    <h1 className="sa-display text-[30px] sm:text-[36px] md:text-[46px] lg:text-[52px] leading-[1.02] md:leading-[0.98] tracking-[-0.04em] md:tracking-[-0.045em] font-bold text-[var(--sa-ink)] max-w-xl">
+                      Protect your online shopping in Pakistan.
+                    </h1>
+
+                    <p className="text-[14px] sm:text-[15px] md:text-[16px] leading-6 md:leading-7 text-[var(--sa-graphite)] max-w-xl">
+                      Search seller handles before you transfer money, review
+                      reported disputes, and file a structured complaint when
+                      something goes wrong.
+                    </p>
+                  </div>
+
+
+                </div>
+
+                <div className="border-t md:border-t-0 md:border-l border-[var(--sa-border)] p-5 sm:p-7 md:p-8 lg:p-10 flex items-center">
+                  <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-[210px]">
+                    <button
+                      onClick={() => setActiveTab('file-report')}
+                      className="flex-1 bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold px-5 py-3 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] transition cursor-pointer text-sm"
+                    >
+                      + File New Report
+                    </button>
+
+                    <button
+                      onClick={() => setActiveTab('new-reports')}
+                      className="flex-1 bg-white hover:bg-[#F2EFE9] border border-[var(--sa-border)] text-[var(--sa-ink)] font-semibold px-5 py-3 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] transition cursor-pointer text-sm"
+                    >
+                      View Reports Feed
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              <div className="border-t border-[var(--sa-border)] bg-[#F2EFE9] px-5 sm:px-7 md:px-10 lg:px-12 py-3.5 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-x-7 gap-y-2">
+                <span className="sa-mono text-[10px] uppercase tracking-[0.12em] text-[var(--sa-graphite)]">
+                  Evidence-backed records
                 </span>
 
-                <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-                  Protect Your Online Shopping in Pakistan
-                </h1>
+                <span className="hidden sm:block w-px h-3 bg-[var(--sa-border)]" />
 
-                <p className="text-sm text-zinc-400 leading-relaxed">
-                  Check seller trust scores, verify social media store
-                  handles before transferring funds via JazzCash or
-                  EasyPaisa, and track active dispute records.
-                </p>
+                <span className="sa-mono text-[10px] uppercase tracking-[0.12em] text-[var(--sa-graphite)]">
+                  Seller right of response
+                </span>
+
+                <span className="hidden sm:block w-px h-3 bg-[var(--sa-border)]" />
+
+                <span className="sa-mono text-[10px] uppercase tracking-[0.12em] text-[var(--sa-graphite)]">
+                  72-hour resolution window
+                </span>
               </div>
+            </section>
 
-              <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
-                <button
-                  onClick={() => setActiveTab('file-report')}
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg transition cursor-pointer w-full sm:w-auto"
-                >
-                  + File New Report
-                </button>
 
-                <button
-                  onClick={() => setActiveTab('new-reports')}
-                  className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white font-semibold px-5 py-3.5 rounded-xl transition cursor-pointer w-full sm:w-auto"
-                >
-                  View Reports Feed
-                </button>
-              </div>
-            </div>
+            {/* RECENT REPORTS */}
+            <section className="space-y-3">
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <div className="sa-mono text-[10px] uppercase tracking-[0.16em] text-[var(--sa-red-deep)] mb-1">
+                    Live Registry
+                  </div>
 
-            {/* LIVE REPORT TICKER */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-mono uppercase tracking-widest text-zinc-400 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                  Recent Reports Live Feed
-                </h3>
+                  <h2 className="sa-display text-xl md:text-2xl font-bold tracking-[-0.03em] text-[var(--sa-ink)]">
+                    Recent reports
+                  </h2>
+                </div>
 
                 <button
                   onClick={() => setActiveTab('new-reports')}
-                  className="text-xs text-red-400 hover:underline font-semibold cursor-pointer"
+                  className="sa-mono text-[11px] uppercase tracking-[0.08em] text-[var(--sa-red-deep)] hover:underline font-semibold cursor-pointer whitespace-nowrap"
                 >
-                  View All →
+                  View all →
                 </button>
               </div>
 
-              <div className="w-full bg-zinc-900/80 border border-zinc-800 rounded-2xl overflow-hidden py-4 relative shadow-inner">
-                <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-zinc-950 to-transparent z-10 pointer-events-none" />
+              <div className="w-full bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] overflow-hidden relative shadow-[0_6px_20px_rgba(23,21,15,0.06)]">
 
-                <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-zinc-950 to-transparent z-10 pointer-events-none" />
-
-                <div className="animate-marquee flex items-center gap-6 px-4">
+                <div className="animate-marquee flex items-stretch">
                   {[...submittedReportsFeed, ...submittedReportsFeed].map(
                     (item, index) => (
-                      <div
+                      <button
+                        type="button"
                         key={`${item.id}-${index}`}
                         onClick={() => setActiveTab('new-reports')}
-                        className="bg-zinc-950 border border-zinc-800/80 hover:border-red-500/40 px-4 py-3 rounded-xl flex items-center gap-4 shrink-0 cursor-pointer transition shadow-md"
+                        className="min-w-[230px] sm:min-w-[260px] md:min-w-[300px] bg-white border-r border-[var(--sa-border)] px-4 sm:px-5 py-4 sm:py-5 flex items-center justify-between gap-4 sm:gap-5 text-left hover:bg-[#F7F5F2] transition cursor-pointer"
                       >
-                        <div className="space-y-0.5">
-                          <span className="text-xs font-bold text-white block">
+                        <div className="min-w-0">
+                          <span className="sa-display text-[15px] font-bold text-[var(--sa-ink)] block truncate">
                             {item.brand}
                           </span>
 
-                          {/* HANDLE + SMALL PLATFORM LOGO */}
-                          <PlatformLink platform={item.platform} handle={item.handle} className="mt-1" />
+                          <PlatformLink
+                            platform={item.platform}
+                            handle={item.handle}
+                            className="mt-1.5"
+                          />
                         </div>
 
-                        <div className="pl-3 border-l border-zinc-800 flex flex-col items-end">
-                          <span className="text-[10px] text-zinc-500 uppercase tracking-wide">
+                        <div className="pl-4 border-l border-[var(--sa-border)] shrink-0">
+                          <span className="sa-mono text-[9px] text-[var(--sa-graphite)] uppercase tracking-[0.12em] block">
                             Reports
                           </span>
 
-                          <span className="text-xs font-mono font-bold text-red-400">
+                          <span className="sa-mono text-[12px] font-semibold text-[var(--sa-red-deep)] block mt-1">
                             {item.reportCount} Active
                           </span>
                         </div>
-                      </div>
+                      </button>
                     )
                   )}
                 </div>
+
               </div>
-            </div>
+
+              <p className="text-[11px] leading-relaxed text-[var(--sa-graphite)]">
+                Recent registry activity. A report represents a submitted complaint
+                and does not by itself establish wrongdoing.
+              </p>
+            </section>
+
           </div>
         )}
 
         {/* FILE NEW REPORT */}
         {activeTab === 'file-report' && (
-          <div className="max-w-2xl mx-auto py-6 space-y-6">
-            <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl shadow-xl space-y-6">
-              <div className="space-y-2 border-b border-zinc-800 pb-4">
-                <span className="text-xs font-mono font-bold text-red-400 uppercase tracking-wider">
+          <div className="max-w-3xl mx-auto py-4 md:py-6 space-y-6">
+            <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] p-5 sm:p-6 md:p-8 rounded-[16px] shadow-[var(--sa-shadow-md)] space-y-6">
+              <div className="space-y-2 border-b border-[var(--sa-border)] pb-5">
+                <span className="sa-mono text-[10px] font-semibold text-[var(--sa-red-deep)] uppercase tracking-[0.16em]">
                   Customer Dispute Registry
                 </span>
 
-                <h2 className="text-2xl font-bold text-white">
+                <h2 className="sa-display text-2xl md:text-3xl font-semibold tracking-tight text-[var(--sa-ink)]">
                   File a Fraud or Scam Report
                 </h2>
 
-                <p className="text-xs text-zinc-400 leading-relaxed">
+                <p className="text-sm text-[var(--sa-graphite)] leading-6 max-w-2xl">
                   Submitting this report starts a{' '}
-                  <strong className="text-zinc-200">
+                  <strong className="text-[var(--sa-ink)]">
                     72-hour response window
                   </strong>{' '}
                   for the business. During that window the public feed shows only the seller identity and report count. If the complaint remains unresolved after 72 hours, its submitted report details become public.
@@ -2069,9 +2135,9 @@ const handleMarkResolved = async (id: string) => {
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">
                       Brand / Store Name{' '}
-                      <span className="text-red-500">*</span>
+                      <span className="text-[var(--sa-red)]">*</span>
                     </label>
 
                     <input
@@ -2082,14 +2148,14 @@ const handleMarkResolved = async (id: string) => {
                         setReportBrandName(e.target.value)
                       }
                       placeholder="e.g. Urban Vogue PK"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">
                       Store Handle / URL{' '}
-                      <span className="text-red-500">*</span>
+                      <span className="text-[var(--sa-red)]">*</span>
                     </label>
 
                     <input
@@ -2100,39 +2166,39 @@ const handleMarkResolved = async (id: string) => {
                         setReportHandle(e.target.value)
                       }
                       placeholder="e.g. @urbanvogue_pk"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs text-zinc-300 font-semibold block">Order # <span className="text-red-500">*</span></label>
-                    <input type="text" required value={reportOrderNumber} onChange={(e) => setReportOrderNumber(e.target.value)} placeholder="e.g. PK-10482" className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500" />
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Order # <span className="text-[var(--sa-red)]">*</span></label>
+                    <input type="text" required value={reportOrderNumber} onChange={(e) => setReportOrderNumber(e.target.value)} placeholder="e.g. PK-10482" className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs text-zinc-300 font-semibold block">Order Date</label>
-                    <input type="date" value={reportOrderDate} onChange={(e) => setReportOrderDate(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500 [color-scheme:dark]" />
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Order Date</label>
+                    <input type="date" value={reportOrderDate} onChange={(e) => setReportOrderDate(e.target.value)} className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs text-zinc-300 font-semibold block">Brand Email</label>
-                    <input type="email" value={reportBrandEmail} onChange={(e) => setReportBrandEmail(e.target.value)} placeholder="support@brand.com" className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500" />
-                    <p className="text-[10px] text-zinc-500">Used only to send this business a neutral complaint notice and response link.</p>
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Brand Email</label>
+                    <input type="email" value={reportBrandEmail} onChange={(e) => setReportBrandEmail(e.target.value)} placeholder="support@brand.com" className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
+                    <p className="text-[10px] text-[var(--sa-graphite)]">Used only to send this business a neutral complaint notice and response link.</p>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs text-zinc-300 font-semibold block">Brand WhatsApp #</label>
-                    <input type="tel" value={reportBrandWhatsapp} onChange={(e) => setReportBrandWhatsapp(e.target.value)} placeholder="+92 300 1234567" className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500" />
-                    <p className="text-[10px] text-zinc-500">Stored for notification use once a WhatsApp Business provider is connected.</p>
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Brand WhatsApp #</label>
+                    <input type="tel" value={reportBrandWhatsapp} onChange={(e) => setReportBrandWhatsapp(e.target.value)} placeholder="+92 300 1234567" className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
+                    <p className="text-[10px] text-[var(--sa-graphite)]">Stored for notification use once a WhatsApp Business provider is connected.</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs text-zinc-300 font-semibold block">
-                      Platform <span className="text-red-500">*</span>
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">
+                      Platform <span className="text-[var(--sa-red)]">*</span>
                     </label>
 
                     <select
@@ -2140,7 +2206,7 @@ const handleMarkResolved = async (id: string) => {
                       onChange={(e) =>
                         setReportPlatform(e.target.value)
                       }
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500 cursor-pointer"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 cursor-pointer transition"
                     >
                       <option value="Instagram">Instagram</option>
                       <option value="Facebook">Facebook</option>
@@ -2151,9 +2217,9 @@ const handleMarkResolved = async (id: string) => {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">
                       Lost Amount (PKR){' '}
-                      <span className="text-red-500">*</span>
+                      <span className="text-[var(--sa-red)]">*</span>
                     </label>
 
                     <input
@@ -2164,12 +2230,12 @@ const handleMarkResolved = async (id: string) => {
                         setReportAmount(e.target.value)
                       }
                       placeholder="e.g. 4500"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs text-zinc-300 font-semibold block">
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">
                       Payment Method
                     </label>
 
@@ -2178,7 +2244,7 @@ const handleMarkResolved = async (id: string) => {
                       onChange={(e) =>
                         setReportPaymentMethod(e.target.value)
                       }
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500 cursor-pointer"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 cursor-pointer transition"
                     >
                       <option value="JazzCash">JazzCash</option>
                       <option value="EasyPaisa">EasyPaisa</option>
@@ -2191,9 +2257,9 @@ const handleMarkResolved = async (id: string) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-zinc-300 font-semibold block">
+                  <label className="text-xs text-[var(--sa-ink)] font-semibold block">
                     Incident Description & Chat Details{' '}
-                    <span className="text-red-500">*</span>
+                    <span className="text-[var(--sa-red)]">*</span>
                   </label>
 
                   <textarea
@@ -2204,16 +2270,16 @@ const handleMarkResolved = async (id: string) => {
                       setReportDescription(e.target.value)
                     }
                     placeholder="Describe what happened, when you transferred the money, and how the seller stopped responding..."
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3.5 text-sm text-zinc-100 focus:outline-none focus:border-red-500 resize-none"
+                    className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] p-3.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 resize-none transition"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-zinc-300 font-semibold block">
+                  <label className="text-xs text-[var(--sa-ink)] font-semibold block">
                     Upload Evidence (Receipts, Chat Screenshots)
                   </label>
 
-                  <label className="border border-dashed border-zinc-700 bg-zinc-950/60 rounded-xl p-6 text-center hover:border-red-500/50 transition cursor-pointer block">
+                  <label className="border border-dashed border-[var(--sa-border)] bg-[#F7F5F2] rounded-[12px] p-6 text-center hover:border-[var(--sa-red)]/50 hover:bg-[var(--sa-red-soft)]/20 transition cursor-pointer block">
                     <input
                       type="file"
                       multiple
@@ -2227,7 +2293,7 @@ const handleMarkResolved = async (id: string) => {
                     />
 
                     <svg
-                      className="w-8 h-8 text-zinc-500 mx-auto mb-2"
+                      className="w-8 h-8 text-[var(--sa-graphite)] mx-auto mb-2"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -2240,24 +2306,24 @@ const handleMarkResolved = async (id: string) => {
                       />
                     </svg>
 
-                    <span className="text-xs text-zinc-300 font-semibold block">
+                    <span className="text-xs text-[var(--sa-ink)] font-semibold block">
                       {reportFiles.length > 0
                         ? `${reportFiles.length} file(s) selected`
                         : 'Click to upload files or drag & drop'}
                     </span>
 
-                    <span className="text-[10px] text-zinc-500 block mt-1">
+                    <span className="text-[10px] text-[var(--sa-graphite)] block mt-1">
                       PNG, JPG, JPEG up to 10MB
                     </span>
                   </label>
                 </div>
 
-                <div className="bg-red-950/20 border border-red-500/30 p-4 rounded-xl flex items-start gap-3">
-                  <span className="text-red-400 font-bold text-base mt-0.5">
+                <div className="bg-[var(--sa-red-soft)]/55 border border-[var(--sa-red)]/20 p-4 rounded-[12px] flex items-start gap-3">
+                  <span className="text-[var(--sa-red-deep)] font-bold text-base mt-0.5">
                     ⚠️
                   </span>
 
-                  <p className="text-xs text-red-300 leading-relaxed">
+                  <p className="text-xs text-[var(--sa-red-deep)] leading-relaxed">
                     By submitting, you certify that all provided details
                     and payment screenshots are authentic and accurate
                     to the best of your knowledge. False reporting may
@@ -2268,7 +2334,7 @@ const handleMarkResolved = async (id: string) => {
                 <button
                   type="submit"
                   disabled={isSubmittingReport}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl text-sm transition cursor-pointer flex items-center justify-center min-h-[46px]"
+                  className="w-full bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold py-3.5 rounded-[8px] text-sm transition cursor-pointer flex items-center justify-center min-h-[48px] shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {isSubmittingReport ? (
                     <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -2283,327 +2349,597 @@ const handleMarkResolved = async (id: string) => {
 
         {/* DASHBOARD */}
         {activeTab === 'dashboard' && isLoggedIn && (
-          <div className="space-y-6">
-            <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="space-y-6 py-6">
+
+            <section className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[16px] shadow-[var(--sa-shadow-sm)] p-6 md:p-8">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+                <div>
+                  <div className="sa-mono text-[10px] uppercase tracking-[0.16em] text-[var(--sa-red-deep)] mb-2">
+                    Your Dashboard
+                  </div>
+
+                  <h2 className="sa-display text-2xl md:text-3xl font-semibold tracking-tight text-[var(--sa-ink)]">
+                    Welcome back, @{loggedInUser}!
+                  </h2>
+
+                  <p className="text-sm text-[var(--sa-graphite)] mt-2">
+                    Manage your active reports, review seller responses, and track resolution status.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                  <button
+                    onClick={() => setActiveTab('file-report')}
+                    className="bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold px-5 py-3 rounded-[8px] text-sm transition cursor-pointer"
+                  >
+                    + File New Report
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('new-reports')}
+                    className="bg-white hover:bg-[#F2EFE9] border border-[var(--sa-border)] text-[var(--sa-ink)] font-semibold px-5 py-3 rounded-[8px] text-sm transition cursor-pointer"
+                  >
+                    Reports Feed
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <section className="space-y-4">
               <div>
-                <h2 className="text-xl font-bold text-white">
-                  Welcome back, @{loggedInUser}!
-                </h2>
+                <div className="sa-mono text-[10px] uppercase tracking-[0.16em] text-[var(--sa-red-deep)] mb-1">
+                  My Reports
+                </div>
 
-                <p className="text-xs text-zinc-400 mt-1">
-                  Manage your active 72-hour dispute tickets, mark
-                  resolved, or delete records.
-                </p>
+                <h3 className="sa-display text-xl md:text-2xl font-semibold text-[var(--sa-ink)]">
+                  Your Complaints
+                </h3>
               </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setActiveTab('file-report')}
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition cursor-pointer"
-                >
-                  + File New Report
-                </button>
-
-                <button
-                  onClick={() => setActiveTab('new-reports')}
-                  className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 font-semibold px-4 py-2.5 rounded-xl text-sm transition cursor-pointer"
-                >
-                  Reports Feed
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-md font-bold text-white">
-                Your Complaints
-              </h3>
 
               {userTickets.length === 0 ? (
-                <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl text-center text-zinc-400 text-sm">
-                  No active complaints right now.
+                <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] shadow-[var(--sa-shadow-sm)] p-10 text-center">
+                  <p className="text-sm text-[var(--sa-graphite)]">
+                    No active complaints right now.
+                  </p>
                 </div>
               ) : (
                 userTickets.map((ticket) => (
-                  <div
+                  <article
                     key={ticket.id}
-                    className="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl space-y-3"
+                    className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] shadow-[var(--sa-shadow-sm)] overflow-hidden"
                   >
-                    <div className="flex items-center justify-between">
-                    <button
-  type="button"
-  onClick={() => {
-    window.location.href = `/case/${encodeURIComponent(ticket.id)}`;
-  }}
-  className="font-mono text-xs text-yellow-400 font-bold hover:text-yellow-300 hover:underline cursor-pointer"
->
-  {ticket.id}
-</button>
-                      <span className="text-xs bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 px-2.5 py-1 rounded font-medium">
-                        {ticket.status}
-                      </span>
-                    </div>
+                    <div className="p-5 md:p-6 space-y-5">
 
-                    <div>
-                      <h4 className="text-base font-bold text-white">
-                        {ticket.brand}
-                      </h4>
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            window.location.href = `/case/${encodeURIComponent(ticket.id)}`;
+                          }}
+                          className="sa-mono text-xs text-[var(--sa-red-deep)] font-semibold hover:underline cursor-pointer"
+                        >
+                          {ticket.id}
+                        </button>
 
-                      {/* HANDLE + PLATFORM LOGO */}
-                      <PlatformLink platform={ticket.platform} handle={ticket.handle} className="mt-1" />
-
-                      <p className="text-xs text-red-400 font-semibold mt-1">
-                        ⏳ {ticket.timeLeft}
-                      </p>
-                      <div className="mt-3 grid sm:grid-cols-2 gap-2 text-xs text-zinc-400">
-                        <p>Order #: <span className="text-zinc-200">{ticket.orderNumber}</span></p>
-                        <p>Amount: <span className="text-zinc-200">PKR {Number(ticket.amount || 0).toLocaleString()}</span></p>
-                        <p>Email notice: <span className="text-zinc-200">{ticket.emailStatus}</span></p>
-                        <p>WhatsApp notice: <span className="text-zinc-200">{ticket.whatsappStatus}</span></p>
+                        <span className="sa-mono text-[10px] uppercase tracking-wide bg-[#FFF8DC] text-[#8A6700] border border-[#D9B84A]/40 px-2.5 py-1 rounded-full font-semibold">
+                          {ticket.status}
+                        </span>
                       </div>
+
+                      <div>
+                        <h4 className="sa-display text-xl font-semibold text-[var(--sa-ink)]">
+                          {ticket.brand}
+                        </h4>
+
+                        <PlatformLink
+                          platform={ticket.platform}
+                          handle={ticket.handle}
+                          className="mt-1.5"
+                        />
+
+                        <p className="sa-mono text-xs text-[var(--sa-red-deep)] font-semibold mt-3">
+                          ⏳ {ticket.timeLeft}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                        <div className="bg-[#F7F5F2] rounded-[10px] p-3">
+                          <span className="text-[11px] uppercase tracking-wide text-[var(--sa-graphite)] block">
+                            Order #
+                          </span>
+                          <span className="text-[var(--sa-ink)] font-medium mt-1 block">
+                            {ticket.orderNumber}
+                          </span>
+                        </div>
+
+                        <div className="bg-[#F7F5F2] rounded-[10px] p-3">
+                          <span className="text-[11px] uppercase tracking-wide text-[var(--sa-graphite)] block">
+                            Amount
+                          </span>
+                          <span className="text-[var(--sa-ink)] font-medium mt-1 block">
+                            PKR {Number(ticket.amount || 0).toLocaleString()}
+                          </span>
+                        </div>
+
+                        <div className="bg-[#F7F5F2] rounded-[10px] p-3">
+                          <span className="text-[11px] uppercase tracking-wide text-[var(--sa-graphite)] block">
+                            Email notice
+                          </span>
+                          <span className="text-[var(--sa-ink)] font-medium mt-1 block">
+                            {ticket.emailStatus}
+                          </span>
+                        </div>
+
+                        <div className="bg-[#F7F5F2] rounded-[10px] p-3">
+                          <span className="text-[11px] uppercase tracking-wide text-[var(--sa-graphite)] block">
+                            WhatsApp notice
+                          </span>
+                          <span className="text-[var(--sa-ink)] font-medium mt-1 block">
+                            {ticket.whatsappStatus}
+                          </span>
+                        </div>
+                      </div>
+
                       {ticket.evidence?.length > 0 && (
-                        <div className="mt-3">
-                          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Your evidence</p>
-                          <div className="flex flex-wrap gap-2">{ticket.evidence.map((ev:any) => <a key={ev.storage_path} href={ev.url || '#'} target="_blank" rel="noopener noreferrer" className="text-xs border border-zinc-700 bg-zinc-950 px-3 py-2 rounded-lg hover:border-red-500/40">{ev.file_name}</a>)}</div>
+                        <div>
+                          <p className="sa-mono text-[10px] uppercase tracking-[0.12em] text-[var(--sa-graphite)] mb-2">
+                            Your evidence
+                          </p>
+
+                          <div className="flex flex-wrap gap-2">
+                            {ticket.evidence.map((ev:any) => (
+                              <a
+                                key={ev.storage_path}
+                                href={ev.url || '#'}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs border border-[var(--sa-border)] bg-white px-3 py-2 rounded-[8px] hover:border-[var(--sa-red)]/40 transition"
+                              >
+                                {ev.file_name}
+                              </a>
+                            ))}
+                          </div>
                         </div>
                       )}
+
                       {ticket.businessResponse && (
-                        <div className="mt-3 bg-zinc-950 border border-zinc-800 rounded-xl p-3">
-                          <p className="text-[10px] uppercase tracking-wider text-emerald-400 font-bold">Business response</p>
-                          <p className="text-xs text-zinc-300 mt-1 whitespace-pre-wrap">{ticket.businessResponse.response_text}</p>
+                        <div className="bg-[var(--sa-green-soft)] border border-[var(--sa-green)]/20 rounded-[12px] p-4">
+                          <p className="sa-mono text-[10px] uppercase tracking-[0.12em] text-[var(--sa-green)] font-semibold">
+                            Business response
+                          </p>
+
+                          <p className="text-sm text-[var(--sa-ink)] mt-2 whitespace-pre-wrap leading-6">
+                            {ticket.businessResponse.response_text}
+                          </p>
                         </div>
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-zinc-800 text-xs">
-                      <span className="text-zinc-500">
+                    <div className="border-t border-[var(--sa-border)] bg-[#F7F5F2] px-5 md:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <span className="text-xs text-[var(--sa-graphite)]">
                         Logged on: {ticket.date}
                       </span>
 
-                      <div className="relative flex items-center gap-2">
+                      <div className="relative flex flex-wrap items-center gap-2">
                         {ticket.status !== 'Resolved by customer' && (
                           <button
-                             onClick={() => handleMarkResolved(ticket.id)}
-                             disabled={resolvingReportId === ticket.id}
-                             className="bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg font-semibold transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                            onClick={() => handleMarkResolved(ticket.id)}
+                            disabled={resolvingReportId === ticket.id}
+                            className="bg-[var(--sa-green-soft)] hover:bg-[#DDEFE5] border border-[var(--sa-green)]/30 text-[var(--sa-green)] px-3 py-2 rounded-[8px] text-xs font-semibold transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                           >
-                            {resolvingReportId === ticket.id ? 'Resolving...' : '🖊 Mark Resolved'}
+                            {resolvingReportId === ticket.id
+                              ? 'Resolving...'
+                              : 'Mark Resolved'}
                           </button>
                         )}
 
                         <button
                           onClick={() => setReportPendingDelete(ticket.id)}
-              
-                          className="bg-zinc-800 hover:bg-red-950/40 border border-zinc-700 hover:border-red-500/40 text-zinc-300 hover:text-red-400 px-3 py-1.5 rounded-lg font-semibold transition cursor-pointer"
+                          className="bg-white hover:bg-[var(--sa-red-soft)] border border-[var(--sa-border)] hover:border-[var(--sa-red)]/30 text-[var(--sa-graphite)] hover:text-[var(--sa-red-deep)] px-3 py-2 rounded-[8px] text-xs font-semibold transition cursor-pointer"
                         >
                           Delete
                         </button>
+
                         {reportPendingDelete === ticket.id && (
-  <div className="absolute z-50 mt-2 right-0 w-72 rounded-xl border border-red-500/30 bg-zinc-950 p-4 shadow-xl">
-    <p className="text-sm font-semibold text-white">
-      Delete report {ticket.id}?
-    </p>
+                          <div className="absolute z-50 top-full mt-2 right-0 w-72 rounded-[12px] border border-[var(--sa-red)]/25 bg-white p-4 shadow-[var(--sa-shadow-lg)]">
+                            <p className="text-sm font-semibold text-[var(--sa-ink)]">
+                              Delete report {ticket.id}?
+                            </p>
 
-    <p className="mt-1 text-xs text-zinc-400">
-      This action cannot be undone.
-    </p>
+                            <p className="mt-1 text-xs text-[var(--sa-graphite)]">
+                              This action cannot be undone.
+                            </p>
 
-    <div className="mt-4 flex justify-end gap-2">
-      <button
-        type="button"
-        onClick={() => setReportPendingDelete(null)}
-        disabled={deletingReportId === ticket.id}
-        className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 disabled:opacity-60"
-      >
-        Cancel
-      </button>
+                            <div className="mt-4 flex justify-end gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setReportPendingDelete(null)}
+                                disabled={deletingReportId === ticket.id}
+                                className="rounded-[8px] border border-[var(--sa-border)] bg-white px-3 py-2 text-xs font-semibold text-[var(--sa-graphite)] disabled:opacity-60"
+                              >
+                                Cancel
+                              </button>
 
-      <button
-        type="button"
-        onClick={() => handleDeleteTicket(ticket.id)}
-        disabled={deletingReportId === ticket.id}
-        className="rounded-lg border border-red-500/40 bg-red-950/40 px-3 py-1.5 text-xs font-semibold text-red-300 disabled:opacity-60 disabled:cursor-not-allowed"
-      >
-        {deletingReportId === ticket.id ? 'Deleting...' : 'Delete Report'}
-      </button>
-    </div>
-  </div>
-)}
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteTicket(ticket.id)}
+                                disabled={deletingReportId === ticket.id}
+                                className="rounded-[8px] border border-[var(--sa-red)]/30 bg-[var(--sa-red-soft)] px-3 py-2 text-xs font-semibold text-[var(--sa-red-deep)] disabled:opacity-60 disabled:cursor-not-allowed"
+                              >
+                                {deletingReportId === ticket.id
+                                  ? 'Deleting...'
+                                  : 'Delete Report'}
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
+
+                  </article>
                 ))
               )}
-            </div>
+            </section>
+
           </div>
         )}
 
         {/* REPORTS FEED */}
         {activeTab === 'new-reports' && (
-          <div className="max-w-3xl mx-auto py-6 space-y-6">
-            <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-bold text-white">
-                  Submitted Reports Registry
-                </h2>
+          <div className="max-w-5xl mx-auto py-6 space-y-8">
 
-                <p className="text-xs text-zinc-400 mt-1">
-                  During each 72-hour window, only seller identity and aggregate report counts are shown. Unresolved complaint details appear below after the deadline.
-                </p>
-              </div>
+            {/* REGISTRY HEADER */}
+            <section className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[var(--sa-radius-lg)] shadow-[var(--sa-shadow-md)] overflow-hidden">
+              <div className="p-6 md:p-8 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
 
-              <div className="flex items-center gap-2 w-full md:w-auto">
-                <input
-                  type="text"
-                  value={newReportSearch}
-                  onChange={(e) =>
-                    setNewReportSearch(e.target.value)
-                  }
-                  placeholder="Search brand or handle..."
-                  className="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-red-500 text-zinc-200 placeholder-zinc-500 w-full md:w-56"
-                />
+                <div className="max-w-2xl">
+                  <div className="sa-mono text-[10px] uppercase tracking-[0.16em] text-[var(--sa-red-deep)] mb-2">
+                    Public Registry
+                  </div>
+
+                  <h2 className="sa-display text-2xl md:text-3xl font-bold tracking-[-0.035em] text-[var(--sa-ink)]">
+                    Submitted Reports Registry
+                  </h2>
+
+                  <p className="text-sm leading-6 text-[var(--sa-graphite)] mt-2 max-w-xl">
+                    During each 72-hour window, only seller identity and aggregate
+                    report counts are shown. Unresolved complaint details become
+                    public after the deadline.
+                  </p>
+                </div>
 
                 <button
                   onClick={() => setActiveTab('file-report')}
-                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0"
+                  className="bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white px-4 py-2.5 rounded-[4px] text-xs font-semibold transition cursor-pointer shrink-0"
                 >
-                  + File New
+                  + File New Report
                 </button>
               </div>
-            </div>
 
-            <div className="space-y-3">
-              {filteredNewReportsFeed.length === 0 ? (
-                <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl text-center text-zinc-400 text-sm">
-                  No reports found matching your search.
-                </div>
-              ) : (
-                filteredNewReportsFeed.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex items-center justify-between gap-4"
-                  >
-                    <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-white">
-                        {item.brand}
-                      </h4>
-
-                      {/* HANDLE + PLATFORM LOGO */}
-                      <PlatformLink platform={item.platform} handle={item.handle} />
-                    </div>
-
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-xs text-zinc-400 font-medium hidden sm:inline">
-                        Reports Against:
-                      </span>
-
-                      <span className="px-2.5 py-1 rounded-md bg-red-500/10 border border-red-500/30 text-red-400 font-mono font-bold text-xs">
-                        {item.reportCount}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            {expiredPublicReports.length > 0 && (
-              <div className="space-y-3 pt-4">
-                <h3 className="text-sm font-bold text-white">Unresolved reports past 72 hours</h3>
-                {expiredPublicReports.map((report: any) => (
-                  <div key={report.id} className="bg-zinc-900 border border-red-500/30 p-5 rounded-2xl space-y-3">
-                    <div className="flex items-center justify-between gap-3">
-  <div>
-    <span className="font-mono text-xs text-red-400 font-bold">
-      {report.report_number}
-    </span>
-
-    <h4 className="font-bold text-white mt-1">
-      {report.brand_name}
-    </h4>
-
-    <PlatformLink
-      platform={report.platform}
-      handle={report.handle}
-      className="mt-1"
-    />
-  </div>
-
-  <div className="flex flex-col items-end gap-2">
-    <span className="text-[10px] px-2 py-1 rounded bg-red-500/10 border border-red-500/30 text-red-300">
-      72H EXPIRED · UNRESOLVED
-    </span>
-
-    <a
-      href={`/report/${encodeURIComponent(report.report_number)}`}
-      className="px-3 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold transition"
-    >
-      View Report
-    </a>
-  </div>
-</div>
-                    <div className="grid sm:grid-cols-2 gap-2 text-xs text-zinc-400"><p>Order #: <span className="text-zinc-200">{report.order_number}</span></p><p>Amount: <span className="text-zinc-200">PKR {Number(report.amount_paid).toLocaleString()}</span></p><p>Payment: <span className="text-zinc-200">{report.payment_method}</span></p><p>Order date: <span className="text-zinc-200">{report.order_date || 'Not provided'}</span></p>{report.brand_email && <p>Brand email: <span className="text-zinc-200">{report.brand_email}</span></p>}{report.brand_whatsapp && <p>Brand WhatsApp: <span className="text-zinc-200">{report.brand_whatsapp}</span></p>}</div>
-                    <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-3"><p className="text-[10px] uppercase tracking-wider text-zinc-500">Customer report details</p><p className="text-xs text-zinc-300 mt-1 whitespace-pre-wrap">{report.description}</p></div>
-                    {publicEvidence[report.id]?.length > 0 && <div><p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Evidence</p><div className="flex flex-wrap gap-2">{publicEvidence[report.id].map((ev:any)=><a key={ev.storage_path} href={ev.url || '#'} target="_blank" rel="noopener noreferrer" className="text-xs border border-zinc-700 bg-zinc-950 hover:border-red-500/40 px-3 py-2 rounded-lg">{ev.file_name}</a>)}</div></div>}
-                    {report.business_response_text && <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-xl p-3"><p className="text-[10px] uppercase tracking-wider text-emerald-400 font-bold">Business response</p><p className="text-xs text-zinc-300 mt-1 whitespace-pre-wrap">{report.business_response_text}</p></div>}
-                  </div>
-                ))}
+              <div className="border-t border-[var(--sa-border)] bg-[#F2EFE9] p-4 md:px-6">
+                <input
+                  type="text"
+                  value={newReportSearch}
+                  onChange={(e) => setNewReportSearch(e.target.value)}
+                  placeholder="Search brand or handle..."
+                  className="w-full bg-white border border-[var(--sa-border)] rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] px-4 py-3 text-sm text-[var(--sa-ink)] placeholder:text-[var(--sa-graphite)] focus:outline-none focus:border-[var(--sa-ink)] transition"
+                />
               </div>
+            </section>
+
+
+            {/* ACTIVE 72-HOUR RECORDS */}
+            <section className="space-y-3">
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <div className="sa-mono text-[10px] uppercase tracking-[0.16em] text-[var(--sa-red-deep)] mb-1">
+                    Open Records
+                  </div>
+
+                  <h3 className="sa-display text-xl font-bold tracking-[-0.03em] text-[var(--sa-ink)]">
+                    Reports within response window
+                  </h3>
+                </div>
+              </div>
+
+              <div className="border border-[var(--sa-border)] rounded-[var(--sa-radius-md)] bg-white overflow-hidden shadow-[var(--sa-shadow-sm)]">
+                {filteredNewReportsFeed.length === 0 ? (
+                  <div className="p-10 text-center">
+                    <p className="text-sm text-[var(--sa-graphite)]">
+                      No reports found matching your search.
+                    </p>
+                  </div>
+                ) : (
+                  filteredNewReportsFeed.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className={`px-5 md:px-6 py-5 flex items-center justify-between gap-5 hover:bg-[#F7F5F2] transition ${
+                        index !== filteredNewReportsFeed.length - 1
+                          ? 'border-b border-[var(--sa-border)]'
+                          : ''
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <h4 className="sa-display text-[16px] font-bold text-[var(--sa-ink)] truncate">
+                          {item.brand}
+                        </h4>
+
+                        <PlatformLink
+                          platform={item.platform}
+                          handle={item.handle}
+                          className="mt-1.5"
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-4 shrink-0">
+                        <span className="sa-mono text-[9px] uppercase tracking-[0.12em] text-[var(--sa-graphite)] hidden sm:inline">
+                          Reports Against
+                        </span>
+
+                        <span className="sa-mono min-w-9 text-center px-2.5 py-1.5 rounded-[999px] bg-[var(--sa-red-soft)] border border-[#F2C7C2] text-[var(--sa-red-deep)] font-semibold text-xs">
+                          {item.reportCount}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <p className="text-[11px] leading-relaxed text-[var(--sa-graphite)]">
+                Records shown above are still within the business response period.
+                Complaint details remain private during this window.
+              </p>
+            </section>
+
+
+            {/* EXPIRED / PUBLIC REPORTS */}
+            {expiredPublicReports.length > 0 && (
+              <section className="space-y-3 pt-2">
+                <div>
+                  <div className="sa-mono text-[10px] uppercase tracking-[0.16em] text-[var(--sa-red-deep)] mb-1">
+                    Public Records
+                  </div>
+
+                  <h3 className="sa-display text-xl font-bold tracking-[-0.03em] text-[var(--sa-ink)]">
+                    Unresolved reports past 72 hours
+                  </h3>
+
+                  <p className="text-xs text-[var(--sa-graphite)] mt-1">
+                    Complaint details below are public because the original
+                    72-hour resolution window expired unresolved.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {expiredPublicReports.map((report: any) => (
+                    <article
+                      key={report.id}
+                      className="bg-white border border-[var(--sa-border)] rounded-[var(--sa-radius-lg)] overflow-hidden shadow-[var(--sa-shadow-md)]"
+                    >
+                      {/* REPORT HEADER */}
+                      <div className="p-5 md:p-6 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                        <div className="min-w-0">
+                          <span className="sa-mono text-[10px] uppercase tracking-[0.12em] text-[var(--sa-red-deep)] font-semibold">
+                            {report.report_number}
+                          </span>
+
+                          <h4 className="sa-display text-xl font-bold tracking-[-0.025em] text-[var(--sa-ink)] mt-1">
+                            {report.brand_name}
+                          </h4>
+
+                          <PlatformLink
+                            platform={report.platform}
+                            handle={report.handle}
+                            className="mt-1.5"
+                          />
+                        </div>
+
+                        <div className="flex flex-row sm:flex-col sm:items-end gap-2 shrink-0">
+                          <span className="sa-mono text-[9px] uppercase tracking-[0.1em] px-2.5 py-1.5 rounded-[999px] bg-[var(--sa-red-soft)] border border-[#F2C7C2] text-[var(--sa-red-deep)] font-semibold">
+                            72H Expired · Unresolved
+                          </span>
+
+                          <a
+                            href={`/report/${encodeURIComponent(report.report_number)}`}
+                            className="px-3 py-2 rounded-[4px] bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white text-xs font-semibold transition"
+                          >
+                            View Report
+                          </a>
+                        </div>
+                      </div>
+
+                      {/* RECORD DATA */}
+                      <div className="border-t border-[var(--sa-border)] bg-[#F7F5F2] grid sm:grid-cols-2 lg:grid-cols-4">
+                        <div className="px-4 py-3 border-b sm:border-b-0 sm:border-r border-[var(--sa-border)]">
+                          <span className="sa-mono text-[9px] uppercase tracking-[0.1em] text-[var(--sa-graphite)] block">
+                            Order
+                          </span>
+                          <span className="text-xs font-semibold text-[var(--sa-ink)] block mt-1">
+                            {report.order_number}
+                          </span>
+                        </div>
+
+                        <div className="px-4 py-3 border-b sm:border-b-0 lg:border-r border-[var(--sa-border)]">
+                          <span className="sa-mono text-[9px] uppercase tracking-[0.1em] text-[var(--sa-graphite)] block">
+                            Amount
+                          </span>
+                          <span className="text-xs font-semibold text-[var(--sa-ink)] block mt-1">
+                            PKR {Number(report.amount_paid).toLocaleString()}
+                          </span>
+                        </div>
+
+                        <div className="px-4 py-3 border-b sm:border-b-0 sm:border-r border-[var(--sa-border)]">
+                          <span className="sa-mono text-[9px] uppercase tracking-[0.1em] text-[var(--sa-graphite)] block">
+                            Payment
+                          </span>
+                          <span className="text-xs font-semibold text-[var(--sa-ink)] block mt-1">
+                            {report.payment_method}
+                          </span>
+                        </div>
+
+                        <div className="px-4 py-3">
+                          <span className="sa-mono text-[9px] uppercase tracking-[0.1em] text-[var(--sa-graphite)] block">
+                            Order Date
+                          </span>
+                          <span className="text-xs font-semibold text-[var(--sa-ink)] block mt-1">
+                            {report.order_date || 'Not provided'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* COMPLAINT */}
+                      <div className="p-5 md:p-6 border-t border-[var(--sa-border)]">
+                        <span className="sa-mono text-[9px] uppercase tracking-[0.12em] text-[var(--sa-graphite)]">
+                          Customer Report Details
+                        </span>
+
+                        <p className="text-sm leading-6 text-[#33302A] mt-2 whitespace-pre-wrap">
+                          {report.description}
+                        </p>
+                      </div>
+
+                      {/* CONTACT DETAILS */}
+                      {(report.brand_email || report.brand_whatsapp) && (
+                        <div className="px-5 md:px-6 pb-5 flex flex-wrap gap-x-6 gap-y-2">
+                          {report.brand_email && (
+                            <span className="text-[11px] text-[var(--sa-graphite)]">
+                              Brand email:{' '}
+                              <strong className="text-[var(--sa-ink)]">
+                                {report.brand_email}
+                              </strong>
+                            </span>
+                          )}
+
+                          {report.brand_whatsapp && (
+                            <span className="text-[11px] text-[var(--sa-graphite)]">
+                              Brand WhatsApp:{' '}
+                              <strong className="text-[var(--sa-ink)]">
+                                {report.brand_whatsapp}
+                              </strong>
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* EVIDENCE */}
+                      {publicEvidence[report.id]?.length > 0 && (
+                        <div className="px-5 md:px-6 pb-5">
+                          <span className="sa-mono text-[9px] uppercase tracking-[0.12em] text-[var(--sa-graphite)] block mb-2">
+                            Evidence
+                          </span>
+
+                          <div className="flex flex-wrap gap-2">
+                            {publicEvidence[report.id].map((ev: any) => (
+                              <a
+                                key={ev.storage_path}
+                                href={ev.url || '#'}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs border border-[var(--sa-border)] bg-white hover:bg-[#F2EFE9] text-[var(--sa-ink)] px-3 py-2 rounded-[4px] transition"
+                              >
+                                {ev.file_name}
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* BUSINESS RESPONSE */}
+                      {report.business_response_text && (
+                        <div className="border-t border-[#C6DFCF] bg-[var(--sa-green-soft)] p-5 md:p-6">
+                          <span className="sa-mono text-[9px] uppercase tracking-[0.12em] text-[var(--sa-green)] font-semibold">
+                            Business Response
+                          </span>
+
+                          <p className="text-sm leading-6 text-[#25543C] mt-2 whitespace-pre-wrap">
+                            {report.business_response_text}
+                          </p>
+                        </div>
+                      )}
+                    </article>
+                  ))}
+                </div>
+
+                <p className="text-[11px] leading-relaxed text-[var(--sa-graphite)]">
+                  ScamAlert.pk publishes submitted complaint records and business
+                  responses. A public listing is not an independent finding of fraud.
+                </p>
+              </section>
             )}
           </div>
         )}
 
         {/* BRAND DIRECTORY */}
         {activeTab === 'brands' && (
-          <div className="space-y-6">
-            <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-bold text-white">
-                  Brand Reputation Directory
-                </h2>
+          <div className="space-y-6 py-6">
+            <section className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[16px] shadow-[var(--sa-shadow-sm)] p-6 md:p-8">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+                <div className="max-w-2xl">
+                  <div className="sa-mono text-[11px] uppercase tracking-[0.16em] text-[var(--sa-red)] font-semibold mb-2">
+                    Seller Directory
+                  </div>
 
-                <p className="text-xs text-zinc-400 mt-1">
-                  Browse reputation scores based on completed complaint outcomes and resolution history.
-                </p>
+                  <h2 className="sa-display text-2xl md:text-3xl font-semibold tracking-tight text-[var(--sa-ink)]">
+                    Brand Directory
+                  </h2>
+
+                  <p className="text-sm text-[var(--sa-graphite)] mt-2 leading-6">
+                    Browse sellers and platforms appearing in submitted reports and review their recorded complaint outcomes.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => setActiveTab('file-report')}
+                  className="bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white text-sm font-semibold px-5 py-3 rounded-[8px] shadow-sm transition cursor-pointer shrink-0"
+                >
+                  + File New Report
+                </button>
               </div>
-
-              <button
-                onClick={() => setActiveTab('file-report')}
-                className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition cursor-pointer"
-              >
-                + File New Report
-              </button>
-            </div>
+            </section>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredBrands.length === 0 && <div className="md:col-span-2 bg-zinc-900 border border-zinc-800 p-8 rounded-2xl text-center text-zinc-400 text-sm">No real report data matches this search yet.</div>}
+              {filteredBrands.length === 0 && (
+                <div className="md:col-span-2 bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] shadow-[var(--sa-shadow-sm)] p-10 text-center">
+                  <p className="text-sm text-[var(--sa-graphite)]">
+                    No report data matches this search yet.
+                  </p>
+                </div>
+              )}
+
               {filteredBrands.map((brand, idx) => (
-                <div
+                <article
                   key={idx}
-                  className="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl flex items-center justify-between"
+                  className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] shadow-[var(--sa-shadow-sm)] p-5 md:p-6 flex items-center justify-between gap-5"
                 >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-base font-bold text-white">
+                  <div className="space-y-2 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h4 className="sa-display text-lg font-semibold text-[var(--sa-ink)]">
                         {brand.name}
                       </h4>
 
                       {brand.verified && (
-                        <span className="text-xs bg-blue-500/10 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded">
+                        <span className="sa-mono text-[10px] uppercase tracking-wide bg-[var(--sa-green-soft)] text-[var(--sa-green)] border border-[var(--sa-green)]/20 px-2 py-1 rounded-full">
                           Verified
                         </span>
                       )}
                     </div>
 
-                    {/* HANDLE + PLATFORM LOGO */}
-                    <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+                    <div className="flex items-center gap-1.5 text-xs text-[var(--sa-graphite)]">
                       <span>Handle:</span>
-                      <PlatformLink platform={brand.platform} handle={brand.handle} />
+                      <PlatformLink
+                        platform={brand.platform}
+                        handle={brand.handle}
+                      />
                     </div>
                   </div>
 
-                  <ScamMeterBadge
-                    score={brand.score}
-                    isBlacklisted={brand.score === 0}
-                  />
-                </div>
+                  <div className="shrink-0">
+                    <ScamMeterBadge
+                      score={brand.score}
+                      isBlacklisted={brand.score === 0}
+                    />
+                  </div>
+                </article>
               ))}
             </div>
           </div>
@@ -2611,70 +2947,89 @@ const handleMarkResolved = async (id: string) => {
 
         {/* BLACKLIST */}
         {activeTab === 'blacklisted' && (
-          <div className="space-y-6">
-            <div className="bg-red-950/20 border border-red-500/30 p-6 rounded-2xl flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-white">
-                  Unresolved 72h Registry
-                </h2>
+          <div className="space-y-6 py-6">
+            <section className="bg-[var(--sa-surface)] border border-[var(--sa-red)]/25 rounded-[16px] shadow-[var(--sa-shadow-sm)] p-6 md:p-8">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+                <div className="max-w-3xl">
+                  <div className="sa-mono text-[11px] uppercase tracking-[0.16em] text-[var(--sa-red)] font-semibold mb-2">
+                    72-Hour Status
+                  </div>
 
-                <p className="text-xs text-red-300/80 mt-1">
-                  Complaints that remain unresolved after the 72-hour response window are listed here with their public report details. This is a complaint-status registry, not an independent finding of fraud.
-                </p>
+                  <h2 className="sa-display text-2xl md:text-3xl font-semibold tracking-tight text-[var(--sa-ink)]">
+                    Unresolved Reports Registry
+                  </h2>
+
+                  <p className="text-sm text-[var(--sa-graphite)] mt-2 leading-6">
+                    Complaints that remain unresolved after the 72-hour response window are listed here with their public report details. A listing represents complaint status and is not an independent finding of fraud.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => setActiveTab('file-report')}
+                  className="bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white text-sm font-semibold px-5 py-3 rounded-[8px] shadow-sm transition cursor-pointer shrink-0"
+                >
+                  + File New Report
+                </button>
               </div>
-
-              <button
-                onClick={() => setActiveTab('file-report')}
-                className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition cursor-pointer shrink-0"
-              >
-                + File New Report
-              </button>
-            </div>
+            </section>
 
             <div className="space-y-4">
-              {blacklistedBrands.length === 0 && <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl text-center text-zinc-400 text-sm">No unresolved reports have passed the 72-hour window.</div>}
-              {blacklistedBrands.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="bg-zinc-900 border border-red-500/40 p-5 rounded-2xl space-y-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs text-red-400 font-bold">
-                      {item.id}
-                    </span>
-
-                    <span className="text-xs bg-red-600 text-white px-2.5 py-0.5 rounded font-mono font-bold">
-                      UNRESOLVED
-                    </span>
-                  </div>
-
-                  <div>
-                    <h4 className="text-base font-bold text-white">
-                      {item.brand}
-                    </h4>
-
-                    {/* HANDLE + PLATFORM LOGO */}
-                    <PlatformLink platform={item.platform} handle={item.handle} className="mt-1" />
-
-                    <p className="text-xs text-red-300 mt-1 font-medium">
-                      {item.reason}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-zinc-800 text-xs text-zinc-400">
-                    <span>
-                      Date Blacklisted: {item.dateBlacklisted}
-                    </span>
-
-                    <span className="text-red-400 font-semibold">
-                      Status: Unresolved after 72h
-                    </span>
-                  </div>
+              {blacklistedBrands.length === 0 && (
+                <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] shadow-[var(--sa-shadow-sm)] p-10 text-center">
+                  <p className="text-sm text-[var(--sa-graphite)]">
+                    No unresolved reports have passed the 72-hour window.
+                  </p>
                 </div>
+              )}
+
+              {blacklistedBrands.map((item, idx) => (
+                <article
+                  key={idx}
+                  className="bg-[var(--sa-surface)] border border-[var(--sa-red)]/25 rounded-[14px] shadow-[var(--sa-shadow-sm)] overflow-hidden"
+                >
+                  <div className="p-5 md:p-6 space-y-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <span className="sa-mono text-xs text-[var(--sa-red)] font-semibold">
+                        {item.id}
+                      </span>
+
+                      <span className="sa-mono text-[10px] uppercase tracking-wide bg-[var(--sa-red-soft)] text-[var(--sa-red-deep)] border border-[var(--sa-red)]/20 px-2.5 py-1 rounded-full font-semibold">
+                        Unresolved · 72H
+                      </span>
+                    </div>
+
+                    <div>
+                      <h4 className="sa-display text-lg font-semibold text-[var(--sa-ink)]">
+                        {item.brand}
+                      </h4>
+
+                      <PlatformLink
+                        platform={item.platform}
+                        handle={item.handle}
+                        className="mt-1"
+                      />
+
+                      <p className="text-sm text-[var(--sa-graphite)] mt-3 leading-6">
+                        {item.reason}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="bg-[var(--sa-red-soft)]/45 border-t border-[var(--sa-red)]/15 px-5 md:px-6 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                    <span className="text-[var(--sa-graphite)]">
+                      Listed: {item.dateBlacklisted}
+                    </span>
+
+                    <span className="text-[var(--sa-red-deep)] font-semibold">
+                      Unresolved after 72 hours
+                    </span>
+                  </div>
+                </article>
               ))}
             </div>
           </div>
         )}
+
       </main>
     </div>
   );

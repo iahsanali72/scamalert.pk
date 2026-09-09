@@ -82,7 +82,7 @@ setReport(publicReport);
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-6">
+      <main className="min-h-screen bg-[var(--sa-paper)] text-[var(--sa-ink)] flex items-center justify-center p-6">
         <p className="text-zinc-400">Loading report...</p>
       </main>
     );
@@ -90,42 +90,42 @@ setReport(publicReport);
 
   if (error || !report) {
     return (
-      <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-6">
-        <div className="max-w-xl w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <div className="text-red-400 font-mono text-xs font-bold mb-3">
+      <main className="min-h-screen bg-[var(--sa-paper)] text-[var(--sa-ink)] flex items-center justify-center p-6">
+        <div className="max-w-xl w-full bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[16px] p-6 shadow-[var(--sa-shadow-md)]">
+          <div className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-red-deep)] font-semibold mb-3">
             REPORT UNAVAILABLE
           </div>
 
-          <h1 className="text-xl font-bold mb-2">
+          <h1 className="sa-display text-xl font-semibold text-[var(--sa-ink)] mb-2">
             Report not publicly available
           </h1>
 
-          <p className="text-sm text-zinc-400">{error}</p>
+          <p className="text-sm text-[var(--sa-graphite)]">{error}</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white py-10 px-4">
+    <main className="min-h-screen bg-[var(--sa-paper)] text-[var(--sa-ink)] py-8 md:py-10 px-4">
       <div className="max-w-3xl mx-auto space-y-6">
         <div>
-          <p className="text-xs font-mono font-bold text-red-400 mb-2">
+          <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-red-deep)] font-semibold mb-2">
             PUBLIC REPORT
           </p>
 
-          <h1 className="text-3xl font-bold">{report.brand_name}</h1>
+          <h1 className="sa-display text-3xl font-semibold tracking-tight text-[var(--sa-ink)]">{report.brand_name}</h1>
 
           <p className="text-sm text-zinc-500 mt-2 font-mono">
             {report.report_number}
           </p>
         </div>
 
-        <div className="bg-zinc-900 border border-red-500/30 rounded-2xl p-6 space-y-6">
+        <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[16px] p-5 md:p-6 space-y-6 shadow-[var(--sa-shadow-md)]">
           <div className="grid sm:grid-cols-2 gap-4">
             <Detail label="Platform" value={report.platform} />
             <div>
-  <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">
+  <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-graphite)] mb-1">
     Handle
   </p>
 
@@ -144,7 +144,7 @@ setReport(publicReport);
     }
     target="_blank"
     rel="noopener noreferrer"
-    className="text-sm text-red-400 hover:text-red-300 hover:underline break-words"
+    className="text-sm text-[var(--sa-red-deep)] hover:text-[var(--sa-red)] hover:underline break-words"
   >
     {report.handle}
   </a>
@@ -164,17 +164,17 @@ setReport(publicReport);
             <Detail label="Payment Method" value={report.payment_method} />
           </div>
 
-          <div className="border-t border-zinc-800 pt-5">
-            <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-2">
+          <div className="border-t border-[var(--sa-border)] pt-5">
+            <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-graphite)] mb-2">
               Customer Report
             </p>
 
-            <p className="text-sm text-zinc-200 whitespace-pre-wrap">
+            <p className="text-sm text-[var(--sa-ink)] whitespace-pre-wrap">
               {report.description || 'No description provided.'}
             </p>
           </div>
           {evidence.length > 0 && (
-  <div className="border-t border-zinc-800 pt-5">
+  <div className="border-t border-[var(--sa-border)] pt-5">
     <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-3">
       Customer Evidence
     </p>
@@ -186,7 +186,7 @@ setReport(publicReport);
           href={item.url || '#'}
           target="_blank"
           rel="noopener noreferrer"
-          className="block bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden hover:border-red-500/40 transition"
+          className="block bg-[#F7F5F2] border border-[var(--sa-border)] rounded-[12px] overflow-hidden hover:border-[var(--sa-red)]/40 transition"
         >
           {item.mime_type?.startsWith('image/') && item.url ? (
             <img
@@ -200,7 +200,7 @@ setReport(publicReport);
             </div>
           )}
 
-          <div className="px-3 py-2 border-t border-zinc-800">
+          <div className="px-3 py-2 border-t border-[var(--sa-border)]">
             <p className="text-xs text-zinc-400 truncate">
               {item.file_name || 'Evidence'}
             </p>
@@ -212,12 +212,12 @@ setReport(publicReport);
 )}
 
           {report.business_response_text && (
-            <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-xl p-4">
-              <p className="text-[10px] uppercase tracking-wider text-emerald-400 mb-2">
+            <div className="bg-[var(--sa-green-soft)] border border-[var(--sa-green)]/25 rounded-[12px] p-4">
+              <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-green)] font-semibold mb-2">
                 Business Response
               </p>
 
-              <p className="text-sm text-zinc-200 whitespace-pre-wrap">
+              <p className="text-sm text-[var(--sa-ink)] whitespace-pre-wrap">
                 {report.business_response_text}
               </p>
 
@@ -230,7 +230,7 @@ setReport(publicReport);
           )}
         </div>
 
-        <p className="text-xs text-zinc-600 text-center">
+        <p className="text-xs text-[var(--sa-graphite)] text-center leading-relaxed">
           This page displays a user-submitted report after the business response
           window has expired. A report does not independently establish wrongdoing.
         </p>
@@ -250,10 +250,10 @@ function Detail({
 
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">
+      <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-graphite)] mb-1">
         {label}
       </p>
-      <p className="text-sm text-zinc-200 break-words">{value}</p>
+      <p className="text-sm text-[var(--sa-ink)] break-words">{value}</p>
     </div>
   );
 }
