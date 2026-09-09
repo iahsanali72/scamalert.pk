@@ -214,6 +214,8 @@ export default function CustomerCasePage() {
       return;
     }
 
+    let decisionCompleted = resolutionChoice !== 'resolved';
+
     if (resolutionChoice === 'resolved') {
       const { error: resolveError } = await supabase
         .from('reports')
@@ -232,6 +234,8 @@ export default function CustomerCasePage() {
           'Your final response was saved, but the report could not be marked resolved.'
         );
       } else {
+        decisionCompleted = true;
+
         setReport((current: any) => ({
           ...current,
           status: 'resolved',
@@ -243,11 +247,40 @@ export default function CustomerCasePage() {
     setFinalResponse(inserted);
     setFinalResponseText('');
 
-    setFinalSuccess(
-      resolutionChoice === 'resolved'
-        ? 'Your final response was submitted and the report was marked resolved.'
-        : 'Your final response was submitted. The report will remain active.'
-    );
+    if (decisionCompleted) {
+      try {
+        const notifyResponse = await fetch(
+          '/api/notify-business-final-response',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              reportId: report.id,
+            }),
+          }
+        );
+
+        if (!notifyResponse.ok) {
+          console.error(
+            'Business final-response notification failed:',
+            notifyResponse.status
+          );
+        }
+      } catch (notifyError) {
+        console.error(
+          'Business final-response notification failed:',
+          notifyError
+        );
+      }
+
+      setFinalSuccess(
+        resolutionChoice === 'resolved'
+          ? 'Your final response was submitted and the report was marked resolved.'
+          : 'Your final response was submitted. The report will remain active.'
+      );
+    }
 
     setFinalSubmitting(false);
   };

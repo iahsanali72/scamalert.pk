@@ -98,6 +98,13 @@ export async function POST(request: Request) {
     const satisfied =
       finalResponse.resolution_choice === 'resolved'
 
+    if (satisfied && report.status !== 'resolved') {
+      return NextResponse.json(
+        { error: 'Report resolution has not completed' },
+        { status: 409 }
+      )
+    }
+
     const decision = satisfied
       ? 'Satisfied'
       : 'Not Satisfied'
