@@ -1388,10 +1388,10 @@ const handleMarkResolved = async (id: string) => {
 
         {reportSuccessMessage && (
           <div className="max-w-3xl mx-auto mb-5">
-            <div className="bg-emerald-950/50 border border-emerald-500/40 rounded-2xl px-5 py-4 flex items-start gap-3 shadow-lg">
-              <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
+            <div className="bg-[#F0FDF4] border border-[#86D5A5] rounded-2xl px-5 py-4 flex items-start gap-3 shadow-lg">
+              <div className="w-7 h-7 rounded-full bg-[#DCFCE7] border border-[#86D5A5] flex items-center justify-center shrink-0">
                 <svg
-                  className="w-4 h-4 text-emerald-400"
+                  className="w-4 h-4 text-[#168A55]"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -1401,12 +1401,12 @@ const handleMarkResolved = async (id: string) => {
                 </svg>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-bold text-emerald-300">
+                <p className="text-sm font-bold text-[#168A55]">
                   {reportSuccessMessage.includes(' deleted.')
                     ? 'Report Deleted Successfully'
                     : 'Report Submitted Successfully'}
                 </p>
-                <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
+                <p className="text-xs text-[#4B5563] mt-1 leading-relaxed">
                   {reportSuccessMessage}
                 </p>
               </div>
