@@ -2034,21 +2034,44 @@ const handleMarkResolved = async (id: string) => {
               </div>
 
               <div className="border-t border-[var(--sa-border)] bg-[#F2EFE9] px-5 sm:px-7 md:px-10 lg:px-12 py-3 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-x-7 gap-y-2">
-                <span className="sa-mono text-[10px] uppercase tracking-[0.12em] text-[var(--sa-graphite)]">
-                  Evidence-backed records
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-full bg-white border border-[var(--sa-border)] flex items-center justify-center shrink-0">
+                    <svg className="w-4 h-4 text-[var(--sa-ink)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M9 12h6m-6 4h6M9 8h3m-5-5h7l4 4v14H7V3z" />
+                    </svg>
+                  </span>
+                  <span className="sa-mono text-[10px] uppercase tracking-[0.12em] text-[var(--sa-graphite)]">
+                    Evidence-backed records
+                  </span>
+                </div>
 
-                <span className="hidden sm:block w-px h-3 bg-[var(--sa-border)]" />
+                <span className="hidden sm:block w-px h-6 bg-[var(--sa-border)]" />
 
-                <span className="sa-mono text-[10px] uppercase tracking-[0.12em] text-[var(--sa-graphite)]">
-                  Seller right of response
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-full bg-white border border-[var(--sa-border)] flex items-center justify-center shrink-0">
+                    <svg className="w-4 h-4 text-[var(--sa-ink)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 3l7 3v5c0 4.4-2.8 8.4-7 10-4.2-1.6-7-5.6-7-10V6l7-3z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M9.5 12.5l1.7 1.7 3.8-4" />
+                    </svg>
+                  </span>
+                  <span className="sa-mono text-[10px] uppercase tracking-[0.12em] text-[var(--sa-graphite)]">
+                    Seller right of response
+                  </span>
+                </div>
 
-                <span className="hidden sm:block w-px h-3 bg-[var(--sa-border)]" />
+                <span className="hidden sm:block w-px h-6 bg-[var(--sa-border)]" />
 
-                <span className="sa-mono text-[10px] uppercase tracking-[0.12em] text-[var(--sa-graphite)]">
-                  72-hour resolution window
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-full bg-white border border-[var(--sa-border)] flex items-center justify-center shrink-0">
+                    <svg className="w-4 h-4 text-[var(--sa-ink)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="9" strokeWidth="1.8" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 7v5l3 2" />
+                    </svg>
+                  </span>
+                  <span className="sa-mono text-[10px] uppercase tracking-[0.12em] text-[var(--sa-graphite)]">
+                    72-hour resolution window
+                  </span>
+                </div>
               </div>
             </section>
 
