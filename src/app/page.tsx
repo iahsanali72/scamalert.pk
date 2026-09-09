@@ -660,6 +660,18 @@ if (restoredDraft) {
     setReportSuccessMessage('');
     setAuthError('');
 
+    const missingFields: string[] = [];
+
+    if (!reportBrandEmail.trim()) missingFields.push('Email');
+    if (!reportBrandWhatsapp.trim()) missingFields.push('Phone number');
+    if (!reportOrderDate) missingFields.push('Order date');
+
+    if (missingFields.length > 0) {
+      setIsSubmittingReport(false);
+      setAuthError(`Please complete the required fields: ${missingFields.join(', ')}.`);
+      return;
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setIsSubmittingReport(false); setShowAuthRequiredModal(true); return; }
 
@@ -1402,7 +1414,9 @@ const handleMarkResolved = async (id: string) => {
               </div>
               <div className="flex-1">
                 <p className="text-sm font-bold text-emerald-300">
-                  Report Submitted Successfully
+                  {reportSuccessMessage.includes(' deleted.')
+                    ? 'Report Deleted Successfully'
+                    : 'Report Submitted Successfully'}
                 </p>
                 <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
                   {reportSuccessMessage}
