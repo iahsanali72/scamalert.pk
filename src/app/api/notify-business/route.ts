@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
+import { sendTrackedEmail } from '@/utils/email-delivery';
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -26,16 +27,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ email: 'not_provided', whatsapp: report.brand_whatsapp ? 'not_configured' : 'not_provided' });
   }
 
-  const resendKey = process.env.RESEND_API_KEY;
-  const from = process.env.NOTIFICATION_FROM_EMAIL;
-  if (!resendKey || !from) {
-    await supabase.from('reports').update({ email_notification_status: 'not_configured' }).eq('id', report.id);
-    return NextResponse.json({ email: 'not_configured', whatsapp: report.brand_whatsapp ? 'not_configured' : 'not_provided' });
-  }
-
   const body = {
-    from,
-    to: [report.brand_email],
     subject: `Report filed on ScamAlert.pk regarding Order #${report.order_number}`,
     html: `
       <div style="margin:0;padding:0;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
@@ -152,21 +144,17 @@ export async function POST(request: Request) {
     `,
   };
 
-  const result = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+  const result = await sendTrackedEmail({
+    reportId: report.id,
+    reportNumber: report.report_number,
+    emailType: 'business_initial_notification',
+    to: report.brand_email,
+    subject: body.subject,
+    html: body.html,
   });
 
-  const resultText = await result.text();
-
-  console.log(
-    'Resend notify-business response:',
-    result.status,
-    resultText
-  );
-
-  const status = result.ok ? 'sent' : 'failed';
+  const status =
+    result.status === 'already_sent' ? 'sent' : result.status;
 
   await supabase
     .from('reports')
