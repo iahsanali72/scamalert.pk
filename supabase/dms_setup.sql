@@ -38,6 +38,9 @@ create table if not exists public.reports (
   response_token_hash text not null,
   response_token_expires_at timestamptz not null default (now() + interval '14 days'),
   business_responded_at timestamptz,
+  deadline_48h_reminder_sent_at timestamptz,
+  deadline_24h_reminder_sent_at timestamptz,
+  deadline_expired_email_sent_at timestamptz,
   email_notification_status text not null default 'not_attempted' check (email_notification_status in ('not_attempted','sent','failed','not_configured','not_provided')),
   whatsapp_notification_status text not null default 'not_configured' check (whatsapp_notification_status in ('not_attempted','sent','failed','not_configured','not_provided')),
   updated_at timestamptz not null default now()
