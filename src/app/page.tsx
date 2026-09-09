@@ -649,6 +649,16 @@ if (restoredDraft) {
     setActiveTab(tab);
   };
 
+  useEffect(() => {
+    if (!reportSuccessMessage) return;
+
+    const timer = window.setTimeout(() => {
+      setReportSuccessMessage('');
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [reportSuccessMessage]);
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setAppliedSearch(searchQuery.trim());
