@@ -660,18 +660,6 @@ if (restoredDraft) {
     setReportSuccessMessage('');
     setAuthError('');
 
-    const missingFields: string[] = [];
-
-    if (!reportBrandEmail.trim()) missingFields.push('Email');
-    if (!reportBrandWhatsapp.trim()) missingFields.push('Phone number');
-    if (!reportOrderDate) missingFields.push('Order date');
-
-    if (missingFields.length > 0) {
-      setIsSubmittingReport(false);
-      setAuthError(`Please complete the required fields: ${missingFields.join(', ')}.`);
-      return;
-    }
-
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setIsSubmittingReport(false); setShowAuthRequiredModal(true); return; }
 
@@ -2194,19 +2182,19 @@ const handleMarkResolved = async (id: string) => {
                     <input type="text" required value={reportOrderNumber} onChange={(e) => setReportOrderNumber(e.target.value)} placeholder="e.g. PK-10482" className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Order Date</label>
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Order Date <span className="font-normal text-[var(--sa-graphite)]">(Optional)</span></label>
                     <input type="date" value={reportOrderDate} onChange={(e) => setReportOrderDate(e.target.value)} className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Brand Email</label>
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Brand Email <span className="font-normal text-[var(--sa-graphite)]">(Optional)</span></label>
                     <input type="email" value={reportBrandEmail} onChange={(e) => setReportBrandEmail(e.target.value)} placeholder="support@brand.com" className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
                     <p className="text-[10px] text-[var(--sa-graphite)]">Used only to send this business a neutral complaint notice and response link.</p>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Brand WhatsApp #</label>
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Brand WhatsApp # <span className="font-normal text-[var(--sa-graphite)]">(Optional)</span></label>
                     <input type="tel" value={reportBrandWhatsapp} onChange={(e) => setReportBrandWhatsapp(e.target.value)} placeholder="+92 300 1234567" className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
                     <p className="text-[10px] text-[var(--sa-graphite)]">Stored for notification use once a WhatsApp Business provider is connected.</p>
                   </div>
