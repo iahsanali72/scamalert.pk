@@ -2544,7 +2544,7 @@ const handleMarkResolved = async (id: string) => {
                         </button>
 
                         {reportPendingDelete === ticket.id && (
-                          <div className="absolute z-50 top-full mt-2 right-0 w-72 rounded-[12px] border border-[var(--sa-red)]/25 bg-white p-4 shadow-[var(--sa-shadow-lg)]">
+                          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 px-4">
                             <p className="text-sm font-semibold text-[var(--sa-ink)]">
                               Delete report {ticket.id}?
                             </p>
