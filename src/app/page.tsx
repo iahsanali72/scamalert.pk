@@ -2544,38 +2544,46 @@ const handleMarkResolved = async (id: string) => {
                         </button>
 
                         {reportPendingDelete === ticket.id && (
-                          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 px-4">
-                            <p className="text-sm font-semibold text-[var(--sa-ink)]">
-                              Delete report {ticket.id}?
-                            </p>
+  <div
+    className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 p-4"
+    onClick={() => setReportPendingDelete(null)}
+  >
+    <div
+      className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h3 className="text-lg font-semibold text-black">
+        Delete report {ticket.id}?
+      </h3>
 
-                            <p className="mt-1 text-xs text-[var(--sa-graphite)]">
-                              This action cannot be undone.
-                            </p>
+      <p className="mt-2 text-sm text-gray-600">
+        This action cannot be undone.
+      </p>
 
-                            <div className="mt-4 flex justify-end gap-2">
-                              <button
-                                type="button"
-                                onClick={() => setReportPendingDelete(null)}
-                                disabled={deletingReportId === ticket.id}
-                                className="rounded-[8px] border border-[var(--sa-border)] bg-white px-3 py-2 text-xs font-semibold text-[var(--sa-graphite)] disabled:opacity-60"
-                              >
-                                Cancel
-                              </button>
+      <div className="mt-6 flex justify-end gap-3">
+        <button
+          type="button"
+          onClick={() => setReportPendingDelete(null)}
+          disabled={deletingReportId === ticket.id}
+          className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700"
+        >
+          Cancel
+        </button>
 
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteTicket(ticket.id)}
-                                disabled={deletingReportId === ticket.id}
-                                className="rounded-[8px] border border-[var(--sa-red)]/30 bg-[var(--sa-red-soft)] px-3 py-2 text-xs font-semibold text-[var(--sa-red-deep)] disabled:opacity-60 disabled:cursor-not-allowed"
-                              >
-                                {deletingReportId === ticket.id
-                                  ? 'Deleting...'
-                                  : 'Delete Report'}
-                              </button>
-                            </div>
-                          </div>
-                        )}
+        <button
+          type="button"
+          onClick={() => handleDeleteTicket(ticket.id)}
+          disabled={deletingReportId === ticket.id}
+          className="rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 disabled:opacity-50"
+        >
+          {deletingReportId === ticket.id
+            ? 'Deleting...'
+            : 'Delete Report'}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
                       </div>
                     </div>
 
