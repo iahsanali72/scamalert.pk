@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
+import { sendTrackedEmail } from '@/utils/email-delivery'
 
 export async function POST(request: Request) {
   try {
@@ -48,27 +49,15 @@ export async function POST(request: Request) {
       )
     }
 
-    const resendKey = process.env.RESEND_API_KEY
-    const from = process.env.NOTIFICATION_FROM_EMAIL
-
-    if (!resendKey || !from) {
-      return NextResponse.json(
-        { email: 'not_configured' },
-        { status: 500 }
-      )
-    }
-
     const appUrl =
       process.env.NEXT_PUBLIC_SITE_URL || 'https://scamalert.pk'
 
     const caseUrl =
       `${appUrl}/case/${encodeURIComponent(report.report_number)}`
 
-    const body = {
-      from,
-      to: [user.email],
-      subject: `Your report has been submitted — ${report.report_number}`,
-      html: `
+    const subject = `Your report has been submitted — ${report.report_number}`
+
+    const html = `
         <div style="margin:0;padding:0;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
           <div style="max-width:640px;margin:0 auto;padding:32px 20px;">
             <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;">
@@ -144,28 +133,26 @@ export async function POST(request: Request) {
             </div>
           </div>
         </div>
-      `,
-    }
+      `
 
-    const result = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
+    const result = await sendTrackedEmail({
+      reportId: report.id,
+      reportNumber: report.report_number,
+      emailType: 'customer_report_submitted',
+      to: user.email,
+      subject,
+      html,
     })
 
-    const resultText = await result.text()
-
-    console.log(
-      'Resend customer submission response:',
-      result.status,
-      resultText
-    )
+    if (!result.ok) {
+      return NextResponse.json(
+        { email: result.status },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
-      email: result.ok ? 'sent' : 'failed',
+      email: result.status === 'already_sent' ? 'sent' : result.status,
     })
   } catch (error) {
     console.error('Customer submission notification error:', error)

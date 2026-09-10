@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createHash } from 'crypto'
 import { createAdminClient } from '@/utils/supabase/admin'
+import { sendTrackedEmail } from '@/utils/email-delivery'
 
 export async function POST(request: Request) {
   try {
@@ -79,33 +80,19 @@ export async function POST(request: Request) {
       )
     }
 
-    const resendKey = process.env.RESEND_API_KEY
-    const from = process.env.NOTIFICATION_FROM_EMAIL
-
-    if (!resendKey || !from) {
-      return NextResponse.json(
-        { error: 'Email service is not configured' },
-        { status: 500 }
-      )
-    }
-
     const appUrl =
       process.env.NEXT_PUBLIC_SITE_URL || 'https://scamalert.pk'
 
     const caseUrl =
       `${appUrl}/case/${encodeURIComponent(report.report_number)}`
 
-    const result = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from,
-        to: [customerEmail],
-        subject: `${report.brand_name} responded to your ScamAlert.pk report`,
-        html: `
+    const result = await sendTrackedEmail({
+      reportId: report.id,
+      reportNumber: report.report_number,
+      emailType: 'customer_business_response',
+      to: customerEmail,
+      subject: `${report.brand_name} responded to your ScamAlert.pk report`,
+      html: `
           <p>
             <strong>${report.brand_name}</strong> has responded to your
             report <strong>${report.report_number}</strong>.
@@ -127,20 +114,11 @@ export async function POST(request: Request) {
             satisfied or not satisfied with the outcome.
           </p>
         `,
-      }),
     })
-
-    const details = await result.text()
-
-    console.log(
-      'Resend notify-customer response:',
-      result.status,
-      details
-    )
 
     if (!result.ok) {
       return NextResponse.json(
-        { email: 'failed' },
+        { email: result.status },
         { status: 500 }
       )
     }

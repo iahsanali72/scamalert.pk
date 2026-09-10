@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
+import { sendTrackedEmail } from '@/utils/email-delivery'
 
 function escapeHtml(value: string) {
   return value
@@ -113,54 +114,48 @@ export async function POST(request: Request) {
       ? 'The customer has accepted your response and the report has been marked resolved.'
       : 'The customer was not satisfied with your response. The report remains active and will continue through the original review period.'
 
-    const result = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from,
-        to: [report.brand_email],
-        subject: `Customer decision for report ${report.report_number}: ${decision}`,
-        html: `
-          <h2>Customer Final Decision</h2>
+    const result = await sendTrackedEmail({
+      reportId: report.id,
+      reportNumber: report.report_number,
+      emailType: 'business_customer_final_response',
+      to: report.brand_email,
+      subject: `Customer decision for report ${report.report_number}: ${decision}`,
+      html: `
+        <h2>Customer Final Decision</h2>
 
-          <p>
-            The customer has submitted their final response regarding
-            <strong>${safeBrandName}</strong>.
-          </p>
+        <p>
+          The customer has submitted their final response regarding
+          <strong>${safeBrandName}</strong>.
+        </p>
 
-          <p>
-            <strong>Report:</strong> ${safeReportNumber}<br />
-            <strong>Order:</strong> ${safeOrderNumber}<br />
-            <strong>Customer decision:</strong> ${decision}
-          </p>
+        <p>
+          <strong>Report:</strong> ${safeReportNumber}<br />
+          <strong>Order:</strong> ${safeOrderNumber}<br />
+          <strong>Customer decision:</strong> ${decision}
+        </p>
 
-          <p>${outcomeText}</p>
+        <p>${outcomeText}</p>
 
-          <p><strong>Customer's final response:</strong></p>
+        <p><strong>Customer's final response:</strong></p>
 
-          <p>${safeResponseText}</p>
+        <p>${safeResponseText}</p>
 
-          <p>
-            This notification is provided by ScamAlert.pk as part of the
-            report review process.
-          </p>
-        `,
-      }),
+        <p>
+          This notification is provided by ScamAlert.pk as part of the
+          report review process.
+        </p>
+      `,
     })
 
-    const details = await result.text()
-
-    console.log(
-      'Resend final-response business email:',
-      result.status,
-      details
-    )
+    if (!result.ok) {
+      return NextResponse.json(
+        { email: result.status },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
-      email: result.ok ? 'sent' : 'failed',
+      email: result.status === 'already_sent' ? 'sent' : result.status,
     })
   } catch (error) {
     console.error('Business final-response notification error:', error)
