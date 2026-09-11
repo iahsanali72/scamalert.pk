@@ -2387,7 +2387,15 @@ const handleMarkResolved = async (id: string) => {
                   </p>
                 </div>
 
-                <button
+                {authError && (
+                  <div className="bg-[var(--sa-red-soft)] border border-[var(--sa-red)]/25 rounded-[10px] px-4 py-3">
+                    <p className="text-sm font-medium text-[var(--sa-red-deep)]">
+                      {authError}
+                    </p>
+                  </div>
+                )}
+
+<button
                   type="submit"
                   disabled={isSubmittingReport}
                   className="w-full bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold py-3.5 rounded-[8px] text-sm transition cursor-pointer flex items-center justify-center min-h-[48px] shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"

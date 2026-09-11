@@ -181,7 +181,7 @@ create or replace function public.create_report(
 )
 returns table(id uuid, report_number text, response_token text, public_at timestamptz)
 language plpgsql
-security definer set search_path = public
+security definer set search_path = public, extensions
 as $$
 declare
   uid uuid := auth.uid();
@@ -192,6 +192,34 @@ begin
   if uid is null then raise exception 'Authentication required'; end if;
   if length(trim(p_brand_name)) < 2 or length(trim(p_order_number)) < 1 or length(trim(p_handle)) < 1 or length(trim(p_description)) < 10 then
     raise exception 'Required report details are missing';
+  end if;
+
+
+  -- Serialize report creation per user to reduce duplicate submissions
+  -- caused by rapid double-clicks or simultaneous requests.
+  perform pg_advisory_xact_lock(hashtext(uid::text));
+
+  -- Do not allow the same user to open another active report for
+  -- the same business and order number.
+  if exists (
+    select 1
+    from public.reports r
+    where r.user_id = uid
+      and r.status = 'pending'
+      and lower(trim(r.brand_name)) = lower(trim(p_brand_name))
+      and lower(trim(r.order_number)) = lower(trim(p_order_number))
+  ) then
+    raise exception 'You already have an active report for this business and order number.';
+  end if;
+
+  -- Basic anti-spam throttle.
+  if exists (
+    select 1
+    from public.reports r
+    where r.user_id = uid
+      and r.created_at > now() - interval '60 seconds'
+  ) then
+    raise exception 'Please wait 60 seconds before submitting another report.';
   end if;
 
   rnum := 'REP-' || upper(substr(replace(rid::text,'-',''),1,8));
