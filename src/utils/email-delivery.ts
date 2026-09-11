@@ -23,15 +23,23 @@ export async function sendTrackedEmail({
   const from = process.env.NOTIFICATION_FROM_EMAIL
   const now = new Date().toISOString()
 
-  const { data: existingLog } = await supabase
+  const { data: existingLog, error: lookupError } = await supabase
     .from('email_delivery_logs')
     .select('id, status, attempt_count, provider_message_id')
     .eq('report_id', reportId)
     .eq('email_type', emailType)
     .eq('recipient_email', to)
-    .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle()
+
+  if (lookupError) {
+    console.error('Unable to check email delivery log:', lookupError)
+
+    return {
+      ok: false,
+      status: 'logging_failed',
+    }
+  }
 
   if (existingLog?.status === 'sent') {
     return {
@@ -41,11 +49,19 @@ export async function sendTrackedEmail({
     }
   }
 
-  let logId = existingLog?.id
-  const nextAttempt = (existingLog?.attempt_count || 0) + 1
+  let logId: string | undefined
 
-  if (logId) {
-    await supabase
+  if (existingLog) {
+    if (existingLog.status === 'pending') {
+      return {
+        ok: false,
+        status: 'in_progress',
+      }
+    }
+
+    const nextAttempt = (existingLog.attempt_count || 0) + 1
+
+    const { data: claimedLog, error: claimError } = await supabase
       .from('email_delivery_logs')
       .update({
         status: 'pending',
@@ -53,7 +69,42 @@ export async function sendTrackedEmail({
         last_attempted_at: now,
         updated_at: now,
       })
-      .eq('id', logId)
+      .eq('id', existingLog.id)
+      .in('status', ['failed', 'not_configured'])
+      .select('id')
+      .maybeSingle()
+
+    if (claimError) {
+      console.error('Unable to claim email delivery log:', claimError)
+
+      return {
+        ok: false,
+        status: 'logging_failed',
+      }
+    }
+
+    if (!claimedLog) {
+      const { data: currentLog } = await supabase
+        .from('email_delivery_logs')
+        .select('status, provider_message_id')
+        .eq('id', existingLog.id)
+        .maybeSingle()
+
+      if (currentLog?.status === 'sent') {
+        return {
+          ok: true,
+          status: 'already_sent',
+          providerMessageId: currentLog.provider_message_id,
+        }
+      }
+
+      return {
+        ok: false,
+        status: 'in_progress',
+      }
+    }
+
+    logId = claimedLog.id
   } else {
     const { data: newLog, error: insertError } = await supabase
       .from('email_delivery_logs')
@@ -72,10 +123,38 @@ export async function sendTrackedEmail({
       .single()
 
     if (insertError) {
+      if (insertError.code === '23505') {
+        const { data: competingLog } = await supabase
+          .from('email_delivery_logs')
+          .select('status, provider_message_id')
+          .eq('report_id', reportId)
+          .eq('email_type', emailType)
+          .eq('recipient_email', to)
+          .maybeSingle()
+
+        if (competingLog?.status === 'sent') {
+          return {
+            ok: true,
+            status: 'already_sent',
+            providerMessageId: competingLog.provider_message_id,
+          }
+        }
+
+        return {
+          ok: false,
+          status: 'in_progress',
+        }
+      }
+
       console.error('Unable to create email delivery log:', insertError)
+
+      return {
+        ok: false,
+        status: 'logging_failed',
+      }
     }
 
-    logId = newLog?.id
+    logId = newLog.id
   }
 
   if (!resendKey || !from) {

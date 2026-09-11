@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/utils/supabase/admin'
+import { sendTrackedEmail } from '@/utils/email-delivery'
 
 function escapeHtml(value: string) {
   return value
@@ -11,43 +12,28 @@ function escapeHtml(value: string) {
 }
 
 async function sendEmail({
+  reportId,
+  reportNumber,
+  emailType,
   to,
   subject,
   html,
 }: {
+  reportId: string
+  reportNumber: string
+  emailType: string
   to: string
   subject: string
   html: string
 }) {
-  const resendKey = process.env.RESEND_API_KEY
-  const from = process.env.NOTIFICATION_FROM_EMAIL
-
-  if (!resendKey || !from) {
-    return { ok: false, reason: 'not_configured' }
-  }
-
-  const result = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${resendKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from,
-      to: [to],
-      subject,
-      html,
-    }),
+  return sendTrackedEmail({
+    reportId,
+    reportNumber,
+    emailType,
+    to,
+    subject,
+    html,
   })
-
-  const details = await result.text()
-
-  console.log('Deadline email Resend result:', result.status, details)
-
-  return {
-    ok: result.ok,
-    reason: result.ok ? 'sent' : 'failed',
-  }
 }
 
 export async function GET(request: Request) {
@@ -124,6 +110,9 @@ export async function GET(request: Request) {
         !report.deadline_expired_email_sent_at
       ) {
         const result = await sendEmail({
+          reportId: report.id,
+          reportNumber: report.report_number,
+          emailType: 'business_deadline_expired',
           to: report.brand_email,
           subject: `72-hour review period expired — ${report.report_number}`,
           html: `
@@ -185,6 +174,9 @@ export async function GET(request: Request) {
         !report.deadline_24h_reminder_sent_at
       ) {
         const result = await sendEmail({
+          reportId: report.id,
+          reportNumber: report.report_number,
+          emailType: 'business_deadline_24h',
           to: report.brand_email,
           subject: `Final reminder: 24 hours or less remain — ${report.report_number}`,
           html: `
@@ -246,6 +238,9 @@ export async function GET(request: Request) {
         !report.deadline_48h_reminder_sent_at
       ) {
         const result = await sendEmail({
+          reportId: report.id,
+          reportNumber: report.report_number,
+          emailType: 'business_deadline_48h',
           to: report.brand_email,
           subject: `Reminder: 48 hours or less remain — ${report.report_number}`,
           html: `
