@@ -407,3 +407,4 @@ grant update (status, resolved_at, updated_at, email_notification_status, whatsa
 grant select, delete on public.reports to authenticated;
 grant select, insert, delete on public.report_evidence to authenticated;
 grant select on public.business_responses to anon, authenticated;
+grant select, insert, update on public.business_responses to service_role;

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/utils/supabase/admin'
+import { sendTrackedEmail } from '@/utils/email-delivery'
 
 export async function POST(request: Request) {
   try {
@@ -19,6 +20,49 @@ export async function POST(request: Request) {
       )
     }
 
+    const normalizedResponseType = responseType || 'response'
+
+    const allowedResponseTypes = [
+      'response',
+      'refund_issued',
+      'tracking_provided',
+      'order_not_recognized',
+    ]
+
+    if (!allowedResponseTypes.includes(normalizedResponseType)) {
+      return NextResponse.json(
+        { error: 'Invalid response type' },
+        { status: 400 }
+      )
+    }
+
+    if (responseText.trim().length < 5) {
+      return NextResponse.json(
+        { error: 'Response must be at least 5 characters long' },
+        { status: 400 }
+      )
+    }
+
+    if (
+      normalizedResponseType === 'refund_issued' &&
+      !refundReference?.trim()
+    ) {
+      return NextResponse.json(
+        { error: 'Refund reference is required when a refund has been issued' },
+        { status: 400 }
+      )
+    }
+
+    if (
+      normalizedResponseType === 'tracking_provided' &&
+      !trackingNumber?.trim()
+    ) {
+      return NextResponse.json(
+        { error: 'Tracking number is required when tracking is provided' },
+        { status: 400 }
+      )
+    }
+
     const supabase = createAdminClient()
 
     // Submit the official one-time business response.
@@ -29,9 +73,15 @@ export async function POST(request: Request) {
         p_report_number: reportNumber,
         p_token: token,
         p_response_text: responseText,
-        p_response_type: responseType || 'response',
-        p_tracking_number: trackingNumber || null,
-        p_refund_reference: refundReference || null,
+        p_response_type: normalizedResponseType,
+        p_tracking_number:
+          normalizedResponseType === 'tracking_provided'
+            ? trackingNumber.trim()
+            : null,
+        p_refund_reference:
+          normalizedResponseType === 'refund_issued'
+            ? refundReference.trim()
+            : null,
       }
     )
 
@@ -78,71 +128,45 @@ export async function POST(request: Request) {
       })
     }
 
-    const resendKey = process.env.RESEND_API_KEY
-    const from = process.env.NOTIFICATION_FROM_EMAIL
-
-    if (!resendKey || !from) {
-      return NextResponse.json({
-        success: true,
-        email: 'not_configured',
-      })
-    }
-
     const appUrl =
       process.env.NEXT_PUBLIC_SITE_URL || 'https://scamalert.pk'
 
     const caseUrl =
       `${appUrl}/case/${encodeURIComponent(report.report_number)}`
 
-    const emailResult = await fetch(
-      'https://api.resend.com/emails',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${resendKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from,
-          to: [customerEmail],
-          subject: `${report.brand_name} responded to your ScamAlert.pk report`,
-          html: `
-            <p>
-              <strong>${report.brand_name}</strong> has responded to your
-              report <strong>${report.report_number}</strong>.
-            </p>
+    const emailResult = await sendTrackedEmail({
+      reportId: report.id,
+      reportNumber: report.report_number,
+      emailType: 'customer_business_response',
+      to: customerEmail,
+      subject: `${report.brand_name} responded to your ScamAlert.pk report`,
+      html: `
+        <p>
+          <strong>${report.brand_name}</strong> has responded to your
+          report <strong>${report.report_number}</strong>.
+        </p>
 
-            <p>
-              Please review the business response and provide your final
-              decision.
-            </p>
+        <p>
+          Please review the business response and provide your final
+          decision.
+        </p>
 
-            <p>
-              <a href="${caseUrl}">
-                Review business response
-              </a>
-            </p>
+        <p>
+          <a href="${caseUrl}">
+            Review business response
+          </a>
+        </p>
 
-            <p>
-              After reviewing the response, you can tell us whether you are
-              satisfied or not satisfied with the outcome.
-            </p>
-          `,
-        }),
-      }
-    )
-
-    const emailDetails = await emailResult.text()
-
-    console.log(
-      'Resend business-response customer email:',
-      emailResult.status,
-      emailDetails
-    )
+        <p>
+          After reviewing the response, you can tell us whether you are
+          satisfied or not satisfied with the outcome.
+        </p>
+      `,
+    })
 
     return NextResponse.json({
       success: true,
-      email: emailResult.ok ? 'sent' : 'failed',
+      email: emailResult.status,
     })
   } catch (error) {
     console.error('Business response submission error:', error)

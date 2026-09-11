@@ -101,11 +101,65 @@ export default function BusinessResponsePage() {
         </div>
         {submitted ? <div className="border border-[var(--sa-green)]/25 bg-[var(--sa-green-soft)] text-[var(--sa-green)] rounded-[10px] p-4">Your response has been recorded. The customer can review it from their dashboard.</div> :
         <form onSubmit={submit} className="space-y-4">
-          <select value={responseType} onChange={e=>setResponseType(e.target.value)} className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] p-3 text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] transition">
-            <option value="response">General response</option><option value="refund_issued">Refund issued</option><option value="tracking_provided">Tracking / delivery proof</option><option value="order_not_recognized">Order not recognized</option>
+          <select
+            value={responseType}
+            onChange={e => {
+              const nextType = e.target.value;
+              setResponseType(nextType);
+
+              if (nextType !== 'tracking_provided') {
+                setTrackingNumber('');
+              }
+
+              if (nextType !== 'refund_issued') {
+                setRefundReference('');
+              }
+            }}
+            className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] p-3 text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] transition"
+          >
+            <option value="response">General response</option>
+            <option value="refund_issued">Refund issued</option>
+            <option value="tracking_provided">Tracking / delivery proof</option>
+            <option value="order_not_recognized">Order not recognized</option>
           </select>
-          <textarea required minLength={5} rows={6} value={responseText} onChange={e=>setResponseText(e.target.value)} placeholder="Explain your response to this complaint..." className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] p-3 text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] transition" />
-          <div className="grid sm:grid-cols-2 gap-3"><input value={trackingNumber} onChange={e=>setTrackingNumber(e.target.value)} placeholder="Tracking number (optional)" className="bg-white border border-[var(--sa-border)] rounded-[8px] p-3 text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] transition"/><input value={refundReference} onChange={e=>setRefundReference(e.target.value)} placeholder="Refund reference (optional)" className="bg-white border border-[var(--sa-border)] rounded-[8px] p-3 text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] transition"/></div>
+
+          <textarea
+            required
+            minLength={5}
+            rows={6}
+            value={responseText}
+            onChange={e => setResponseText(e.target.value)}
+            placeholder={
+              responseType === 'refund_issued'
+                ? 'Explain the refund, including when and how it was issued...'
+                : responseType === 'tracking_provided'
+                  ? 'Explain the shipment or delivery details...'
+                  : responseType === 'order_not_recognized'
+                    ? 'Explain why this order or transaction is not recognized...'
+                    : 'Explain your response to this complaint...'
+            }
+            className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] p-3 text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] transition"
+          />
+
+          {responseType === 'tracking_provided' && (
+            <input
+              required
+              value={trackingNumber}
+              onChange={e => setTrackingNumber(e.target.value)}
+              placeholder="Tracking number"
+              className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] p-3 text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] transition"
+            />
+          )}
+
+          {responseType === 'refund_issued' && (
+            <input
+              required
+              value={refundReference}
+              onChange={e => setRefundReference(e.target.value)}
+              placeholder="Refund reference"
+              className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] p-3 text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] transition"
+            />
+          )}
           <div className="space-y-2">
   <label className="block text-xs font-semibold text-[var(--sa-graphite)]">
     Attach Proof <span className="text-[var(--sa-graphite)]">(optional)</span>
