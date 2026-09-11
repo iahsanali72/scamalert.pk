@@ -1072,7 +1072,7 @@ const handleMarkResolved = async (id: string) => {
         }
       `}</style>
 
-      <header className="border-b border-[var(--sa-border)] bg-[var(--sa-surface)]/95 backdrop-blur sticky top-0 z-40">
+      <header className="border-b border-[var(--sa-border)] bg-[var(--sa-surface)]/95 backdrop-blur relative z-40">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-2 md:py-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-4">
           <div className="flex items-center justify-between gap-2 w-full md:w-auto min-w-0">
             <ScamAlertLogo
@@ -1376,12 +1376,12 @@ const handleMarkResolved = async (id: string) => {
 </div>
 
         <div className="border-t border-[var(--sa-border)] bg-[var(--sa-surface)]">
-          <div className="max-w-7xl mx-auto px-1.5 sm:px-4 md:px-6 flex items-center gap-0 overflow-x-auto scrollbar-hide">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 flex items-center gap-0 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
             {tabsToRender.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className={`sa-mono px-2 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-[11px] uppercase tracking-[0.06em] sm:tracking-[0.08em] font-medium border-b-2 transition cursor-pointer whitespace-nowrap shrink-0 ${
+                className={`sa-mono px-2.5 sm:px-4 py-2 sm:py-3 text-[9px] sm:text-[11px] uppercase tracking-[0.04em] sm:tracking-[0.08em] font-medium border-b-2 transition cursor-pointer whitespace-nowrap shrink-0 snap-start ${
                   activeTab === tab.id
                     ? 'border-[var(--sa-red)] text-[var(--sa-ink)] bg-[#FFF8F7]'
                     : 'border-transparent text-[var(--sa-graphite)] hover:text-[var(--sa-ink)] hover:bg-[#F7F5F2]'
@@ -2115,16 +2115,16 @@ const handleMarkResolved = async (id: string) => {
                 </button>
               </div>
 
-              <div className="w-full bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] overflow-hidden relative shadow-[0_6px_20px_rgba(23,21,15,0.06)]">
+              <div className="w-full bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] overflow-x-auto sm:overflow-hidden relative shadow-[0_6px_20px_rgba(23,21,15,0.06)] scrollbar-hide snap-x snap-mandatory">
 
-                <div className="animate-marquee flex items-stretch">
+                <div className="flex items-stretch sm:animate-marquee">
                   {[...submittedReportsFeed, ...submittedReportsFeed].map(
                     (item, index) => (
                       <button
                         type="button"
                         key={`${item.id}-${index}`}
                         onClick={() => setActiveTab('new-reports')}
-                        className="min-w-[230px] sm:min-w-[260px] md:min-w-[300px] bg-white border-r border-[var(--sa-border)] px-4 sm:px-5 py-4 sm:py-5 flex items-center justify-between gap-4 sm:gap-5 text-left hover:bg-[#F7F5F2] transition cursor-pointer"
+                        className="min-w-[85%] sm:min-w-[260px] md:min-w-[300px] bg-white border-r border-[var(--sa-border)] px-4 sm:px-5 py-4 sm:py-5 flex items-center justify-between gap-4 sm:gap-5 text-left hover:bg-[#F7F5F2] transition cursor-pointer snap-start"
                       >
                         <div className="min-w-0">
                           <span className="sa-display text-[15px] font-bold text-[var(--sa-ink)] block truncate">
