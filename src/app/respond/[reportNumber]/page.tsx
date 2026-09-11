@@ -97,7 +97,7 @@ export default function BusinessResponsePage() {
           <div><span className="text-[var(--sa-graphite)]">Order #</span><p className="font-semibold">{report.order_number}</p></div>
           <div><span className="text-[var(--sa-graphite)]">Platform</span><p>{report.platform} · {report.handle}</p></div>
           <div><span className="text-[var(--sa-graphite)]">Amount</span><p>PKR {Number(report.amount_paid).toLocaleString()}</p></div>
-          <div className="sm:col-span-2"><span className="text-[var(--sa-graphite)]">Customer complaint</span><p className="mt-1 whitespace-pre-wrap break-all">{report.description}</p></div>
+          <div className="sm:col-span-2 min-w-0"><span className="text-[var(--sa-graphite)]">Customer complaint</span><p className="mt-1 whitespace-pre-wrap break-all [overflow-wrap:anywhere]">{report.description}</p></div>
         </div>
         {submitted ? <div className="border border-[var(--sa-green)]/25 bg-[var(--sa-green-soft)] text-[var(--sa-green)] rounded-[10px] p-4">Your response has been recorded. The customer can review it from their dashboard.</div> :
         <form onSubmit={submit} className="space-y-4">
