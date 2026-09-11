@@ -211,20 +211,89 @@ setReport(publicReport);
   </div>
 )}
 
-          {report.business_response_text && (
-            <div className="bg-[var(--sa-green-soft)] border border-[var(--sa-green)]/25 rounded-[12px] p-4">
-              <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-green)] font-semibold mb-2">
-                Business Response
-              </p>
-
-              <p className="text-sm text-[var(--sa-ink)] whitespace-pre-wrap">
-                {report.business_response_text}
-              </p>
-
-              {report.business_response_type && (
-                <p className="text-xs text-zinc-500 mt-3">
-                  Response type: {report.business_response_type}
+          {(report.business_response_text ||
+            report.customer_final_response_text) && (
+            <div className="border-t border-[var(--sa-border)] pt-5 space-y-4">
+              <div>
+                <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-graphite)] mb-1">
+                  Case History
                 </p>
+                <p className="text-xs text-[var(--sa-graphite)]">
+                  Response history for this unresolved public report.
+                </p>
+              </div>
+
+              {report.business_response_text && (
+                <div className="bg-[var(--sa-green-soft)] border border-[var(--sa-green)]/25 rounded-[12px] p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
+                    <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-green)] font-semibold">
+                      Business Response
+                    </p>
+
+                    {report.business_responded_at && (
+                      <p className="text-[11px] text-[var(--sa-graphite)]">
+                        {new Date(report.business_responded_at).toLocaleString('en-PK')}
+                      </p>
+                    )}
+                  </div>
+
+                  <p className="text-sm text-[var(--sa-ink)] whitespace-pre-wrap">
+                    {report.business_response_text}
+                  </p>
+
+                  <div className="mt-3 space-y-1">
+                    {report.business_response_type && (
+                      <p className="text-xs text-[var(--sa-graphite)]">
+                        Response type:{' '}
+                        {String(report.business_response_type).replaceAll('_', ' ')}
+                      </p>
+                    )}
+
+                    {report.business_tracking_number && (
+                      <p className="text-xs text-[var(--sa-ink)]">
+                        <span className="font-medium">Tracking number:</span>{' '}
+                        {report.business_tracking_number}
+                      </p>
+                    )}
+
+                    {report.business_refund_reference && (
+                      <p className="text-xs text-[var(--sa-ink)]">
+                        <span className="font-medium">Refund reference:</span>{' '}
+                        {report.business_refund_reference}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {report.customer_final_response_text && (
+                <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[12px] p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
+                    <p className="sa-mono text-[10px] uppercase tracking-[0.15em] text-[var(--sa-red-deep)] font-semibold">
+                      Customer Final Response
+                    </p>
+
+                    {report.customer_final_responded_at && (
+                      <p className="text-[11px] text-[var(--sa-graphite)]">
+                        {new Date(report.customer_final_responded_at).toLocaleString('en-PK')}
+                      </p>
+                    )}
+                  </div>
+
+                  <p className="text-sm text-[var(--sa-ink)] whitespace-pre-wrap">
+                    {report.customer_final_response_text}
+                  </p>
+
+                  {report.customer_resolution_choice && (
+                    <div className="mt-3">
+                      <span className="inline-flex items-center rounded-full border border-[var(--sa-border)] px-2.5 py-1 text-xs font-medium text-[var(--sa-ink)]">
+                        {report.customer_resolution_choice === 'resolved'
+                          ? 'Satisfied · Resolved'
+                          : 'Not Satisfied · Report Active'}
+                      </span>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           )}
