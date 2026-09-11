@@ -350,24 +350,57 @@ returns boolean
 language plpgsql
 security definer set search_path = public
 as $$
-declare rid uuid;
+declare
+  rid uuid;
 begin
-  select r.id into rid from public.reports r
+  select r.id
+  into rid
+  from public.reports r
   where r.report_number = p_report_number
-    and r.status='pending'
+    and r.status = 'pending'
     and r.response_token_expires_at > now()
-    and r.response_token_hash = encode(digest(p_token,'sha256'),'hex');
-  if rid is null then return false; end if;
-  if length(trim(p_response_text)) < 5 then raise exception 'Response is too short'; end if;
-  insert into public.business_responses(report_id,response_text,response_type,tracking_number,refund_reference)
-  values (rid,trim(p_response_text),p_response_type,nullif(trim(p_tracking_number),''),nullif(trim(p_refund_reference),''))
-  on conflict (report_id) do update set
-    response_text=excluded.response_text,
-    response_type=excluded.response_type,
-    tracking_number=excluded.tracking_number,
-    refund_reference=excluded.refund_reference,
-    updated_at=now();
-  update public.reports set business_responded_at=now(), updated_at=now() where id=rid;
+    and r.response_token_hash =
+      encode(extensions.digest(p_token, 'sha256'), 'hex');
+
+  if rid is null then
+    return false;
+  end if;
+
+  -- Brand gets exactly ONE official response.
+  if exists (
+    select 1
+    from public.business_responses br
+    where br.report_id = rid
+  ) then
+    raise exception 'Business response has already been submitted for this report.';
+  end if;
+
+  if length(trim(p_response_text)) < 5 then
+    raise exception 'Response is too short.';
+  end if;
+
+  insert into public.business_responses(
+    report_id,
+    response_text,
+    response_type,
+    tracking_number,
+    refund_reference
+  )
+  values (
+    rid,
+    trim(p_response_text),
+    p_response_type,
+    nullif(trim(p_tracking_number), ''),
+    nullif(trim(p_refund_reference), '')
+  );
+
+  update public.reports
+  set
+    business_responded_at = now(),
+    response_token_expires_at = now(),
+    updated_at = now()
+  where id = rid;
+
   return true;
 end;
 $$;
