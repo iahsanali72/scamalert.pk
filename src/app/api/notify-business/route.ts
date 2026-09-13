@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { sendTrackedEmail } from '@/utils/email-delivery';
+import { sendWhatsAppTemplate } from '@/utils/whatsapp';
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -22,10 +23,8 @@ export async function POST(request: Request) {
   const appUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://scamalert.pk';
   const responseUrl = `${appUrl}/respond/${encodeURIComponent(report.report_number)}?token=${encodeURIComponent(responseToken)}`;
 
-  if (!report.brand_email) {
-    await supabase.from('reports').update({ email_notification_status: 'not_provided' }).eq('id', report.id);
-    return NextResponse.json({ email: 'not_provided', whatsapp: report.brand_whatsapp ? 'not_configured' : 'not_provided' });
-  }
+  let emailStatus = report.brand_email ? 'not_attempted' : 'not_provided';
+  let whatsappStatus = report.brand_whatsapp ? 'not_configured' : 'not_provided';
 
   const body = {
     subject: `Report filed on ScamAlert.pk regarding Order #${report.order_number}`,
@@ -144,25 +143,49 @@ export async function POST(request: Request) {
     `,
   };
 
-  const result = await sendTrackedEmail({
-    reportId: report.id,
-    reportNumber: report.report_number,
-    emailType: 'business_initial_notification',
-    to: report.brand_email,
-    subject: body.subject,
-    html: body.html,
-  });
+  if (report.brand_whatsapp) {
+    const templateName = process.env.WHATSAPP_BUSINESS_REPORT_TEMPLATE;
 
-  const status =
-    result.status === 'already_sent' ? 'sent' : result.status;
+    if (templateName) {
+      const whatsappResult = await sendWhatsAppTemplate({
+        to: report.brand_whatsapp,
+        templateName,
+        bodyParameters: [
+          report.brand_name,
+          report.report_number,
+          report.order_number,
+          responseUrl,
+        ],
+      });
+
+      whatsappStatus = whatsappResult.status;
+    }
+  }
+
+  if (report.brand_email) {
+    const result = await sendTrackedEmail({
+      reportId: report.id,
+      reportNumber: report.report_number,
+      emailType: 'business_initial_notification',
+      to: report.brand_email,
+      subject: body.subject,
+      html: body.html,
+    });
+
+    emailStatus =
+      result.status === 'already_sent' ? 'sent' : result.status;
+  }
 
   await supabase
     .from('reports')
-    .update({ email_notification_status: status })
+    .update({
+      email_notification_status: emailStatus,
+      whatsapp_notification_status: whatsappStatus,
+    })
     .eq('id', report.id);
 
   return NextResponse.json({
-    email: status,
-    whatsapp: report.brand_whatsapp ? 'not_configured' : 'not_provided',
+    email: emailStatus,
+    whatsapp: whatsappStatus,
   });
 }
