@@ -2210,7 +2210,7 @@ const handleMarkResolved = async (id: string) => {
 
                   <div className="space-y-1.5">
                     <label className="text-xs text-[var(--sa-ink)] font-semibold block">
-                      Store Handle / URL{' '}
+                      {reportPlatform === 'Instagram' ? 'Instagram Handle' : reportPlatform === 'Facebook' ? 'Facebook Page URL' : reportPlatform === 'WhatsApp' ? 'WhatsApp Number' : reportPlatform === 'Website' ? 'Website URL' : reportPlatform === 'TikTok' ? 'TikTok Handle' : 'Store Handle / URL'}{' '}
                       <span className="text-[var(--sa-red)]">*</span>
                     </label>
 
@@ -2221,7 +2221,7 @@ const handleMarkResolved = async (id: string) => {
                       onChange={(e) =>
                         setReportHandle(e.target.value)
                       }
-                      placeholder="e.g. @urbanvogue_pk"
+                      placeholder={reportPlatform === 'Instagram' ? 'e.g. @urbanvogue_pk' : reportPlatform === 'Facebook' ? 'e.g. facebook.com/urbanvoguepk' : reportPlatform === 'WhatsApp' ? 'e.g. +92 300 1234567' : reportPlatform === 'Website' ? 'e.g. https://urbanvogue.pk' : reportPlatform === 'TikTok' ? 'e.g. @urbanvogue_pk' : 'e.g. @urbanvogue_pk'}
                       className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
                     />
                   </div>
