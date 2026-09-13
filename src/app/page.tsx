@@ -132,18 +132,18 @@ function PlatformIcon({ platform }: { platform: string }) {
     );
   }
 
-  if (lower.includes('telegram')) {
+  if (lower.includes('tiktok')) {
     return (
       <span
-        title="Telegram"
-        className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-sky-500 text-white shrink-0"
+        title="TikTok"
+        className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-black text-white shrink-0"
       >
         <svg
           className="w-3 h-3"
           viewBox="0 0 24 24"
           fill="currentColor"
         >
-          <path d="M21.8 4.2L18.7 19c-.2 1-1 1.3-1.8.8l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L6.1 12.7l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.5 3c.9-.3 1.7.2 1.3 1.2z" />
+          <path d="M14 3v10.5a4.5 4.5 0 11-4-4.47V12a2 2 0 102 2V3h2zm0 0c.7 2.3 2.2 3.8 4.5 4.5V10c-1.7-.3-3.2-1-4.5-2V3z" />
         </svg>
       </span>
     );
@@ -196,7 +196,7 @@ function getPlatformUrl(platform: string, handle: string): string | null {
   if (!clean) return null;
   if (lower.includes('instagram')) return `https://www.instagram.com/${clean.replace(/^@/, '')}/`;
   if (lower.includes('facebook')) return `https://www.facebook.com/${clean.replace(/^@/, '')}`;
-  if (lower.includes('telegram')) return `https://t.me/${clean.replace(/^@/, '')}`;
+  if (lower.includes('tiktok')) return `https://www.tiktok.com/@${clean.replace(/^@/, '')}`;
   if (lower.includes('whatsapp')) {
     const phone = clean.replace(/[^\d+]/g, '').replace(/^\+/, '');
     return phone ? `https://wa.me/${phone}` : null;
@@ -2268,7 +2268,7 @@ const handleMarkResolved = async (id: string) => {
                       <option value="Facebook">Facebook</option>
                       <option value="WhatsApp">WhatsApp</option>
                       <option value="Website">Website</option>
-                      <option value="Telegram">Telegram</option>
+                      <option value="TikTok">TikTok</option>
                     </select>
                   </div>
 
