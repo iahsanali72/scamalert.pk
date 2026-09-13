@@ -677,7 +677,10 @@ if (restoredDraft) {
       p_brand_name: reportBrandName.trim(),
       p_order_number: reportOrderNumber.trim(),
       p_brand_email: reportBrandEmail.trim() || null,
-      p_brand_whatsapp: reportBrandWhatsapp.trim() || null,
+      p_brand_whatsapp:
+        reportPlatform === 'WhatsApp'
+          ? reportHandle.trim() || null
+          : reportBrandWhatsapp.trim() || null,
       p_platform: reportPlatform,
       p_handle: reportHandle.trim(),
       p_order_date: reportOrderDate || null,
@@ -2323,13 +2326,23 @@ const handleMarkResolved = async (id: string) => {
                     <p className="text-[10px] text-[var(--sa-graphite)]">Used only to send this business a neutral complaint notice and response link.</p>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">
-                      Brand WhatsApp # <span className="font-normal text-[var(--sa-graphite)]">(Optional)</span>
-                    </label>
-                    <input type="tel" value={reportBrandWhatsapp} onChange={(e) => setReportBrandWhatsapp(e.target.value)} placeholder="+92 300 1234567" className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
-                    <p className="text-[10px] text-[var(--sa-graphite)]">Stored for notification use once a WhatsApp Business provider is connected.</p>
-                  </div>
+                  {reportPlatform !== 'WhatsApp' && (
+                    <div className="space-y-1.5">
+                      <label className="text-xs text-[var(--sa-ink)] font-semibold block">
+                        Brand WhatsApp # <span className="font-normal text-[var(--sa-graphite)]">(Optional)</span>
+                      </label>
+                      <input
+                        type="tel"
+                        value={reportBrandWhatsapp}
+                        onChange={(e) => setReportBrandWhatsapp(e.target.value)}
+                        placeholder="+92 300 1234567"
+                        className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
+                      />
+                      <p className="text-[10px] text-[var(--sa-graphite)]">
+                        Stored for notification use once a WhatsApp Business provider is connected.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">
