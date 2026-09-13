@@ -13,6 +13,81 @@ export default function PublicReportPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [evidence, setEvidence] = useState<any[]>([]);
+  const [copied, setCopied] = useState(false);
+
+  const getPublicReportUrl = () => {
+    if (typeof window === 'undefined') return '';
+    return `${window.location.origin}/report/${encodeURIComponent(reportNumber)}`;
+  };
+
+  const handleWhatsAppShare = () => {
+    const publicUrl = getPublicReportUrl();
+    if (!publicUrl) return;
+
+    const message = [
+      `ScamAlert.pk Report: ${report?.brand_name || 'Reported seller'}`,
+      `Report #${reportNumber}`,
+      `Read the public report: ${publicUrl}`,
+    ].join('\n');
+
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(message)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  };
+
+  const handleCopyLink = async () => {
+    const publicUrl = getPublicReportUrl();
+    if (!publicUrl) return;
+
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      setCopied(true);
+
+      window.setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch (copyError) {
+      console.error('Unable to copy report link:', copyError);
+    }
+  };
+
+
+  const handleFacebookShare = () => {
+    const publicUrl = getPublicReportUrl();
+    if (!publicUrl) return;
+
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(publicUrl)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  };
+
+  const handleXShare = () => {
+    const publicUrl = getPublicReportUrl();
+    if (!publicUrl) return;
+
+    const text = `ScamAlert.pk Report: ${report?.brand_name || 'Reported seller'} — Report #${reportNumber}`;
+
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(publicUrl)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  };
+
+  const handleLinkedInShare = () => {
+    const publicUrl = getPublicReportUrl();
+    if (!publicUrl) return;
+
+    window.open(
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(publicUrl)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  };
   useEffect(() => {
     const loadReport = async () => {
       setLoading(true);
@@ -119,6 +194,48 @@ setReport(publicReport);
           <p className="text-sm text-zinc-500 mt-2 font-mono">
             {report.report_number}
           </p>
+
+          <div className="flex flex-wrap gap-2 mt-4">
+            <button
+              type="button"
+              onClick={handleWhatsAppShare}
+              className="inline-flex items-center justify-center rounded-[10px] border border-[var(--sa-border)] bg-[var(--sa-surface)] px-4 py-2 text-sm font-medium text-[var(--sa-ink)] transition cursor-pointer hover:bg-zinc-50"
+            >
+              Share on WhatsApp
+            </button>
+
+            <button
+              type="button"
+              onClick={handleFacebookShare}
+              className="inline-flex items-center justify-center rounded-[10px] border border-[var(--sa-border)] bg-[var(--sa-surface)] px-4 py-2 text-sm font-medium text-[var(--sa-ink)] transition cursor-pointer hover:bg-zinc-50"
+            >
+              Facebook
+            </button>
+
+            <button
+              type="button"
+              onClick={handleXShare}
+              className="inline-flex items-center justify-center rounded-[10px] border border-[var(--sa-border)] bg-[var(--sa-surface)] px-4 py-2 text-sm font-medium text-[var(--sa-ink)] transition cursor-pointer hover:bg-zinc-50"
+            >
+              X
+            </button>
+
+            <button
+              type="button"
+              onClick={handleLinkedInShare}
+              className="inline-flex items-center justify-center rounded-[10px] border border-[var(--sa-border)] bg-[var(--sa-surface)] px-4 py-2 text-sm font-medium text-[var(--sa-ink)] transition cursor-pointer hover:bg-zinc-50"
+            >
+              LinkedIn
+            </button>
+
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className="inline-flex items-center justify-center rounded-[10px] border border-[var(--sa-border)] bg-[var(--sa-surface)] px-4 py-2 text-sm font-medium text-[var(--sa-ink)] transition cursor-pointer hover:bg-zinc-50"
+            >
+              {copied ? 'Link copied' : 'Copy link'}
+            </button>
+          </div>
         </div>
 
         <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[16px] p-5 md:p-6 space-y-6 shadow-[var(--sa-shadow-md)]">
