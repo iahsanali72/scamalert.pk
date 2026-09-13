@@ -2192,20 +2192,22 @@ const handleMarkResolved = async (id: string) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs text-[var(--sa-ink)] font-semibold block">
-                      Brand / Store Name{' '}
-                      <span className="text-[var(--sa-red)]">*</span>
+                      Platform <span className="text-[var(--sa-red)]">*</span>
                     </label>
 
-                    <input
-                      type="text"
-                      required
-                      value={reportBrandName}
+                    <select
+                      value={reportPlatform}
                       onChange={(e) =>
-                        setReportBrandName(e.target.value)
+                        setReportPlatform(e.target.value)
                       }
-                      placeholder="e.g. Urban Vogue PK"
-                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
-                    />
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 cursor-pointer transition"
+                    >
+                      <option value="Instagram">Instagram</option>
+                      <option value="Facebook">Facebook</option>
+                      <option value="WhatsApp">WhatsApp</option>
+                      <option value="Website">Website</option>
+                      <option value="TikTok">TikTok</option>
+                    </select>
                   </div>
 
                   <div className="space-y-1.5">
@@ -2229,47 +2231,49 @@ const handleMarkResolved = async (id: string) => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Order # <span className="text-[var(--sa-red)]">*</span></label>
-                    <input type="text" required value={reportOrderNumber} onChange={(e) => setReportOrderNumber(e.target.value)} placeholder="e.g. PK-10482" className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Order Date <span className="font-normal text-[var(--sa-graphite)]">(Optional)</span></label>
-                    <input type="date" value={reportOrderDate} onChange={(e) => setReportOrderDate(e.target.value)} className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
-                  </div>
-                </div>
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">
+                      Brand / Store Name{' '}
+                      <span className="text-[var(--sa-red)]">*</span>
+                    </label>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Brand Email <span className="font-normal text-[var(--sa-graphite)]">(Optional)</span></label>
-                    <input type="email" value={reportBrandEmail} onChange={(e) => setReportBrandEmail(e.target.value)} placeholder="support@brand.com" className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
-                    <p className="text-[10px] text-[var(--sa-graphite)]">Used only to send this business a neutral complaint notice and response link.</p>
+                    <input
+                      type="text"
+                      required
+                      value={reportBrandName}
+                      onChange={(e) =>
+                        setReportBrandName(e.target.value)
+                      }
+                      placeholder="e.g. Urban Vogue PK"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
+                    />
                   </div>
+
                   <div className="space-y-1.5">
-                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">Brand WhatsApp # <span className="font-normal text-[var(--sa-graphite)]">(Optional)</span></label>
-                    <input type="tel" value={reportBrandWhatsapp} onChange={(e) => setReportBrandWhatsapp(e.target.value)} placeholder="+92 300 1234567" className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
-                    <p className="text-[10px] text-[var(--sa-graphite)]">Stored for notification use once a WhatsApp Business provider is connected.</p>
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">
+                      Order # <span className="text-[var(--sa-red)]">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={reportOrderNumber}
+                      onChange={(e) => setReportOrderNumber(e.target.value)}
+                      placeholder="e.g. PK-10482"
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
+                    />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs text-[var(--sa-ink)] font-semibold block">
-                      Platform <span className="text-[var(--sa-red)]">*</span>
+                      Order Date <span className="font-normal text-[var(--sa-graphite)]">(Optional)</span>
                     </label>
-
-                    <select
-                      value={reportPlatform}
-                      onChange={(e) =>
-                        setReportPlatform(e.target.value)
-                      }
-                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 cursor-pointer transition"
-                    >
-                      <option value="Instagram">Instagram</option>
-                      <option value="Facebook">Facebook</option>
-                      <option value="WhatsApp">WhatsApp</option>
-                      <option value="Website">Website</option>
-                      <option value="TikTok">TikTok</option>
-                    </select>
+                    <input
+                      type="date"
+                      value={reportOrderDate}
+                      onChange={(e) => setReportOrderDate(e.target.value)}
+                      className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
+                    />
                   </div>
 
                   <div className="space-y-1.5">
@@ -2304,11 +2308,27 @@ const handleMarkResolved = async (id: string) => {
                     >
                       <option value="JazzCash">JazzCash</option>
                       <option value="EasyPaisa">EasyPaisa</option>
-                      <option value="Bank Transfer">
-                        Bank Transfer
-                      </option>
+                      <option value="Bank Transfer">Bank Transfer</option>
                       <option value="COD Fraud">COD Fraud</option>
                     </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">
+                      Brand Email <span className="font-normal text-[var(--sa-graphite)]">(Optional)</span>
+                    </label>
+                    <input type="email" value={reportBrandEmail} onChange={(e) => setReportBrandEmail(e.target.value)} placeholder="support@brand.com" className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
+                    <p className="text-[10px] text-[var(--sa-graphite)]">Used only to send this business a neutral complaint notice and response link.</p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-[var(--sa-ink)] font-semibold block">
+                      Brand WhatsApp # <span className="font-normal text-[var(--sa-graphite)]">(Optional)</span>
+                    </label>
+                    <input type="tel" value={reportBrandWhatsapp} onChange={(e) => setReportBrandWhatsapp(e.target.value)} placeholder="+92 300 1234567" className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] placeholder:text-[#9B948B] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition" />
+                    <p className="text-[10px] text-[var(--sa-graphite)]">Stored for notification use once a WhatsApp Business provider is connected.</p>
                   </div>
                 </div>
 
