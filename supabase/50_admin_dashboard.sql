@@ -21,6 +21,12 @@ alter table public.profiles
 
 grant select on public.profiles to authenticated;
 
+-- service_role is the trusted backend key used exclusively by the
+-- /api/admin/* routes (never exposed to the browser) and already
+-- bypasses RLS by design; it still needs the base table grants below,
+-- which this project's live schema didn't have.
+grant select, update, delete on public.reports to service_role;
+
 -- Grant admin access to this account. To add more admins later, run
 -- this same statement again with a different email.
 update public.profiles
