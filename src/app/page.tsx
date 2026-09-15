@@ -2,7 +2,167 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
+import type { User } from '@supabase/supabase-js';
 import { createClient } from '../utils/supabase/client';
+
+interface FeedItem {
+  id: string;
+  brand: string;
+  handle: string;
+  platform: string;
+  reportCount: number;
+}
+
+interface BrandDirectoryItem {
+  name: string;
+  handle: string;
+  platform: string;
+  score: number;
+  verified: boolean;
+  resolvedCases: number;
+  openDisputes: number;
+}
+
+interface BlacklistItem {
+  id: string;
+  brand: string;
+  handle: string;
+  platform: string;
+  reason: string;
+  dateBlacklisted: string;
+  trustScore: number;
+}
+
+interface EvidenceItem {
+  storage_path: string;
+  file_name: string;
+  mime_type: string;
+  url: string | null;
+}
+
+interface PublicEvidenceItem extends EvidenceItem {
+  report_id: string;
+}
+
+interface ExpiredReport {
+  id: string;
+  report_number: string;
+  brand_name: string;
+  handle: string;
+  platform: string;
+  order_number: string;
+  amount_paid: number;
+  payment_method: string;
+  order_date: string | null;
+  description: string;
+  brand_email: string | null;
+  brand_whatsapp: string | null;
+  business_response_text: string | null;
+}
+
+interface BusinessResponse {
+  response_text: string;
+  response_type: string;
+  tracking_number: string | null;
+  refund_reference: string | null;
+  created_at: string;
+}
+
+interface CustomerFinalResponse {
+  response_text: string;
+  resolution_choice: string;
+  created_at: string;
+}
+
+interface ReportDraft {
+  reportBrandName: string;
+  reportHandle: string;
+  reportPlatform: string;
+  reportOrderNumber: string;
+  reportBrandEmail: string;
+  reportBrandWhatsapp: string;
+  reportOrderDate: string;
+  reportAmount: string;
+  reportPaymentMethod: string;
+  reportDescription: string;
+}
+
+interface FeedRow {
+  feed_key: string;
+  brand: string;
+  handle: string;
+  platform: string;
+  report_count: number | string;
+}
+
+interface DirectoryRow {
+  name: string;
+  handle: string;
+  platform: string;
+  score: number | string;
+  verified: boolean;
+  resolved_cases: number | string;
+  open_disputes: number | string;
+}
+
+interface BlacklistRow {
+  id: string;
+  brand: string;
+  handle: string;
+  platform: string;
+  reason: string;
+  date_blacklisted: string;
+  trust_score: number;
+}
+
+interface Ticket {
+  dbId: string;
+  id: string;
+  brand: string;
+  handle: string;
+  platform: string;
+  status: string;
+  timeLeft: string;
+  date: string;
+  publicAt: string;
+  orderNumber: string;
+  brandEmail: string | null;
+  brandWhatsapp: string | null;
+  amount: number;
+  paymentMethod: string;
+  description: string;
+  emailStatus: string | null;
+  whatsappStatus: string | null;
+  businessResponse: BusinessResponse | null;
+  customerFinalResponse: CustomerFinalResponse | null;
+  evidence: EvidenceItem[];
+}
+
+/** Raw shape of a single row from the `reports` Supabase query in loadUserReports,
+ * before it's transformed into a Ticket. Supabase infers to-one relations as an
+ * array or a single object depending on the FK, so both are accepted here. */
+interface RawReportRow {
+  id: string;
+  report_number: string;
+  brand_name: string;
+  handle: string;
+  platform: string;
+  status: string;
+  public_at: string;
+  created_at: string;
+  order_number: string;
+  brand_email: string | null;
+  brand_whatsapp: string | null;
+  amount_paid: number;
+  payment_method: string;
+  description: string;
+  email_notification_status: string | null;
+  whatsapp_notification_status: string | null;
+  business_responded_at: string | null;
+  business_responses: BusinessResponse | BusinessResponse[] | null;
+  customer_final_responses: CustomerFinalResponse | CustomerFinalResponse[] | null;
+  report_evidence: { storage_path: string; file_name: string; mime_type: string }[] | null;
+}
 
 function ScamAlertLogo({ onClick }: { onClick: () => void }) {
   return (
@@ -307,6 +467,8 @@ export default function ScamAlertApp() {
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [emailInput, setEmailInput] = useState('');
+  const [loginEmailInput, setLoginEmailInput] = useState('');
+  const [loginPasswordInput, setLoginPasswordInput] = useState('');
   const [authError, setAuthError] = useState('');
   const [authMessage, setAuthMessage] = useState('');
 
@@ -340,11 +502,13 @@ export default function ScamAlertApp() {
     useState('JazzCash');
   const [reportDescription, setReportDescription] = useState('');
   const [reportFiles, setReportFiles] = useState<File[]>([]);
+  const [fileUploadError, setFileUploadError] = useState('');
+  const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
   const [resolvingReportId, setResolvingReportId] = useState<string | null>(null);
 const [deletingReportId, setDeletingReportId] = useState<string | null>(null);
 const [reportPendingDelete, setReportPendingDelete] = useState<string | null>(null);
-  const [pendingReportDraft, setPendingReportDraft] = useState<any>(null);
+  const [pendingReportDraft, setPendingReportDraft] = useState<ReportDraft | null>(null);
 const savePendingReportDraft = () => {
   const draft = {
     reportBrandName,
@@ -369,12 +533,12 @@ const savePendingReportDraft = () => {
 
   const [systemNotifications, setSystemNotifications] = useState<string[]>([]);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [submittedReportsFeed, setSubmittedReportsFeed] = useState<any[]>([]);
-  const [expiredPublicReports, setExpiredPublicReports] = useState<any[]>([]);
-  const [publicEvidence, setPublicEvidence] = useState<Record<string, any[]>>({});
-  const [userTickets, setUserTickets] = useState<any[]>([]);
-  const [brandList, setBrandList] = useState<any[]>([]);
-  const [blacklistedBrands, setBlacklistedBrands] = useState<any[]>([]);
+  const [submittedReportsFeed, setSubmittedReportsFeed] = useState<FeedItem[]>([]);
+  const [expiredPublicReports, setExpiredPublicReports] = useState<ExpiredReport[]>([]);
+  const [publicEvidence, setPublicEvidence] = useState<Record<string, PublicEvidenceItem[]>>({});
+  const [userTickets, setUserTickets] = useState<Ticket[]>([]);
+  const [brandList, setBrandList] = useState<BrandDirectoryItem[]>([]);
+  const [blacklistedBrands, setBlacklistedBrands] = useState<BlacklistItem[]>([]);
 
   const formatTimeLeft = (publicAt: string, status: string) => {
     if (status === 'resolved') return 'Resolved';
@@ -395,14 +559,14 @@ const savePendingReportDraft = () => {
     ]);
 
     if (!feedResult.error) {
-      setSubmittedReportsFeed((feedResult.data || []).map((row: any) => ({
+      setSubmittedReportsFeed(((feedResult.data || []) as FeedRow[]).map((row) => ({
         id: row.feed_key, brand: row.brand, handle: row.handle, platform: row.platform, reportCount: Number(row.report_count),
       })));
     }
-    if (!expiredResult.error) setExpiredPublicReports(expiredResult.data || []);
+    if (!expiredResult.error) setExpiredPublicReports((expiredResult.data || []) as ExpiredReport[]);
     if (!evidenceResult.error) {
-      const grouped: Record<string, any[]> = {};
-      for (const ev of evidenceResult.data || []) {
+      const grouped: Record<string, PublicEvidenceItem[]> = {};
+      for (const ev of (evidenceResult.data || []) as PublicEvidenceItem[]) {
         const signed = await supabase.storage.from('report-evidence').createSignedUrl(ev.storage_path, 3600);
         if (!grouped[ev.report_id]) grouped[ev.report_id] = [];
         grouped[ev.report_id].push({ ...ev, url: signed.data?.signedUrl || null });
@@ -410,13 +574,13 @@ const savePendingReportDraft = () => {
       setPublicEvidence(grouped);
     }
     if (!directoryResult.error) {
-      setBrandList((directoryResult.data || []).map((row: any) => ({
+      setBrandList(((directoryResult.data || []) as DirectoryRow[]).map((row) => ({
         name: row.name, handle: row.handle, platform: row.platform, score: Number(row.score), verified: Boolean(row.verified),
         resolvedCases: Number(row.resolved_cases), openDisputes: Number(row.open_disputes),
       })));
     }
     if (!blacklistResult.error) {
-      setBlacklistedBrands((blacklistResult.data || []).map((row: any) => ({
+      setBlacklistedBrands(((blacklistResult.data || []) as BlacklistRow[]).map((row) => ({
         id: row.id, brand: row.brand, handle: row.handle, platform: row.platform, reason: row.reason,
         dateBlacklisted: row.date_blacklisted, trustScore: row.trust_score,
       })));
@@ -465,8 +629,8 @@ const savePendingReportDraft = () => {
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
     if (error) { setAuthError(error.message); return; }
-    const tickets = await Promise.all((data || []).map(async (r: any) => {
-      const evidence = await Promise.all((r.report_evidence || []).map(async (ev: any) => {
+    const tickets: Ticket[] = await Promise.all(((data || []) as unknown as RawReportRow[]).map(async (r) => {
+      const evidence = await Promise.all((r.report_evidence || []).map(async (ev) => {
         const signed = await supabase.storage.from('report-evidence').createSignedUrl(ev.storage_path, 3600);
         return { ...ev, url: signed.data?.signedUrl || null };
       }));
@@ -593,7 +757,7 @@ const clearPendingReportFiles = async () => {
   useEffect(() => {
     let isMounted = true;
 
-    const applyUser = async (user: any) => {
+    const applyUser = async (user: User | null) => {
       if (!isMounted) return;
       if (user) {
         const displayName = user.user_metadata?.username || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
@@ -696,14 +860,22 @@ if (restoredDraft) {
     }
 
     const created = data[0];
+    const failedUploads: string[] = [];
     for (const file of reportFiles) {
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
       const path = `${user.id}/${created.id}/${crypto.randomUUID()}-${safeName}`;
       const upload = await supabase.storage.from('report-evidence').upload(path, file, { contentType: file.type, upsert: false });
       if (!upload.error) {
-        await supabase.from('report_evidence').insert({ report_id: created.id, user_id: user.id, storage_path: path, file_name: file.name, mime_type: file.type, size_bytes: file.size });
+        const insert = await supabase.from('report_evidence').insert({ report_id: created.id, user_id: user.id, storage_path: path, file_name: file.name, mime_type: file.type, size_bytes: file.size });
+        if (insert.error) failedUploads.push(file.name);
+      } else {
+        failedUploads.push(file.name);
       }
     }
+    const evidenceNotice =
+      failedUploads.length === 0
+        ? ''
+        : ` Warning: ${failedUploads.length} of ${reportFiles.length} evidence file(s) failed to upload (${failedUploads.join(', ')}). The report itself was still filed.`;
 
     let customerNotice = 'Customer confirmation email failed.';
 
@@ -733,10 +905,10 @@ if (restoredDraft) {
     } catch { /* report remains valid even when notification provider is unavailable */ }
 
     setReportBrandName(''); setReportHandle(''); setReportOrderNumber(''); setReportBrandEmail(''); setReportBrandWhatsapp('');
-    setReportOrderDate(''); setReportAmount(''); setReportDescription(''); setReportFiles([]); setPendingReportDraft(null);
+    setReportOrderDate(''); setReportAmount(''); setReportDescription(''); setReportFiles([]); setFileUploadError(''); setPendingReportDraft(null);
     localStorage.removeItem('scamalert_pending_report');
     await clearPendingReportFiles();
-    setReportSuccessMessage(`Report ${created.report_number} filed. The 72-hour review window has started. ${customerNotice} ${notice}`);
+    setReportSuccessMessage(`Report ${created.report_number} filed. The 72-hour review window has started. ${customerNotice} ${notice}${evidenceNotice}`);
     setSystemNotifications(prev => [`[Report ${created.report_number}] 72-hour review window started. ${notice}`, ...prev]);
     await Promise.all([loadUserReports(user.id), loadPublicData()]);
     setIsSubmittingReport(false);
@@ -752,11 +924,11 @@ if (restoredDraft) {
     setAuthError('');
     setAuthMessage('');
 
-    const email = usernameInput.trim();
+    const email = loginEmailInput.trim();
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password: passwordInput,
+      password: loginPasswordInput,
     });
 
     setIsLoggingIn(false);
@@ -779,8 +951,8 @@ if (restoredDraft) {
 
     setIsLoggedIn(true);
     setLoggedInUser(displayName);
-    setUsernameInput('');
-    setPasswordInput('');
+    setLoginEmailInput('');
+    setLoginPasswordInput('');
 
     setActiveTab(pendingReportDraft ? 'file-report' : 'dashboard');
   };
@@ -884,7 +1056,7 @@ if (restoredDraft) {
         `Verification email sent to ${email}. Please open that email and click “Confirm email address” before signing in.`
       );
       setActiveTab('login');
-      setUsernameInput(email);
+      setLoginEmailInput(email);
       return;
     }
 
@@ -909,6 +1081,34 @@ if (restoredDraft) {
     setUsernameStatus('idle');
    const hasPendingReport = !!localStorage.getItem('scamalert_pending_report');
    setActiveTab(hasPendingReport ? 'file-report' : 'dashboard');
+  };
+
+  const MAX_EVIDENCE_FILE_BYTES = 10 * 1024 * 1024;
+  const ALLOWED_EVIDENCE_TYPES = ['image/png', 'image/jpeg'];
+
+  const processEvidenceFiles = (incoming: FileList | File[]) => {
+    const files = Array.from(incoming);
+    const accepted: File[] = [];
+    const rejected: string[] = [];
+
+    for (const file of files) {
+      if (!ALLOWED_EVIDENCE_TYPES.includes(file.type)) {
+        rejected.push(`${file.name} (unsupported file type)`);
+        continue;
+      }
+      if (file.size > MAX_EVIDENCE_FILE_BYTES) {
+        rejected.push(`${file.name} (over 10MB)`);
+        continue;
+      }
+      accepted.push(file);
+    }
+
+    setReportFiles(accepted);
+    setFileUploadError(
+      rejected.length > 0
+        ? `Couldn't add: ${rejected.join(', ')}. Only PNG/JPG under 10MB are accepted.`
+        : ''
+    );
   };
 
   const handleFileNewReportSubmit = async (e: React.FormEvent) => {
@@ -940,6 +1140,7 @@ if (restoredDraft) {
     setReportAmount('');
     setReportDescription('');
     setReportFiles([]);
+    setFileUploadError('');
     setPendingReportDraft(null);
 
 localStorage.removeItem('scamalert_pending_report');
@@ -1112,14 +1313,14 @@ const handleMarkResolved = async (id: string) => {
     <span className="text-lg">🔔</span>
 
     {userTickets.filter(
-      (ticket: any) =>
+      (ticket: Ticket) =>
         ticket.businessResponse &&
         !ticket.customerFinalResponse &&
         ticket.status !== 'Resolved by customer'
     ).length > 0 && (
       <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold min-w-5 h-5 px-1 rounded-full flex items-center justify-center">
         {userTickets.filter(
-          (ticket: any) =>
+          (ticket: Ticket) =>
             ticket.businessResponse &&
             !ticket.customerFinalResponse &&
             ticket.status !== 'Resolved by customer'
@@ -1134,7 +1335,7 @@ const handleMarkResolved = async (id: string) => {
         </p>
 
         {userTickets.filter(
-          (ticket: any) =>
+          (ticket: Ticket) =>
             ticket.businessResponse &&
             !ticket.customerFinalResponse &&
             ticket.status !== 'Resolved by customer'
@@ -1145,12 +1346,12 @@ const handleMarkResolved = async (id: string) => {
         ) : (
           userTickets
             .filter(
-              (ticket: any) =>
+              (ticket: Ticket) =>
                 ticket.businessResponse &&
                 !ticket.customerFinalResponse &&
                 ticket.status !== 'Resolved by customer'
             )
-            .map((ticket: any) => (
+            .map((ticket: Ticket) => (
               <div
                 key={ticket.dbId}
                 onClick={() =>
@@ -1260,14 +1461,14 @@ const handleMarkResolved = async (id: string) => {
     <span className="text-lg">🔔</span>
 
     {userTickets.filter(
-      (ticket: any) =>
+      (ticket: Ticket) =>
         ticket.businessResponse &&
         !ticket.customerFinalResponse &&
         ticket.status !== 'Resolved by customer'
     ).length > 0 && (
       <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold min-w-5 h-5 px-1 rounded-full flex items-center justify-center">
         {userTickets.filter(
-          (ticket: any) =>
+          (ticket: Ticket) =>
             ticket.businessResponse &&
             !ticket.customerFinalResponse &&
             ticket.status !== 'Resolved by customer'
@@ -1283,7 +1484,7 @@ const handleMarkResolved = async (id: string) => {
       </p>
 
       {userTickets.filter(
-        (ticket: any) =>
+        (ticket: Ticket) =>
           ticket.businessResponse &&
           !ticket.customerFinalResponse &&
           ticket.status !== 'Resolved by customer'
@@ -1294,12 +1495,12 @@ const handleMarkResolved = async (id: string) => {
       ) : (
         userTickets
           .filter(
-            (ticket: any) =>
+            (ticket: Ticket) =>
               ticket.businessResponse &&
               !ticket.customerFinalResponse &&
               ticket.status !== 'Resolved by customer'
           )
-          .map((ticket: any) => (
+          .map((ticket: Ticket) => (
             <button
               key={ticket.dbId}
               type="button"
@@ -1522,9 +1723,9 @@ const handleMarkResolved = async (id: string) => {
                   <input
                     type="email"
                     required
-                    value={usernameInput}
+                    value={loginEmailInput}
                     onChange={(e) =>
-                      setUsernameInput(e.target.value)
+                      setLoginEmailInput(e.target.value)
                     }
                     placeholder="you@example.com"
                     className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
@@ -1553,9 +1754,9 @@ const handleMarkResolved = async (id: string) => {
                   <input
                     type="password"
                     required
-                    value={passwordInput}
+                    value={loginPasswordInput}
                     onChange={(e) =>
-                      setPasswordInput(e.target.value)
+                      setLoginPasswordInput(e.target.value)
                     }
                     placeholder="••••••••"
                     className="w-full bg-white border border-[var(--sa-border)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--sa-ink)] focus:outline-none focus:border-[var(--sa-red)] focus:ring-2 focus:ring-[var(--sa-red)]/10 transition"
@@ -2118,44 +2319,61 @@ const handleMarkResolved = async (id: string) => {
                 </button>
               </div>
 
-              <div className="w-full bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] overflow-x-auto sm:overflow-hidden relative shadow-[0_6px_20px_rgba(23,21,15,0.06)] scrollbar-hide snap-x snap-mandatory">
-
-                <div className="flex items-stretch sm:animate-marquee">
-                  {[...submittedReportsFeed, ...submittedReportsFeed].map(
-                    (item, index) => (
-                      <button
-                        type="button"
-                        key={`${item.id}-${index}`}
-                        onClick={() => setActiveTab('new-reports')}
-                        className="min-w-[85%] sm:min-w-[260px] md:min-w-[300px] bg-white border-r border-[var(--sa-border)] px-4 sm:px-5 py-4 sm:py-5 flex items-center justify-between gap-4 sm:gap-5 text-left hover:bg-[#F7F5F2] transition cursor-pointer snap-start"
-                      >
-                        <div className="min-w-0">
-                          <span className="sa-display text-[15px] font-bold text-[var(--sa-ink)] block truncate">
-                            {item.brand}
-                          </span>
-
-                          <PlatformLink
-                            platform={item.platform}
-                            handle={item.handle}
-                            className="mt-1.5"
-                          />
-                        </div>
-
-                        <div className="pl-4 border-l border-[var(--sa-border)] shrink-0">
-                          <span className="sa-mono text-[9px] text-[var(--sa-graphite)] uppercase tracking-[0.12em] block">
-                            Reports
-                          </span>
-
-                          <span className="sa-mono text-[12px] font-semibold text-[var(--sa-red-deep)] block mt-1">
-                            {item.reportCount} Active
-                          </span>
-                        </div>
-                      </button>
-                    )
-                  )}
+              {submittedReportsFeed.length === 0 ? (
+                <div className="w-full bg-[var(--sa-surface)] border border-dashed border-[var(--sa-border)] rounded-[14px] px-6 py-10 flex flex-col items-center text-center gap-2">
+                  <span className="w-10 h-10 rounded-full bg-[#F2EFE9] border border-[var(--sa-border)] flex items-center justify-center">
+                    <svg className="w-5 h-5 text-[var(--sa-graphite)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M9 12h6m-6 4h6M9 8h3m-5-5h7l4 4v14H7V3z" />
+                    </svg>
+                  </span>
+                  <p className="text-sm font-semibold text-[var(--sa-ink)]">
+                    No reports filed yet
+                  </p>
+                  <p className="text-xs text-[var(--sa-graphite)] max-w-sm">
+                    When shoppers file disputes, the seller and report count
+                    appear here during the 72-hour response window.
+                  </p>
                 </div>
+              ) : (
+                <div className="w-full bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] overflow-x-auto sm:overflow-hidden relative shadow-[0_6px_20px_rgba(23,21,15,0.06)] scrollbar-hide snap-x snap-mandatory">
 
-              </div>
+                  <div className="flex items-stretch sm:animate-marquee">
+                    {[...submittedReportsFeed, ...submittedReportsFeed].map(
+                      (item, index) => (
+                        <button
+                          type="button"
+                          key={`${item.id}-${index}`}
+                          onClick={() => setActiveTab('new-reports')}
+                          className="min-w-[85%] sm:min-w-[260px] md:min-w-[300px] bg-white border-r border-[var(--sa-border)] px-4 sm:px-5 py-4 sm:py-5 flex items-center justify-between gap-4 sm:gap-5 text-left hover:bg-[#F7F5F2] transition cursor-pointer snap-start"
+                        >
+                          <div className="min-w-0">
+                            <span className="sa-display text-[15px] font-bold text-[var(--sa-ink)] block truncate">
+                              {item.brand}
+                            </span>
+
+                            <PlatformLink
+                              platform={item.platform}
+                              handle={item.handle}
+                              className="mt-1.5"
+                            />
+                          </div>
+
+                          <div className="pl-4 border-l border-[var(--sa-border)] shrink-0">
+                            <span className="sa-mono text-[9px] text-[var(--sa-graphite)] uppercase tracking-[0.12em] block">
+                              Reports
+                            </span>
+
+                            <span className="sa-mono text-[12px] font-semibold text-[var(--sa-red-deep)] block mt-1">
+                              {item.reportCount} Active
+                            </span>
+                          </div>
+                        </button>
+                      )
+                    )}
+                  </div>
+
+                </div>
+              )}
 
               <p className="text-[11px] leading-relaxed text-[var(--sa-graphite)]">
                 Recent registry activity. A report represents a submitted complaint
@@ -2368,15 +2586,33 @@ const handleMarkResolved = async (id: string) => {
                     Upload Evidence (Receipts, Chat Screenshots)
                   </label>
 
-                  <label className="border border-dashed border-[var(--sa-border)] bg-[#F7F5F2] rounded-[12px] p-6 text-center hover:border-[var(--sa-red)]/50 hover:bg-[var(--sa-red-soft)]/20 transition cursor-pointer block">
+                  <label
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setIsDraggingFiles(true);
+                    }}
+                    onDragLeave={() => setIsDraggingFiles(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setIsDraggingFiles(false);
+                      if (e.dataTransfer.files?.length) {
+                        processEvidenceFiles(e.dataTransfer.files);
+                      }
+                    }}
+                    className={`border border-dashed rounded-[12px] p-6 text-center transition cursor-pointer block ${
+                      isDraggingFiles
+                        ? 'border-[var(--sa-red)] bg-[var(--sa-red-soft)]/40'
+                        : 'border-[var(--sa-border)] bg-[#F7F5F2] hover:border-[var(--sa-red)]/50 hover:bg-[var(--sa-red-soft)]/20'
+                    }`}
+                  >
                     <input
                       type="file"
                       multiple
                       accept="image/png, image/jpeg, image/jpg"
                       className="hidden"
                       onChange={(e) => {
-                        if (e.target.files) {
-                          setReportFiles(Array.from(e.target.files));
+                        if (e.target.files?.length) {
+                          processEvidenceFiles(e.target.files);
                         }
                       }}
                     />
@@ -2405,6 +2641,12 @@ const handleMarkResolved = async (id: string) => {
                       PNG, JPG, JPEG up to 10MB
                     </span>
                   </label>
+
+                  {fileUploadError && (
+                    <p className="text-[11px] text-[var(--sa-red-deep)] bg-[var(--sa-red-soft)] border border-[var(--sa-red)]/25 rounded-[8px] px-3 py-2">
+                      {fileUploadError}
+                    </p>
+                  )}
                 </div>
 
                 <div className="bg-[var(--sa-red-soft)]/55 border border-[var(--sa-red)]/20 p-4 rounded-[12px] flex items-start gap-3">
@@ -2584,7 +2826,7 @@ const handleMarkResolved = async (id: string) => {
                           </p>
 
                           <div className="flex flex-wrap gap-2">
-                            {ticket.evidence.map((ev:any) => (
+                            {ticket.evidence.map((ev: EvidenceItem) => (
                               <a
                                 key={ev.storage_path}
                                 href={ev.url || '#'}
@@ -2816,7 +3058,7 @@ const handleMarkResolved = async (id: string) => {
                 </div>
 
                 <div className="space-y-4">
-                  {expiredPublicReports.map((report: any) => (
+                  {expiredPublicReports.map((report: ExpiredReport) => (
                     <article
                       key={report.id}
                       className="bg-white border border-[var(--sa-border)] rounded-[var(--sa-radius-lg)] overflow-hidden shadow-[var(--sa-shadow-md)]"
@@ -2934,7 +3176,7 @@ const handleMarkResolved = async (id: string) => {
                           </span>
 
                           <div className="flex flex-wrap gap-2">
-                            {publicEvidence[report.id].map((ev: any) => (
+                            {publicEvidence[report.id].map((ev: PublicEvidenceItem) => (
                               <a
                                 key={ev.storage_path}
                                 href={ev.url || '#'}

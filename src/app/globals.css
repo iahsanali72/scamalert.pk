@@ -39,6 +39,21 @@ textarea {
   font: inherit;
 }
 
+/* Visible keyboard focus for every interactive element. Inputs already had
+   their own focus ring via Tailwind classes; buttons and links had none. */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline-style: solid !important;
+  outline-width: 2px !important;
+  outline-color: var(--sa-red) !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+
 ::selection {
   background: var(--sa-red);
   color: white;
