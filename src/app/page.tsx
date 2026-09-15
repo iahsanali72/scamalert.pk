@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 import type { User } from '@supabase/supabase-js';
 import { createClient } from '../utils/supabase/client';
+import { FaFacebookF, FaInstagram, FaXTwitter, FaTiktok, FaWhatsapp } from 'react-icons/fa6';
 
 interface FeedItem {
   id: string;
@@ -3397,42 +3398,42 @@ const handleMarkResolved = async (id: string) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="ScamAlert.pk on Facebook"
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--sa-border)] text-[11px] font-bold text-[var(--sa-graphite)] transition hover:border-[var(--sa-red)] hover:text-[var(--sa-red)]"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--sa-ink)] text-white transition hover:bg-[var(--sa-red)]"
               >
-                f
+                <FaFacebookF className="h-3.5 w-3.5" />
               </a>
               <a
                 href="https://www.instagram.com/Scam_alert.pk"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="ScamAlert.pk on Instagram"
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--sa-border)] text-[11px] font-bold text-[var(--sa-graphite)] transition hover:border-[var(--sa-red)] hover:text-[var(--sa-red)]"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--sa-ink)] text-white transition hover:bg-[var(--sa-red)]"
               >
-                IG
+                <FaInstagram className="h-4 w-4" />
               </a>
               <a
                 href="https://x.com/scamAlertpk"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="ScamAlert.pk on X"
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--sa-border)] text-[11px] font-bold text-[var(--sa-graphite)] transition hover:border-[var(--sa-red)] hover:text-[var(--sa-red)]"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--sa-ink)] text-white transition hover:bg-[var(--sa-red)]"
               >
-                X
+                <FaXTwitter className="h-3.5 w-3.5" />
               </a>
               <a
                 href="https://www.tiktok.com/@ScamAlert.pk"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="ScamAlert.pk on TikTok"
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--sa-border)] text-[11px] font-bold text-[var(--sa-graphite)] transition hover:border-[var(--sa-red)] hover:text-[var(--sa-red)]"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--sa-ink)] text-white transition hover:bg-[var(--sa-red)]"
               >
-                TT
+                <FaTiktok className="h-3.5 w-3.5" />
               </a>
               <span
                 title="WhatsApp — coming soon"
-                className="flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-full border border-[var(--sa-border)] text-[11px] font-bold text-[var(--sa-graphite)] opacity-40"
+                className="flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-full bg-[var(--sa-ink)] text-white opacity-30"
               >
-                WA
+                <FaWhatsapp className="h-4 w-4" />
               </span>
             </div>
           </div>
