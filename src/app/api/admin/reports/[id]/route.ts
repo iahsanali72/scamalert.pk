@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { requireAdmin } from '@/utils/admin'
 import { createAdminClient } from '@/utils/supabase/admin'
 
+export const dynamic = 'force-dynamic'
+
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

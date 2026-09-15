@@ -68,9 +68,9 @@ export default function AdminPage() {
 
   const loadAll = async () => {
     const [statsRes, reportsRes, usersRes] = await Promise.all([
-      fetch('/api/admin/stats'),
-      fetch('/api/admin/reports'),
-      fetch('/api/admin/users'),
+      fetch('/api/admin/stats', { cache: 'no-store' }),
+      fetch('/api/admin/reports', { cache: 'no-store' }),
+      fetch('/api/admin/users', { cache: 'no-store' }),
     ]);
 
     if (statsRes.status === 403 || reportsRes.status === 403 || usersRes.status === 403) {
