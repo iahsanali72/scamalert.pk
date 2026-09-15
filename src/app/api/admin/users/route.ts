@@ -34,6 +34,7 @@ export async function GET() {
 
   const users = (authUsers?.users ?? []).map((u) => {
     const profile = profileById.get(u.id)
+    const bannedUntil = u.banned_until ?? null
     return {
       id: u.id,
       email: u.email,
@@ -43,6 +44,7 @@ export async function GET() {
       city: profile?.city ?? null,
       createdAt: u.created_at,
       reportCount: reportCountByUser.get(u.id) ?? 0,
+      isBanned: bannedUntil ? new Date(bannedUntil) > new Date() : false,
     }
   })
 

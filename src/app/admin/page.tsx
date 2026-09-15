@@ -38,6 +38,7 @@ interface AdminUser {
   city: string | null;
   createdAt: string;
   reportCount: number;
+  isBanned: boolean;
 }
 
 type AuthState = 'checking' | 'signed-out' | 'not-admin' | 'admin';
@@ -63,6 +64,7 @@ export default function AdminPage() {
   const [reportFilter, setReportFilter] = useState<'all' | 'pending' | 'resolved' | 'expired'>('all');
   const [reportSearch, setReportSearch] = useState('');
   const [busyReportId, setBusyReportId] = useState<string | null>(null);
+  const [busyUserId, setBusyUserId] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [nowMs, setNowMs] = useState<number | null>(null);
 
@@ -142,6 +144,27 @@ export default function AdminPage() {
       await loadAll();
     } finally {
       setBusyReportId(null);
+    }
+  };
+
+  const handleBanToggle = async (userId: string, action: 'ban' | 'unban') => {
+    if (action === 'ban' && !window.confirm('Ban this user? They will no longer be able to sign in.')) return;
+    setBusyUserId(userId);
+    setError('');
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || 'Failed to update user.');
+        return;
+      }
+      await loadAll();
+    } finally {
+      setBusyUserId(null);
     }
   };
 
@@ -349,6 +372,24 @@ export default function AdminPage() {
                           >
                             Delete
                           </button>
+                          {users.find((u) => u.id === r.user_id)?.isBanned ? (
+                            <button
+                              disabled={busyUserId === r.user_id}
+                              onClick={() => handleBanToggle(r.user_id, 'unban')}
+                              className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1 text-xs font-semibold transition hover:border-[var(--sa-ink)] disabled:opacity-50"
+                            >
+                              Unban submitter
+                            </button>
+                          ) : (
+                            <button
+                              disabled={busyUserId === r.user_id}
+                              onClick={() => handleBanToggle(r.user_id, 'ban')}
+                              className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1 text-xs font-semibold text-[var(--sa-red)] transition hover:border-[var(--sa-red)] disabled:opacity-50"
+                              title="Ban the user who filed this report"
+                            >
+                              Ban submitter
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -377,6 +418,8 @@ export default function AdminPage() {
                   <th className="px-4 py-3">City</th>
                   <th className="px-4 py-3">Reports filed</th>
                   <th className="px-4 py-3">Joined</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -390,11 +433,41 @@ export default function AdminPage() {
                     <td className="px-4 py-3">{u.city ?? '—'}</td>
                     <td className="px-4 py-3">{u.reportCount}</td>
                     <td className="px-4 py-3 text-[var(--sa-graphite)]">{formatDate(u.createdAt)}</td>
+                    <td className="px-4 py-3">
+                      {u.isBanned ? (
+                        <span className="rounded-full bg-[var(--sa-red-soft)] px-2 py-0.5 text-xs font-semibold text-[var(--sa-red-deep)]">
+                          Banned
+                        </span>
+                      ) : (
+                        <span className="rounded-full bg-[var(--sa-green-soft)] px-2 py-0.5 text-xs font-semibold text-[var(--sa-green)]">
+                          Active
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      {u.isBanned ? (
+                        <button
+                          disabled={busyUserId === u.id}
+                          onClick={() => handleBanToggle(u.id, 'unban')}
+                          className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1 text-xs font-semibold transition hover:border-[var(--sa-ink)] disabled:opacity-50"
+                        >
+                          Unban
+                        </button>
+                      ) : (
+                        <button
+                          disabled={busyUserId === u.id}
+                          onClick={() => handleBanToggle(u.id, 'ban')}
+                          className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1 text-xs font-semibold text-[var(--sa-red)] transition hover:border-[var(--sa-red)] disabled:opacity-50"
+                        >
+                          Ban
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))}
                 {users.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-[var(--sa-graphite)]">
+                    <td colSpan={8} className="px-4 py-8 text-center text-[var(--sa-graphite)]">
                       No users yet.
                     </td>
                   </tr>
