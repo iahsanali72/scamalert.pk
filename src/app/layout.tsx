@@ -5,6 +5,7 @@ import {
   Space_Grotesk,
 } from 'next/font/google';
 import Script from 'next/script';
+import { preload } from 'react-dom';
 import './globals.css';
 
 const instrumentSans = Instrument_Sans({
@@ -118,6 +119,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  preload('/images/pakistan-hero-bg.webp', { as: 'image' });
+
   return (
     <html lang="en">
       <body

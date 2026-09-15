@@ -1402,6 +1402,7 @@ const handleMarkResolved = async (id: string) => {
             <select
               value={selectedPlatform}
               onChange={(e) => setSelectedPlatform(e.target.value)}
+              aria-label="Filter by channel"
               className="w-[112px] sm:w-36 bg-white border border-[var(--sa-border)] rounded-[4px] px-2 h-8 md:h-auto md:py-2.5 text-xs md:text-sm focus:outline-none focus:border-[var(--sa-ink)] text-[var(--sa-ink)] cursor-pointer transition"
             >
               <option value="all">All Channels</option>
@@ -1413,6 +1414,7 @@ const handleMarkResolved = async (id: string) => {
 
             <button
               type="submit"
+              aria-label="Search"
               className="bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white w-9 h-8 md:w-auto md:h-auto md:px-4 md:py-2.5 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] text-sm font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
             >
               <svg
