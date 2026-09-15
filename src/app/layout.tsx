@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: [
       {
-        url: '/images/pakistan-hero-bg.png',
+        url: '/images/pakistan-hero-og.jpg',
         width: 2043,
         height: 770,
         alt: 'ScamAlert.pk — report and verify online sellers in Pakistan',
@@ -86,7 +86,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: ['/images/pakistan-hero-bg.png'],
+    images: ['/images/pakistan-hero-og.jpg'],
   },
 };
 

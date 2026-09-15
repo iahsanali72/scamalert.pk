@@ -2212,7 +2212,7 @@ const handleMarkResolved = async (id: string) => {
             <section className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[18px] overflow-hidden shadow-[0_12px_32px_rgba(23,21,15,0.08)]">
               <div className="relative grid md:grid-cols-[1fr_auto] overflow-hidden">
 
-                <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/pakistan-hero-bg.png')" }} />
+                <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/pakistan-hero-bg.webp')" }} />
                 <div className="absolute inset-0" style={{ backgroundColor: "rgba(255,255,255,0.56)" }} />
 
                 <div className="relative overflow-hidden p-4 sm:p-7 md:p-10 lg:p-12 md:min-h-[330px]">
