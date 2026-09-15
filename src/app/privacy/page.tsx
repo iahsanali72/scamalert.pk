@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description: 'How ScamAlert.pk collects, uses, and protects your data when you file or view fraud reports.',
+};
+
 export default function PrivacyPolicyPage() {
   return (
     <main className="min-h-screen bg-[#F7F8FA] text-[#172033]">
