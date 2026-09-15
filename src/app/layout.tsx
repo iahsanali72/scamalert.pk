@@ -103,6 +103,12 @@ const structuredData = {
       url: SITE_URL,
       logo: `${SITE_URL}/icon.png`,
       description: SITE_DESCRIPTION,
+      sameAs: [
+        'https://www.facebook.com/ScamAlert.pk',
+        'https://www.instagram.com/Scam_alert.pk',
+        'https://x.com/scamAlertpk',
+        'https://www.tiktok.com/@ScamAlert.pk',
+      ],
     },
     {
       '@type': 'WebSite',

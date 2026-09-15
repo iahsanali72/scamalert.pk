@@ -3382,13 +3382,59 @@ const handleMarkResolved = async (id: string) => {
       </main>
 
       <footer className="border-t border-[var(--sa-border)] bg-[var(--sa-surface)]">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[var(--sa-graphite)]">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--sa-graphite)]">
           <span>© 2026 ScamAlert.pk</span>
-          <div className="flex items-center gap-4">
-            <a href="/how-to-spot-online-scams-pakistan" className="hover:text-[var(--sa-ink)] transition">How to Spot a Scam</a>
-            <a href="/how-to-verify-online-seller-pakistan" className="hover:text-[var(--sa-ink)] transition">Verify a Seller</a>
-            <a href="/privacy" className="hover:text-[var(--sa-ink)] transition">Privacy Policy</a>
-            <a href="/terms" className="hover:text-[var(--sa-ink)] transition">Terms of Service</a>
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex items-center gap-4">
+              <a href="/how-to-spot-online-scams-pakistan" className="hover:text-[var(--sa-ink)] transition">How to Spot a Scam</a>
+              <a href="/how-to-verify-online-seller-pakistan" className="hover:text-[var(--sa-ink)] transition">Verify a Seller</a>
+              <a href="/privacy" className="hover:text-[var(--sa-ink)] transition">Privacy Policy</a>
+              <a href="/terms" className="hover:text-[var(--sa-ink)] transition">Terms of Service</a>
+            </div>
+            <div className="flex items-center gap-2">
+              <a
+                href="https://www.facebook.com/ScamAlert.pk"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="ScamAlert.pk on Facebook"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--sa-border)] text-[11px] font-bold text-[var(--sa-graphite)] transition hover:border-[var(--sa-red)] hover:text-[var(--sa-red)]"
+              >
+                f
+              </a>
+              <a
+                href="https://www.instagram.com/Scam_alert.pk"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="ScamAlert.pk on Instagram"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--sa-border)] text-[11px] font-bold text-[var(--sa-graphite)] transition hover:border-[var(--sa-red)] hover:text-[var(--sa-red)]"
+              >
+                IG
+              </a>
+              <a
+                href="https://x.com/scamAlertpk"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="ScamAlert.pk on X"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--sa-border)] text-[11px] font-bold text-[var(--sa-graphite)] transition hover:border-[var(--sa-red)] hover:text-[var(--sa-red)]"
+              >
+                X
+              </a>
+              <a
+                href="https://www.tiktok.com/@ScamAlert.pk"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="ScamAlert.pk on TikTok"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--sa-border)] text-[11px] font-bold text-[var(--sa-graphite)] transition hover:border-[var(--sa-red)] hover:text-[var(--sa-red)]"
+              >
+                TT
+              </a>
+              <span
+                title="WhatsApp — coming soon"
+                className="flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-full border border-[var(--sa-border)] text-[11px] font-bold text-[var(--sa-graphite)] opacity-40"
+              >
+                WA
+              </span>
+            </div>
           </div>
         </div>
       </footer>
