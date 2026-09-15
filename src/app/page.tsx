@@ -30,7 +30,7 @@ function ScamAlertLogo({ onClick }: { onClick: () => void }) {
           d="M32 14c7.5 0 13.5 6 13.5 13.5v9l3.5 5H15l3.5-5v-9C18.5 20 24.5 14 32 14z"
           fill="#C31F2C"
         />
-        <circle className="sa-bell-swing" cx="32" cy="46.5" r="4.5" fill="#C31F2C" />
+        <circle className="sa-bell-swing" cx="32" cy="46.5" r="4.5" fill="#17150F" />
         <path
           d="M11 24 Q4 32 11 40"
           fill="none"
@@ -2069,7 +2069,7 @@ const handleMarkResolved = async (id: string) => {
                       d="M32 14c7.5 0 13.5 6 13.5 13.5v9l3.5 5H15l3.5-5v-9C18.5 20 24.5 14 32 14z"
                       fill="#C31F2C"
                     />
-                    <circle cx="32" cy="46.5" r="4.5" fill="#C31F2C" />
+                    <circle cx="32" cy="46.5" r="4.5" fill="#17150F" />
                   </svg>
 
                   <div className="flex items-baseline justify-between border-b border-dashed border-[var(--sa-border)] pb-3 mb-3">
