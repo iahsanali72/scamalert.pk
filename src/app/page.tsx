@@ -14,31 +14,38 @@ function ScamAlertLogo({ onClick }: { onClick: () => void }) {
         width="46"
         height="46"
         viewBox="0 0 64 64"
-        aria-label="ScamAlert.pk bell mark"
+        aria-label="ScamAlert.pk seal mark"
         className="shrink-0"
       >
+        <circle
+          cx="32"
+          cy="32"
+          r="29"
+          fill="none"
+          stroke="#C31F2C"
+          strokeWidth="2.5"
+        />
         <path
-          d="M32 12c8.3 0 15 6.7 15 15v10l4 6H13l4-6V27c0-8.3 6.7-15 15-15z"
-          fill="#E5342A"
+          className="sa-bell-swing"
+          d="M32 14c7.5 0 13.5 6 13.5 13.5v9l3.5 5H15l3.5-5v-9C18.5 20 24.5 14 32 14z"
+          fill="#C31F2C"
         />
-        <circle cx="32" cy="49" r="5" fill="#17150F" />
-        <rect
-          x="2"
-          y="20"
-          width="5"
-          height="14"
-          rx="2.5"
-          fill="#17150F"
-          opacity="0.3"
+        <circle className="sa-bell-swing" cx="32" cy="46.5" r="4.5" fill="#C31F2C" />
+        <path
+          d="M11 24 Q4 32 11 40"
+          fill="none"
+          stroke="#C31F2C"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          opacity="0.8"
         />
-        <rect
-          x="57"
-          y="20"
-          width="5"
-          height="14"
-          rx="2.5"
-          fill="#17150F"
-          opacity="0.3"
+        <path
+          d="M53 24 Q60 32 53 40"
+          fill="none"
+          stroke="#C31F2C"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          opacity="0.8"
         />
       </svg>
 
@@ -1016,6 +1023,12 @@ const handleMarkResolved = async (id: string) => {
     setDeletingReportId(null);
   }
 };
+
+  const heroTopReport = submittedReportsFeed[0] || null;
+  const heroOpenReportsTotal = submittedReportsFeed.reduce(
+    (sum, item) => sum + item.reportCount,
+    0
+  );
 
   const activeSearchTerm = appliedSearch || searchQuery;
 
@@ -2009,52 +2022,92 @@ const handleMarkResolved = async (id: string) => {
 
             {/* HERO / REGISTRY INTRO */}
             <section className="sa-hero-in bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[18px] overflow-hidden shadow-[0_12px_32px_rgba(23,21,15,0.08)]">
-              <div className="relative grid md:grid-cols-[1fr_auto] overflow-hidden">
+              <div className="grid md:grid-cols-[1.15fr_0.9fr] gap-6 md:gap-10 p-4 sm:p-7 md:p-10 lg:p-12 items-center">
 
-                <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/pakistan-hero-bg.png')" }} />
-                <div className="absolute inset-0" style={{ backgroundColor: "rgba(255,255,255,0.56)" }} />
-
-                <div className="relative overflow-hidden p-4 sm:p-7 md:p-10 lg:p-12 md:min-h-[330px]">
-                  <div className="relative z-10 max-w-2xl space-y-4 md:space-y-5">
-                    <div className="sa-mono text-[11px] uppercase tracking-[0.16em] text-[var(--sa-red-deep)] font-semibold">
-                      Pakistan Fraud & Scam Registry
-                    </div>
-
-                    <h1 className="sa-display text-[30px] sm:text-[36px] md:text-[46px] lg:text-[52px] leading-[1.02] md:leading-[0.98] tracking-[-0.04em] md:tracking-[-0.045em] font-bold text-[var(--sa-ink)] max-w-xl">
-                      Protect your online shopping in Pakistan.
-                    </h1>
-
-                    <p className="text-[14px] sm:text-[15px] md:text-[16px] leading-6 md:leading-7 text-[var(--sa-graphite)] max-w-xl">
-                      Search seller handles before you transfer money, review
-                      reported disputes, and file a structured complaint when
-                      something goes wrong.
-                    </p>
+                <div className="space-y-4 md:space-y-5">
+                  <div className="inline-flex items-center gap-2 sa-mono text-[11px] font-semibold text-[var(--sa-red-deep)] bg-[var(--sa-red-soft)] rounded-full px-3 py-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--sa-red)]" />
+                    Community registry &middot; {heroOpenReportsTotal} open reports
                   </div>
 
+                  <h1 className="sa-display text-[30px] sm:text-[36px] md:text-[44px] lg:text-[50px] leading-[1.0] md:leading-[0.98] tracking-[-0.04em] md:tracking-[-0.045em] font-extrabold text-[var(--sa-ink)] max-w-xl">
+                    Don&apos;t get scammed twice.
+                  </h1>
 
-                </div>
+                  <p className="text-[14px] sm:text-[15px] md:text-[16px] leading-6 md:leading-7 text-[var(--sa-graphite)] max-w-xl">
+                    Search a seller before you pay. If they scam you, file a
+                    structured, timestamped report &mdash; it goes on the public
+                    record if they don&apos;t respond within 72 hours.
+                  </p>
 
-                <div className="relative z-10 border-t md:border-t-0 md:border-l border-[var(--sa-border)] p-4 sm:p-7 md:p-8 lg:p-10 flex items-center">
-                  <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-[210px]">
+                  <div className="flex flex-col sm:flex-row gap-3 pt-1">
                     <button
                       onClick={() => setActiveTab('file-report')}
-                      className="sa-btn-press flex-1 bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold px-5 py-3 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] transition cursor-pointer text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sa-red)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sa-surface)]"
+                      className="sa-btn-press flex-1 sm:flex-none bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold px-5 py-3 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] transition cursor-pointer text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sa-red)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sa-surface)]"
                     >
                       + File New Report
                     </button>
 
                     <button
                       onClick={() => setActiveTab('new-reports')}
-                      className="sa-btn-press flex-1 bg-white hover:bg-[#F2EFE9] border border-[var(--sa-border)] text-[var(--sa-ink)] font-semibold px-5 py-3 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] transition cursor-pointer text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sa-ink)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sa-surface)]"
+                      className="sa-btn-press flex-1 sm:flex-none bg-white hover:bg-[#F2EFE9] border border-[var(--sa-border)] text-[var(--sa-ink)] font-semibold px-5 py-3 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] transition cursor-pointer text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sa-ink)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sa-surface)]"
                     >
                       View Reports Feed
                     </button>
                   </div>
                 </div>
 
+                <div className="relative bg-white border border-[var(--sa-border)] rounded-[14px] shadow-[var(--sa-shadow-md)] p-5 -rotate-1 md:mx-4">
+                  <svg
+                    className="sa-stamp absolute -top-4 -right-3 w-16 h-16"
+                    viewBox="0 0 64 64"
+                    aria-hidden="true"
+                  >
+                    <circle cx="32" cy="32" r="29" fill="none" stroke="#C31F2C" strokeWidth="2" />
+                    <circle cx="32" cy="32" r="25" fill="none" stroke="#C31F2C" strokeWidth="0.75" />
+                    <path
+                      d="M32 14c7.5 0 13.5 6 13.5 13.5v9l3.5 5H15l3.5-5v-9C18.5 20 24.5 14 32 14z"
+                      fill="#C31F2C"
+                    />
+                    <circle cx="32" cy="46.5" r="4.5" fill="#C31F2C" />
+                  </svg>
+
+                  <div className="flex items-baseline justify-between border-b border-dashed border-[var(--sa-border)] pb-3 mb-3">
+                    <span className="sa-mono text-[9px] font-bold uppercase tracking-[0.1em] text-[var(--sa-graphite)]">
+                      Complaint Form
+                    </span>
+                    {heroTopReport && (
+                      <span className="sa-mono text-[9px] font-bold text-[var(--sa-red-deep)]">
+                        {heroTopReport.id}
+                      </span>
+                    )}
+                  </div>
+
+                  {heroTopReport ? (
+                    <div className="space-y-2.5">
+                      <div className="grid grid-cols-[68px_1fr] gap-2 text-[12px]">
+                        <span className="sa-mono text-[9px] uppercase tracking-[0.06em] text-[var(--sa-graphite)] self-center">Seller</span>
+                        <span className="font-semibold text-[var(--sa-ink)] truncate">{heroTopReport.brand}</span>
+                      </div>
+                      <div className="grid grid-cols-[68px_1fr] gap-2 text-[12px]">
+                        <span className="sa-mono text-[9px] uppercase tracking-[0.06em] text-[var(--sa-graphite)] self-center">Platform</span>
+                        <span className="font-semibold text-[var(--sa-ink)]">{heroTopReport.platform}</span>
+                      </div>
+                      <div className="grid grid-cols-[68px_1fr] gap-2 text-[12px] items-center">
+                        <span className="sa-mono text-[9px] uppercase tracking-[0.06em] text-[var(--sa-graphite)]">Status</span>
+                        <span className="sa-chip sa-chip-office w-fit">{heroTopReport.reportCount} reports filed</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-[12px] leading-relaxed text-[var(--sa-graphite)] py-3">
+                      No reports filed yet. Yours could be the first on record.
+                    </p>
+                  )}
+                </div>
+
               </div>
 
-              <div className="border-t border-[var(--sa-border)] bg-[#F2EFE9] px-5 sm:px-7 md:px-10 lg:px-12 py-3 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-x-7 gap-y-2">
+              <div className="sa-perf bg-[#F2EFE9] px-5 sm:px-7 md:px-10 lg:px-12 py-3 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-x-7 gap-y-2">
                 <div className="flex items-center gap-2">
                   <span className="w-7 h-7 rounded-full bg-white border border-[var(--sa-border)] flex items-center justify-center shrink-0">
                     <svg className="w-4 h-4 text-[var(--sa-ink)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">

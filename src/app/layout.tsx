@@ -1,26 +1,28 @@
 import type { Metadata, Viewport } from 'next';
 import {
+  Archivo,
   IBM_Plex_Mono,
-  Instrument_Sans,
-  Space_Grotesk,
+  IBM_Plex_Sans,
 } from 'next/font/google';
 import './globals.css';
 
-const instrumentSans = Instrument_Sans({
+const ibmPlexSans = IBM_Plex_Sans({
   subsets: ['latin'],
-  variable: '--font-instrument-sans',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-ibm-plex-sans',
   display: 'swap',
 });
 
-const spaceGrotesk = Space_Grotesk({
+const archivo = Archivo({
   subsets: ['latin'],
-  variable: '--font-space-grotesk',
+  weight: ['700', '800', '900'],
+  variable: '--font-archivo',
   display: 'swap',
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-ibm-plex-mono',
   display: 'swap',
 });
@@ -43,7 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${instrumentSans.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable} antialiased`}
+        className={`${ibmPlexSans.variable} ${archivo.variable} ${ibmPlexMono.variable} antialiased`}
       >
         {children}
       </body>

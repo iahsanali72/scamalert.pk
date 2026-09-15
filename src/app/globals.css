@@ -1,21 +1,31 @@
 @import "tailwindcss";
 
 :root {
-  --sa-paper: #f7f5f2;
+  /* Brand system: see brand book. "Original Copy" paper, "Carbon Ink" text,
+     "Stamp Red" accent — named after the carbon-copy triplicate form the
+     visual language borrows from (discipline, not government authority). */
+  --sa-paper: #fbf9f5;
   --sa-surface: #ffffff;
-  --sa-ink: #17150f;
-  --sa-graphite: #6b635a;
-  --sa-border: #ded9d2;
+  --sa-ink: #16140f;
+  --sa-graphite: #675f54;
+  --sa-border: #e3dcd0;
 
-  --sa-red: #e5342a;
-  --sa-red-deep: #b4230f;
-  --sa-red-soft: #fbe9e7;
+  --sa-red: #c31f2c;
+  --sa-red-deep: #8f1620;
+  --sa-red-soft: #fbe7e6;
 
-  --sa-green: #1f7a4d;
-  --sa-green-soft: #e9f5ee;
+  --sa-green: #1b7a4a;
+  --sa-green-soft: #e7f3ec;
 
-  --font-display: var(--font-space-grotesk), sans-serif;
-  --font-body: var(--font-instrument-sans), sans-serif;
+  /* Semantic "copy tier" colors, borrowed from real carbon-copy forms.
+     Status only — never used as page decoration. */
+  --sa-copy-pink: #f3d9d6;
+  --sa-copy-pink-ink: #9c3b36;
+  --sa-copy-yellow: #efd9a6;
+  --sa-copy-yellow-ink: #8a6415;
+
+  --font-display: var(--font-archivo), sans-serif;
+  --font-body: var(--font-ibm-plex-sans), sans-serif;
   --font-mono: var(--font-ibm-plex-mono), monospace;
 }
 
@@ -161,5 +171,83 @@ textarea {
   }
   .sa-btn-press:active {
     transform: none;
+  }
+}
+
+/* ===========================================================
+   Brand marks: perforation divider, status chips, the seal
+   =========================================================== */
+.sa-perf {
+  border: none;
+  border-top: 2px dashed var(--sa-border);
+}
+
+.sa-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.sa-chip-customer {
+  background: var(--sa-copy-pink);
+  color: var(--sa-copy-pink-ink);
+}
+.sa-chip-office {
+  background: var(--sa-copy-yellow);
+  color: var(--sa-copy-yellow-ink);
+}
+.sa-chip-resolved {
+  background: var(--sa-green-soft);
+  color: var(--sa-green);
+}
+.sa-chip-original {
+  background: var(--sa-paper);
+  color: var(--sa-ink);
+  border: 1px solid var(--sa-border);
+}
+
+/* Seal bell: ringing arcs are static (read as "ringing" even in a still),
+   the swing plays once on first paint, not on every re-mount. */
+@keyframes sa-bell-swing {
+  0%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(-14deg); }
+  20% { transform: rotate(12deg); }
+  30% { transform: rotate(-9deg); }
+  40% { transform: rotate(7deg); }
+  50% { transform: rotate(-5deg); }
+  60% { transform: rotate(3deg); }
+  70% { transform: rotate(-2deg); }
+  80% { transform: rotate(1deg); }
+}
+.sa-bell-swing {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: sa-bell-swing 900ms ease-out 1;
+}
+
+/* Hero form-card seal: presses in like a stamp, once, on first paint. */
+@keyframes sa-stamp-press {
+  0% { transform: rotate(18deg) scale(2.4); opacity: 0; }
+  70% { transform: rotate(14deg) scale(0.94); opacity: 1; }
+  100% { transform: rotate(12deg) scale(1); opacity: 1; }
+}
+.sa-stamp {
+  animation: sa-stamp-press 650ms var(--ease-out) 350ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sa-bell-swing {
+    animation: none;
+  }
+  .sa-stamp {
+    animation: none;
+    transform: rotate(12deg);
   }
 }
