@@ -3385,6 +3385,8 @@ const handleMarkResolved = async (id: string) => {
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[var(--sa-graphite)]">
           <span>© 2026 ScamAlert.pk</span>
           <div className="flex items-center gap-4">
+            <a href="/how-to-spot-online-scams-pakistan" className="hover:text-[var(--sa-ink)] transition">How to Spot a Scam</a>
+            <a href="/how-to-verify-online-seller-pakistan" className="hover:text-[var(--sa-ink)] transition">Verify a Seller</a>
             <a href="/privacy" className="hover:text-[var(--sa-ink)] transition">Privacy Policy</a>
             <a href="/terms" className="hover:text-[var(--sa-ink)] transition">Terms of Service</a>
           </div>
