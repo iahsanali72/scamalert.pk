@@ -76,3 +76,90 @@ textarea {
   border-radius: var(--sa-radius-lg);
   box-shadow: var(--sa-shadow-md);
 }
+
+/* ===========================================================
+   Motion tokens + purposeful, reduced-motion-safe transitions
+   =========================================================== */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* One-time entrance for the hero on first paint. Kept subtle (4px/200ms)
+   since switching back to the Overview tab remounts it during normal nav. */
+.sa-hero-in {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
+}
+@starting-style {
+  .sa-hero-in {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* Toast / inline banner entrance (success confirmation, error banners). */
+.sa-toast {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+}
+@starting-style {
+  .sa-toast {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+
+/* Modal backdrop + panel entrance. Modals stay centered (no transform-origin). */
+.sa-modal-backdrop {
+  opacity: 1;
+  transition: opacity 220ms var(--ease-out);
+}
+@starting-style {
+  .sa-modal-backdrop {
+    opacity: 0;
+  }
+}
+
+.sa-modal-panel {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
+}
+@starting-style {
+  .sa-modal-panel {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+/* Physical press feedback for primary actions. */
+@media (hover: hover) and (pointer: fine) {
+  .sa-btn-press {
+    transition: transform 120ms var(--ease-out), background-color 150ms var(--ease-out);
+  }
+}
+.sa-btn-press:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sa-hero-in,
+  .sa-toast,
+  .sa-modal-backdrop,
+  .sa-modal-panel {
+    transition-duration: 1ms;
+  }
+  @starting-style {
+    .sa-hero-in,
+    .sa-toast,
+    .sa-modal-panel {
+      transform: none;
+    }
+  }
+  .sa-btn-press:active {
+    transform: none;
+  }
+}

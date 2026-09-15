@@ -1401,7 +1401,7 @@ const handleMarkResolved = async (id: string) => {
 
         {reportSuccessMessage && (
           <div className="max-w-3xl mx-auto mb-5">
-            <div className="bg-[#F0FDF4] border border-[#86D5A5] rounded-2xl px-5 py-4 flex items-start gap-3 shadow-lg">
+            <div className="sa-toast bg-[#F0FDF4] border border-[#86D5A5] rounded-2xl px-5 py-4 flex items-start gap-3 shadow-lg">
               <div className="w-7 h-7 rounded-full bg-[#DCFCE7] border border-[#86D5A5] flex items-center justify-center shrink-0">
                 <svg
                   className="w-4 h-4 text-[#168A55]"
@@ -1426,7 +1426,7 @@ const handleMarkResolved = async (id: string) => {
               <button
                 type="button"
                 onClick={() => setReportSuccessMessage('')}
-                className="text-[var(--sa-graphite)] hover:text-[var(--sa-red)] text-sm font-semibold cursor-pointer transition"
+                className="text-[var(--sa-graphite)] hover:text-[var(--sa-red)] text-sm font-semibold cursor-pointer transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sa-red)] rounded"
                 aria-label="Dismiss report confirmation"
               >
                 ✕
@@ -1437,8 +1437,8 @@ const handleMarkResolved = async (id: string) => {
 
         {/* AUTH REQUIRED MODAL */}
         {showAuthRequiredModal && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-            <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] p-6 rounded-[16px] max-w-md w-full space-y-4 shadow-[var(--sa-shadow-lg)]">
+          <div className="sa-modal-backdrop fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="sa-modal-panel bg-[var(--sa-surface)] border border-[var(--sa-border)] p-6 rounded-[16px] max-w-md w-full space-y-4 shadow-[var(--sa-shadow-lg)]">
               <div className="flex items-center justify-between">
                 <h3 className="sa-display text-lg font-semibold text-[var(--sa-ink)]">
                   Account Required to Submit Report
@@ -1446,7 +1446,7 @@ const handleMarkResolved = async (id: string) => {
 
                 <button
                   onClick={() => setShowAuthRequiredModal(false)}
-                  className="text-[var(--sa-graphite)] hover:text-[var(--sa-red)] text-sm font-semibold cursor-pointer transition"
+                  className="text-[var(--sa-graphite)] hover:text-[var(--sa-red)] text-sm font-semibold cursor-pointer transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sa-red)] rounded"
                 >
                   ✕
                 </button>
@@ -1464,7 +1464,7 @@ const handleMarkResolved = async (id: string) => {
                     setShowAuthRequiredModal(false);
                     setActiveTab('login');
                   }}
-                  className="w-full bg-white hover:bg-[#F7F5F2] border border-[var(--sa-border)] text-[var(--sa-ink)] text-xs font-semibold py-3 rounded-[8px] transition cursor-pointer text-center"
+                  className="sa-btn-press w-full bg-white hover:bg-[#F7F5F2] border border-[var(--sa-border)] text-[var(--sa-ink)] text-xs font-semibold py-3 rounded-[8px] transition cursor-pointer text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sa-ink)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sa-surface)]"
                 >
                   Sign In
                 </button>
@@ -1474,7 +1474,7 @@ const handleMarkResolved = async (id: string) => {
                     setShowAuthRequiredModal(false);
                     setActiveTab('signup');
                   }}
-                  className="w-full bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white text-xs font-semibold py-3 rounded-[8px] transition cursor-pointer text-center shadow-[var(--sa-shadow-sm)]"
+                  className="sa-btn-press w-full bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white text-xs font-semibold py-3 rounded-[8px] transition cursor-pointer text-center shadow-[var(--sa-shadow-sm)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sa-red)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sa-surface)]"
                 >
                   Create Account
                 </button>
@@ -2008,7 +2008,7 @@ const handleMarkResolved = async (id: string) => {
           <div className="space-y-6 md:space-y-10 py-2 md:py-6">
 
             {/* HERO / REGISTRY INTRO */}
-            <section className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[18px] overflow-hidden shadow-[0_12px_32px_rgba(23,21,15,0.08)]">
+            <section className="sa-hero-in bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[18px] overflow-hidden shadow-[0_12px_32px_rgba(23,21,15,0.08)]">
               <div className="relative grid md:grid-cols-[1fr_auto] overflow-hidden">
 
                 <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/pakistan-hero-bg.png')" }} />
@@ -2038,14 +2038,14 @@ const handleMarkResolved = async (id: string) => {
                   <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-[210px]">
                     <button
                       onClick={() => setActiveTab('file-report')}
-                      className="flex-1 bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold px-5 py-3 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] transition cursor-pointer text-sm"
+                      className="sa-btn-press flex-1 bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold px-5 py-3 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] transition cursor-pointer text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sa-red)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sa-surface)]"
                     >
                       + File New Report
                     </button>
 
                     <button
                       onClick={() => setActiveTab('new-reports')}
-                      className="flex-1 bg-white hover:bg-[#F2EFE9] border border-[var(--sa-border)] text-[var(--sa-ink)] font-semibold px-5 py-3 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] transition cursor-pointer text-sm"
+                      className="sa-btn-press flex-1 bg-white hover:bg-[#F2EFE9] border border-[var(--sa-border)] text-[var(--sa-ink)] font-semibold px-5 py-3 rounded-[var(--sa-radius-sm)] shadow-[var(--sa-shadow-sm)] transition cursor-pointer text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sa-ink)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sa-surface)]"
                     >
                       View Reports Feed
                     </button>
@@ -2118,44 +2118,61 @@ const handleMarkResolved = async (id: string) => {
                 </button>
               </div>
 
-              <div className="w-full bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] overflow-x-auto sm:overflow-hidden relative shadow-[0_6px_20px_rgba(23,21,15,0.06)] scrollbar-hide snap-x snap-mandatory">
-
-                <div className="flex items-stretch sm:animate-marquee">
-                  {[...submittedReportsFeed, ...submittedReportsFeed].map(
-                    (item, index) => (
-                      <button
-                        type="button"
-                        key={`${item.id}-${index}`}
-                        onClick={() => setActiveTab('new-reports')}
-                        className="min-w-[85%] sm:min-w-[260px] md:min-w-[300px] bg-white border-r border-[var(--sa-border)] px-4 sm:px-5 py-4 sm:py-5 flex items-center justify-between gap-4 sm:gap-5 text-left hover:bg-[#F7F5F2] transition cursor-pointer snap-start"
-                      >
-                        <div className="min-w-0">
-                          <span className="sa-display text-[15px] font-bold text-[var(--sa-ink)] block truncate">
-                            {item.brand}
-                          </span>
-
-                          <PlatformLink
-                            platform={item.platform}
-                            handle={item.handle}
-                            className="mt-1.5"
-                          />
-                        </div>
-
-                        <div className="pl-4 border-l border-[var(--sa-border)] shrink-0">
-                          <span className="sa-mono text-[9px] text-[var(--sa-graphite)] uppercase tracking-[0.12em] block">
-                            Reports
-                          </span>
-
-                          <span className="sa-mono text-[12px] font-semibold text-[var(--sa-red-deep)] block mt-1">
-                            {item.reportCount} Active
-                          </span>
-                        </div>
-                      </button>
-                    )
-                  )}
+              {submittedReportsFeed.length === 0 ? (
+                <div className="w-full bg-[var(--sa-surface)] border border-dashed border-[var(--sa-border)] rounded-[14px] px-6 py-10 flex flex-col items-center text-center gap-2">
+                  <span className="w-10 h-10 rounded-full bg-[#F2EFE9] border border-[var(--sa-border)] flex items-center justify-center">
+                    <svg className="w-5 h-5 text-[var(--sa-graphite)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M9 12h6m-6 4h6M9 8h3m-5-5h7l4 4v14H7V3z" />
+                    </svg>
+                  </span>
+                  <p className="text-sm font-semibold text-[var(--sa-ink)]">
+                    No reports filed yet
+                  </p>
+                  <p className="text-xs text-[var(--sa-graphite)] max-w-sm">
+                    When shoppers file disputes, the seller and report count
+                    appear here during the 72-hour response window.
+                  </p>
                 </div>
+              ) : (
+                <div className="w-full bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] overflow-x-auto sm:overflow-hidden relative shadow-[0_6px_20px_rgba(23,21,15,0.06)] scrollbar-hide snap-x snap-mandatory">
 
-              </div>
+                  <div className="flex items-stretch sm:animate-marquee">
+                    {[...submittedReportsFeed, ...submittedReportsFeed].map(
+                      (item, index) => (
+                        <button
+                          type="button"
+                          key={`${item.id}-${index}`}
+                          onClick={() => setActiveTab('new-reports')}
+                          className="min-w-[85%] sm:min-w-[260px] md:min-w-[300px] bg-white border-r border-[var(--sa-border)] px-4 sm:px-5 py-4 sm:py-5 flex items-center justify-between gap-4 sm:gap-5 text-left hover:bg-[#F7F5F2] transition cursor-pointer snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--sa-red)]"
+                        >
+                          <div className="min-w-0">
+                            <span className="sa-display text-[15px] font-bold text-[var(--sa-ink)] block truncate">
+                              {item.brand}
+                            </span>
+
+                            <PlatformLink
+                              platform={item.platform}
+                              handle={item.handle}
+                              className="mt-1.5"
+                            />
+                          </div>
+
+                          <div className="pl-4 border-l border-[var(--sa-border)] shrink-0">
+                            <span className="sa-mono text-[9px] text-[var(--sa-graphite)] uppercase tracking-[0.12em] block">
+                              Reports
+                            </span>
+
+                            <span className="sa-mono text-[12px] font-semibold text-[var(--sa-red-deep)] block mt-1">
+                              {item.reportCount} Active
+                            </span>
+                          </div>
+                        </button>
+                      )
+                    )}
+                  </div>
+
+                </div>
+              )}
 
               <p className="text-[11px] leading-relaxed text-[var(--sa-graphite)]">
                 Recent registry activity. A report represents a submitted complaint
@@ -2421,7 +2438,7 @@ const handleMarkResolved = async (id: string) => {
                 </div>
 
                 {authError && (
-                  <div className="bg-[var(--sa-red-soft)] border border-[var(--sa-red)]/25 rounded-[10px] px-4 py-3">
+                  <div className="sa-toast bg-[var(--sa-red-soft)] border border-[var(--sa-red)]/25 rounded-[10px] px-4 py-3">
                     <p className="text-sm font-medium text-[var(--sa-red-deep)]">
                       {authError}
                     </p>
@@ -2431,7 +2448,7 @@ const handleMarkResolved = async (id: string) => {
 <button
                   type="submit"
                   disabled={isSubmittingReport}
-                  className="w-full bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold py-3.5 rounded-[8px] text-sm transition cursor-pointer flex items-center justify-center min-h-[48px] shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="sa-btn-press w-full bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold py-3.5 rounded-[8px] text-sm transition cursor-pointer flex items-center justify-center min-h-[48px] shadow-sm disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sa-red)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sa-surface)]"
                 >
                   {isSubmittingReport ? (
                     <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
