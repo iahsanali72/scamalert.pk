@@ -1,0 +1,409 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { createClient } from '@/utils/supabase/client';
+
+interface Stats {
+  totalReports: number;
+  pendingReports: number;
+  resolvedReports: number;
+  expiredUnresolvedReports: number;
+  totalUsers: number;
+}
+
+interface AdminReport {
+  id: string;
+  report_number: string;
+  user_id: string;
+  brand_name: string;
+  handle: string;
+  platform: string;
+  order_number: string;
+  amount_paid: number;
+  payment_method: string;
+  status: 'pending' | 'resolved';
+  created_at: string;
+  public_at: string;
+  resolved_at: string | null;
+  business_responded_at: string | null;
+}
+
+interface AdminUser {
+  id: string;
+  email: string | null;
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  city: string | null;
+  createdAt: string;
+  reportCount: number;
+}
+
+type AuthState = 'checking' | 'signed-out' | 'not-admin' | 'admin';
+type Tab = 'overview' | 'reports' | 'users';
+
+const formatDate = (iso: string | null) =>
+  iso
+    ? new Date(iso).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })
+    : '—';
+
+export default function AdminPage() {
+  const [supabase] = useState(() => createClient());
+  const [authState, setAuthState] = useState<AuthState>('checking');
+  const [activeTab, setActiveTab] = useState<Tab>('overview');
+
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [reports, setReports] = useState<AdminReport[]>([]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [reportFilter, setReportFilter] = useState<'all' | 'pending' | 'resolved' | 'expired'>('all');
+  const [reportSearch, setReportSearch] = useState('');
+  const [busyReportId, setBusyReportId] = useState<string | null>(null);
+  const [error, setError] = useState('');
+  const [nowMs, setNowMs] = useState<number | null>(null);
+
+  const loadAll = async () => {
+    const [statsRes, reportsRes, usersRes] = await Promise.all([
+      fetch('/api/admin/stats'),
+      fetch('/api/admin/reports'),
+      fetch('/api/admin/users'),
+    ]);
+
+    if (statsRes.status === 403 || reportsRes.status === 403 || usersRes.status === 403) {
+      setAuthState('not-admin');
+      return;
+    }
+
+    const [statsData, reportsData, usersData] = await Promise.all([
+      statsRes.json(),
+      reportsRes.json(),
+      usersRes.json(),
+    ]);
+
+    setStats(statsData);
+    setReports(reportsData.reports ?? []);
+    setUsers(usersData.users ?? []);
+    setNowMs(Date.now());
+    setAuthState('admin');
+  };
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setAuthState('signed-out');
+        return;
+      }
+      try {
+        await loadAll();
+      } catch {
+        setError('Failed to load admin data.');
+        setAuthState('not-admin');
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleStatusChange = async (reportId: string, status: 'pending' | 'resolved') => {
+    setBusyReportId(reportId);
+    setError('');
+    try {
+      const res = await fetch(`/api/admin/reports/${reportId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || 'Failed to update report.');
+        return;
+      }
+      await loadAll();
+    } finally {
+      setBusyReportId(null);
+    }
+  };
+
+  const handleDelete = async (reportId: string) => {
+    if (!window.confirm('Permanently delete this report? This cannot be undone.')) return;
+    setBusyReportId(reportId);
+    setError('');
+    try {
+      const res = await fetch(`/api/admin/reports/${reportId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || 'Failed to delete report.');
+        return;
+      }
+      await loadAll();
+    } finally {
+      setBusyReportId(null);
+    }
+  };
+
+  const isExpiredUnresolved = (r: AdminReport) =>
+    r.status === 'pending' && nowMs !== null && new Date(r.public_at).getTime() <= nowMs;
+
+  const filteredReports = reports.filter((r) => {
+    const matchesFilter =
+      reportFilter === 'all' ||
+      (reportFilter === 'pending' && r.status === 'pending') ||
+      (reportFilter === 'resolved' && r.status === 'resolved') ||
+      (reportFilter === 'expired' && isExpiredUnresolved(r));
+    const q = reportSearch.trim().toLowerCase();
+    const matchesSearch =
+      q === '' ||
+      r.report_number.toLowerCase().includes(q) ||
+      r.brand_name.toLowerCase().includes(q) ||
+      r.handle.toLowerCase().includes(q);
+    return matchesFilter && matchesSearch;
+  });
+
+  if (authState === 'checking') {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[var(--sa-paper)] text-[var(--sa-graphite)]">
+        Checking access…
+      </main>
+    );
+  }
+
+  if (authState === 'signed-out' || authState === 'not-admin') {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[var(--sa-paper)] px-5 text-center">
+        <div className="sa-card-elevated max-w-md p-8">
+          <h1 className="sa-display mb-2 text-xl font-bold text-[var(--sa-ink)]">
+            Admin access only
+          </h1>
+          <p className="text-sm text-[var(--sa-graphite)]">
+            {authState === 'signed-out'
+              ? 'Sign in on the homepage with your admin account, then come back to this page.'
+              : "This account doesn't have admin access."}
+          </p>
+          <Link
+            href="/"
+            className="mt-6 inline-block rounded-[8px] bg-[var(--sa-red)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--sa-red-deep)]"
+          >
+            Back to ScamAlert.pk
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-[var(--sa-paper)] text-[var(--sa-ink)]">
+      <header className="border-b border-[var(--sa-border)] bg-[var(--sa-surface)]">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6">
+          <div>
+            <p className="sa-mono text-xs font-semibold uppercase tracking-wider text-[var(--sa-red)]">
+              Admin
+            </p>
+            <h1 className="sa-display text-lg font-bold">ScamAlert.pk Dashboard</h1>
+          </div>
+          <Link href="/" className="text-sm font-semibold text-[var(--sa-red)] hover:underline">
+            ← Back to site
+          </Link>
+        </div>
+        <nav className="mx-auto flex max-w-7xl gap-1 px-4 md:px-6">
+          {(['overview', 'reports', 'users'] as Tab[]).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`border-b-2 px-4 py-2.5 text-sm font-semibold capitalize transition ${
+                activeTab === tab
+                  ? 'border-[var(--sa-red)] text-[var(--sa-ink)]'
+                  : 'border-transparent text-[var(--sa-graphite)] hover:text-[var(--sa-ink)]'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </nav>
+      </header>
+
+      <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
+        {error && (
+          <div className="mb-6 rounded-[8px] border border-[var(--sa-red)]/30 bg-[var(--sa-red-soft)] px-4 py-3 text-sm text-[var(--sa-red-deep)]">
+            {error}
+          </div>
+        )}
+
+        {activeTab === 'overview' && stats && (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {[
+              { label: 'Total reports', value: stats.totalReports },
+              { label: 'Pending', value: stats.pendingReports },
+              { label: 'Resolved', value: stats.resolvedReports },
+              { label: 'Expired / blacklisted', value: stats.expiredUnresolvedReports },
+              { label: 'Total users', value: stats.totalUsers },
+            ].map((s) => (
+              <div key={s.label} className="sa-card p-5">
+                <p className="sa-display text-3xl font-bold text-[var(--sa-ink)]">{s.value}</p>
+                <p className="mt-1 text-xs text-[var(--sa-graphite)]">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === 'reports' && (
+          <div>
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-wrap gap-2">
+                {(['all', 'pending', 'expired', 'resolved'] as const).map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setReportFilter(f)}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-semibold capitalize transition ${
+                      reportFilter === f
+                        ? 'border-[var(--sa-red)] bg-[var(--sa-red)] text-white'
+                        : 'border-[var(--sa-border)] text-[var(--sa-graphite)] hover:border-[var(--sa-red)]'
+                    }`}
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+              <input
+                value={reportSearch}
+                onChange={(e) => setReportSearch(e.target.value)}
+                placeholder="Search report #, brand, or handle…"
+                className="w-full rounded-[8px] border border-[var(--sa-border)] px-3 py-2 text-sm focus:border-[var(--sa-ink)] focus:outline-none sm:w-72"
+              />
+            </div>
+
+            <div className="sa-card overflow-x-auto">
+              <table className="w-full min-w-[900px] text-sm">
+                <thead>
+                  <tr className="border-b border-[var(--sa-border)] text-left text-xs uppercase tracking-wide text-[var(--sa-graphite)]">
+                    <th className="px-4 py-3">Report #</th>
+                    <th className="px-4 py-3">Brand / Handle</th>
+                    <th className="px-4 py-3">Platform</th>
+                    <th className="px-4 py-3">Amount</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Filed</th>
+                    <th className="px-4 py-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredReports.map((r) => (
+                    <tr key={r.id} className="border-b border-[var(--sa-border)] last:border-0">
+                      <td className="px-4 py-3">
+                        <a
+                          href={`/report/${encodeURIComponent(r.report_number)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-semibold text-[var(--sa-red)] hover:underline"
+                        >
+                          {r.report_number}
+                        </a>
+                      </td>
+                      <td className="px-4 py-3">
+                        {r.brand_name}
+                        <span className="block text-xs text-[var(--sa-graphite)]">@{r.handle}</span>
+                      </td>
+                      <td className="px-4 py-3">{r.platform}</td>
+                      <td className="px-4 py-3">Rs {Number(r.amount_paid).toLocaleString()}</td>
+                      <td className="px-4 py-3">
+                        {isExpiredUnresolved(r) ? (
+                          <span className="rounded-full bg-[var(--sa-red-soft)] px-2 py-0.5 text-xs font-semibold text-[var(--sa-red-deep)]">
+                            Expired
+                          </span>
+                        ) : r.status === 'resolved' ? (
+                          <span className="rounded-full bg-[var(--sa-green-soft)] px-2 py-0.5 text-xs font-semibold text-[var(--sa-green)]">
+                            Resolved
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-[var(--sa-border)] px-2 py-0.5 text-xs font-semibold text-[var(--sa-graphite)]">
+                            Pending
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-[var(--sa-graphite)]">{formatDate(r.created_at)}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-2">
+                          {r.status !== 'resolved' ? (
+                            <button
+                              disabled={busyReportId === r.id}
+                              onClick={() => handleStatusChange(r.id, 'resolved')}
+                              className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1 text-xs font-semibold transition hover:border-[var(--sa-green)] hover:text-[var(--sa-green)] disabled:opacity-50"
+                            >
+                              Resolve
+                            </button>
+                          ) : (
+                            <button
+                              disabled={busyReportId === r.id}
+                              onClick={() => handleStatusChange(r.id, 'pending')}
+                              className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1 text-xs font-semibold transition hover:border-[var(--sa-ink)] disabled:opacity-50"
+                            >
+                              Reopen
+                            </button>
+                          )}
+                          <button
+                            disabled={busyReportId === r.id}
+                            onClick={() => handleDelete(r.id)}
+                            className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1 text-xs font-semibold text-[var(--sa-red)] transition hover:border-[var(--sa-red)] disabled:opacity-50"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredReports.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="px-4 py-8 text-center text-[var(--sa-graphite)]">
+                        No reports match this filter.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'users' && (
+          <div className="sa-card overflow-x-auto">
+            <table className="w-full min-w-[700px] text-sm">
+              <thead>
+                <tr className="border-b border-[var(--sa-border)] text-left text-xs uppercase tracking-wide text-[var(--sa-graphite)]">
+                  <th className="px-4 py-3">Email</th>
+                  <th className="px-4 py-3">Username</th>
+                  <th className="px-4 py-3">Name</th>
+                  <th className="px-4 py-3">City</th>
+                  <th className="px-4 py-3">Reports filed</th>
+                  <th className="px-4 py-3">Joined</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr key={u.id} className="border-b border-[var(--sa-border)] last:border-0">
+                    <td className="px-4 py-3">{u.email ?? '—'}</td>
+                    <td className="px-4 py-3">{u.username ?? '—'}</td>
+                    <td className="px-4 py-3">
+                      {[u.firstName, u.lastName].filter(Boolean).join(' ') || '—'}
+                    </td>
+                    <td className="px-4 py-3">{u.city ?? '—'}</td>
+                    <td className="px-4 py-3">{u.reportCount}</td>
+                    <td className="px-4 py-3 text-[var(--sa-graphite)]">{formatDate(u.createdAt)}</td>
+                  </tr>
+                ))}
+                {users.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-[var(--sa-graphite)]">
+                      No users yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
