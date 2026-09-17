@@ -44,6 +44,45 @@ interface AdminUser {
 type AuthState = 'checking' | 'signed-out' | 'not-admin' | 'admin';
 type Tab = 'overview' | 'reports' | 'users';
 
+interface ReportDetail {
+  report: {
+    id: string;
+    report_number: string;
+    brand_name: string;
+    handle: string;
+    platform: string;
+    order_number: string;
+    brand_email: string | null;
+    brand_whatsapp: string | null;
+    order_date: string | null;
+    amount_paid: number;
+    payment_method: string;
+    description: string;
+    status: string;
+    created_at: string;
+    public_at: string;
+    resolved_at: string | null;
+  };
+  businessResponse: {
+    response_text: string;
+    response_type: string;
+    tracking_number: string | null;
+    refund_reference: string | null;
+    created_at: string;
+  } | null;
+  evidence: {
+    id: string;
+    file_name: string;
+    mime_type: string | null;
+    url: string | null;
+  }[];
+  customerFinalResponses: {
+    response_text: string;
+    resolution_choice: string;
+    created_at: string;
+  }[];
+}
+
 const formatDate = (iso: string | null) =>
   iso
     ? new Date(iso).toLocaleDateString('en-GB', {
@@ -67,6 +106,36 @@ export default function AdminPage() {
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [nowMs, setNowMs] = useState<number | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
+  const [detail, setDetail] = useState<ReportDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState('');
+
+  const openDetail = async (reportId: string) => {
+    setDetailId(reportId);
+    setDetail(null);
+    setDetailError('');
+    setDetailLoading(true);
+    try {
+      const res = await fetch(`/api/admin/reports/${reportId}`, { cache: 'no-store' });
+      const data = await res.json();
+      if (!res.ok) {
+        setDetailError(data?.error || 'Failed to load report.');
+        return;
+      }
+      setDetail(data);
+    } catch {
+      setDetailError('Failed to load report.');
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  const closeDetail = () => {
+    setDetailId(null);
+    setDetail(null);
+    setDetailError('');
+  };
 
   const loadAll = async () => {
     const [statsRes, reportsRes, usersRes] = await Promise.all([
@@ -315,14 +384,12 @@ export default function AdminPage() {
                   {filteredReports.map((r) => (
                     <tr key={r.id} className="border-b border-[var(--sa-border)] last:border-0">
                       <td className="px-4 py-3">
-                        <a
-                          href={`/report/${encodeURIComponent(r.report_number)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <button
+                          onClick={() => openDetail(r.id)}
                           className="font-semibold text-[var(--sa-red)] hover:underline"
                         >
                           {r.report_number}
-                        </a>
+                        </button>
                       </td>
                       <td className="px-4 py-3">
                         {r.brand_name}
@@ -477,6 +544,145 @@ export default function AdminPage() {
           </div>
         )}
       </div>
+
+      {detailId && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 py-10"
+          onClick={closeDetail}
+        >
+          <div
+            className="sa-card-elevated w-full max-w-2xl bg-[var(--sa-surface)] p-6 sm:p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-6 flex items-start justify-between">
+              <h2 className="sa-display text-xl font-bold">Report detail</h2>
+              <button
+                onClick={closeDetail}
+                aria-label="Close"
+                className="rounded-full p-1 text-[var(--sa-graphite)] hover:text-[var(--sa-ink)]"
+              >
+                ✕
+              </button>
+            </div>
+
+            {detailLoading && <p className="text-sm text-[var(--sa-graphite)]">Loading…</p>}
+            {detailError && (
+              <p className="text-sm text-[var(--sa-red-deep)]">{detailError}</p>
+            )}
+
+            {detail && (
+              <div className="space-y-6 text-sm">
+                <div>
+                  <p className="sa-display text-lg font-bold">{detail.report.report_number}</p>
+                  <p className="text-[var(--sa-graphite)]">
+                    {detail.report.brand_name} · @{detail.report.handle} · {detail.report.platform}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-[var(--sa-graphite)]">Order #</p>
+                    <p>{detail.report.order_number}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-[var(--sa-graphite)]">Amount</p>
+                    <p>Rs {Number(detail.report.amount_paid).toLocaleString()} · {detail.report.payment_method}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-[var(--sa-graphite)]">Status</p>
+                    <p className="capitalize">{detail.report.status}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-[var(--sa-graphite)]">Filed</p>
+                    <p>{formatDate(detail.report.created_at)}</p>
+                  </div>
+                  {detail.report.brand_email && (
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-[var(--sa-graphite)]">Brand email</p>
+                      <p>{detail.report.brand_email}</p>
+                    </div>
+                  )}
+                  {detail.report.brand_whatsapp && (
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-[var(--sa-graphite)]">Brand WhatsApp</p>
+                      <p>{detail.report.brand_whatsapp}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <p className="mb-1 text-xs uppercase tracking-wide text-[var(--sa-graphite)]">Description</p>
+                  <p className="whitespace-pre-wrap rounded-[8px] border border-[var(--sa-border)] p-3">
+                    {detail.report.description}
+                  </p>
+                </div>
+
+                {detail.evidence.length > 0 && (
+                  <div>
+                    <p className="mb-2 text-xs uppercase tracking-wide text-[var(--sa-graphite)]">
+                      Evidence ({detail.evidence.length})
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {detail.evidence.map((ev) =>
+                        ev.url ? (
+                          <a
+                            key={ev.id}
+                            href={ev.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1.5 text-xs font-semibold text-[var(--sa-red)] hover:underline"
+                          >
+                            {ev.file_name}
+                          </a>
+                        ) : (
+                          <span key={ev.id} className="text-xs text-[var(--sa-graphite)]">
+                            {ev.file_name} (unavailable)
+                          </span>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {detail.businessResponse && (
+                  <div>
+                    <p className="mb-1 text-xs uppercase tracking-wide text-[var(--sa-graphite)]">
+                      Business response ({detail.businessResponse.response_type})
+                    </p>
+                    <p className="whitespace-pre-wrap rounded-[8px] border border-[var(--sa-border)] p-3">
+                      {detail.businessResponse.response_text}
+                    </p>
+                    {detail.businessResponse.tracking_number && (
+                      <p className="mt-1 text-xs text-[var(--sa-graphite)]">
+                        Tracking: {detail.businessResponse.tracking_number}
+                      </p>
+                    )}
+                    {detail.businessResponse.refund_reference && (
+                      <p className="mt-1 text-xs text-[var(--sa-graphite)]">
+                        Refund ref: {detail.businessResponse.refund_reference}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {detail.customerFinalResponses.length > 0 && (
+                  <div>
+                    <p className="mb-1 text-xs uppercase tracking-wide text-[var(--sa-graphite)]">
+                      Customer verdict
+                    </p>
+                    {detail.customerFinalResponses.map((cfr, i) => (
+                      <p key={i} className="whitespace-pre-wrap rounded-[8px] border border-[var(--sa-border)] p-3">
+                        <span className="font-semibold capitalize">{cfr.resolution_choice}</span>
+                        {cfr.response_text ? ` — ${cfr.response_text}` : ''}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </main>
   );
 }

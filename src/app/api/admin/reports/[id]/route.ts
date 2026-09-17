@@ -4,6 +4,50 @@ import { createAdminClient } from '@/utils/supabase/admin'
 
 export const dynamic = 'force-dynamic'
 
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const admin = await requireAdmin()
+  if (!admin) {
+    return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
+  }
+
+  const { id } = await params
+  const supabase = createAdminClient()
+
+  const [reportRes, responseRes, evidenceRes, finalRes] = await Promise.all([
+    supabase.from('reports').select('*').eq('id', id).single(),
+    supabase.from('business_responses').select('*').eq('report_id', id).maybeSingle(),
+    supabase.from('report_evidence').select('*').eq('report_id', id),
+    supabase
+      .from('customer_final_responses')
+      .select('*')
+      .eq('report_id', id)
+      .order('created_at', { ascending: false }),
+  ])
+
+  if (reportRes.error) {
+    return NextResponse.json({ error: reportRes.error.message }, { status: 500 })
+  }
+
+  const evidence = await Promise.all(
+    (evidenceRes.data ?? []).map(async (ev) => {
+      const signed = await supabase.storage
+        .from('report-evidence')
+        .createSignedUrl(ev.storage_path, 3600)
+      return { ...ev, url: signed.data?.signedUrl ?? null }
+    })
+  )
+
+  return NextResponse.json({
+    report: reportRes.data,
+    businessResponse: responseRes.data ?? null,
+    evidence,
+    customerFinalResponses: finalRes.data ?? [],
+  })
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
