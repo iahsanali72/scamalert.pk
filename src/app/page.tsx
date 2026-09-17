@@ -691,6 +691,14 @@ const restorePendingReportDraft = () => {
     return false;
   }
 };
+const handleDiscardDraft = async () => {
+  setReportBrandName(''); setReportHandle(''); setReportOrderNumber(''); setReportBrandEmail(''); setReportBrandWhatsapp('');
+  setReportOrderDate(''); setReportAmount(''); setReportDescription(''); setReportFiles([]); setFileUploadError('');
+  setReportPlatform('Instagram'); setReportPaymentMethod('JazzCash');
+  setPendingReportDraft(null);
+  localStorage.removeItem('scamalert_pending_report');
+  await clearPendingReportFiles();
+};
 const PENDING_REPORT_DB = 'scamalert_pending_report_db';
 const PENDING_REPORT_STORE = 'pending_files';
 const PENDING_REPORT_FILES_KEY = 'evidence';
@@ -2408,6 +2416,21 @@ const handleMarkResolved = async (id: string) => {
                   for the business. During that window the public feed shows only the seller identity and report count. If the complaint remains unresolved after 72 hours, its submitted report details become public.
                 </p>
               </div>
+
+              {pendingReportDraft && (
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 rounded-[8px] border border-[var(--sa-border)] bg-[var(--sa-paper)] px-4 py-3">
+                  <p className="text-xs text-[var(--sa-graphite)]">
+                    A saved draft was restored into this form.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleDiscardDraft}
+                    className="self-start sm:self-auto text-xs font-semibold text-[var(--sa-red)] hover:underline"
+                  >
+                    Discard draft
+                  </button>
+                </div>
+              )}
 
               <form
                 onSubmit={handleFileNewReportSubmit}
