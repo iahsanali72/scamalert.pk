@@ -26,6 +26,7 @@ grant select on public.profiles to authenticated;
 -- bypasses RLS by design; it still needs the base table grants below,
 -- which this project's live schema didn't have.
 grant select, update, delete on public.reports to service_role;
+grant select on public.profiles to service_role;
 
 -- Grant admin access to this account. To add more admins later, run
 -- this same statement again with a different email.
