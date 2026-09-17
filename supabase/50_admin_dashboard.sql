@@ -27,6 +27,9 @@ grant select on public.profiles to authenticated;
 -- which this project's live schema didn't have.
 grant select, update, delete on public.reports to service_role;
 grant select on public.profiles to service_role;
+grant select on public.business_responses to service_role;
+grant select on public.report_evidence to service_role;
+grant select on public.customer_final_responses to service_role;
 
 -- Grant admin access to this account. To add more admins later, run
 -- this same statement again with a different email.
