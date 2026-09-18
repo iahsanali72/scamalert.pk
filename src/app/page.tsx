@@ -834,8 +834,31 @@ if (restoredDraft) {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setAppliedSearch(searchQuery.trim());
-    setActiveTab('brands');
+    const term = searchQuery.trim();
+    setAppliedSearch(term);
+
+    const platformMatches = (platform: string) =>
+      selectedPlatform === 'all' ||
+      platform.toLowerCase() === selectedPlatform.toLowerCase();
+    const termMatches = (...fields: string[]) =>
+      term === '' ||
+      fields.some((f) => f.toLowerCase().includes(term.toLowerCase()));
+
+    if (
+      submittedReportsFeed.some(
+        (item) => termMatches(item.brand, item.handle) && platformMatches(item.platform)
+      )
+    ) {
+      setActiveTab('new-reports');
+    } else if (
+      blacklistedBrands.some(
+        (item) => termMatches(item.brand, item.handle) && platformMatches(item.platform)
+      )
+    ) {
+      setActiveTab('blacklisted');
+    } else {
+      setActiveTab('brands');
+    }
   };
 
   const submitReport = async () => {
@@ -1229,19 +1252,16 @@ const handleMarkResolved = async (id: string) => {
 
   const activeSearchTerm = appliedSearch || searchQuery;
 
-  const filteredBrands = brandList.filter(
-    (b) =>
-      b.name.toLowerCase().includes(activeSearchTerm.toLowerCase()) &&
-      (selectedPlatform === 'all' ||
-        b.platform.toLowerCase() === selectedPlatform.toLowerCase())
-  );
-
   const matchesActiveSearch = (brand: string, handle: string, platform: string) =>
     (activeSearchTerm.trim() === '' ||
       brand.toLowerCase().includes(activeSearchTerm.toLowerCase()) ||
       handle.toLowerCase().includes(activeSearchTerm.toLowerCase())) &&
     (selectedPlatform === 'all' ||
       platform.toLowerCase() === selectedPlatform.toLowerCase());
+
+  const filteredBrands = brandList.filter((b) =>
+    matchesActiveSearch(b.name, b.handle, b.platform)
+  );
 
   const filteredNewReportsFeed = submittedReportsFeed.filter(
     (item) =>
