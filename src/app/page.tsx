@@ -1236,14 +1236,26 @@ const handleMarkResolved = async (id: string) => {
         b.platform.toLowerCase() === selectedPlatform.toLowerCase())
   );
 
+  const matchesActiveSearch = (brand: string, handle: string, platform: string) =>
+    (activeSearchTerm.trim() === '' ||
+      brand.toLowerCase().includes(activeSearchTerm.toLowerCase()) ||
+      handle.toLowerCase().includes(activeSearchTerm.toLowerCase())) &&
+    (selectedPlatform === 'all' ||
+      platform.toLowerCase() === selectedPlatform.toLowerCase());
+
   const filteredNewReportsFeed = submittedReportsFeed.filter(
     (item) =>
-      item.brand
+      (item.brand
         .toLowerCase()
         .includes(newReportSearch.toLowerCase()) ||
       item.handle
         .toLowerCase()
-        .includes(newReportSearch.toLowerCase())
+        .includes(newReportSearch.toLowerCase())) &&
+      matchesActiveSearch(item.brand, item.handle, item.platform)
+  );
+
+  const filteredBlacklist = blacklistedBrands.filter((item) =>
+    matchesActiveSearch(item.brand, item.handle, item.platform)
   );
 
   const tabsToRender = isLoggedIn
@@ -3355,7 +3367,15 @@ const handleMarkResolved = async (id: string) => {
                 </div>
               )}
 
-              {blacklistedBrands.map((item, idx) => (
+              {blacklistedBrands.length > 0 && filteredBlacklist.length === 0 && (
+                <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] shadow-[var(--sa-shadow-sm)] p-10 text-center">
+                  <p className="text-sm text-[var(--sa-graphite)]">
+                    No blacklisted sellers match your search.
+                  </p>
+                </div>
+              )}
+
+              {filteredBlacklist.map((item, idx) => (
                 <article
                   key={idx}
                   className="bg-[var(--sa-surface)] border border-[var(--sa-red)]/25 rounded-[14px] shadow-[var(--sa-shadow-sm)] overflow-hidden"
