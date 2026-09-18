@@ -1436,6 +1436,7 @@ const handleMarkResolved = async (id: string) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search store handle or domain..."
+                enterKeyHint="search"
                 className="w-full bg-white border border-[var(--sa-border)] rounded-[4px] px-3 h-8 md:h-auto md:py-2.5 text-xs md:text-sm focus:outline-none focus:border-[var(--sa-ink)] text-[var(--sa-ink)] placeholder:text-[var(--sa-graphite)] transition"
               />
             </div>
