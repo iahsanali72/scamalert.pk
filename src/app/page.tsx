@@ -2743,9 +2743,22 @@ const handleMarkResolved = async (id: string) => {
                 </div>
 
                 <div className="border border-[var(--sa-border)] rounded-[12px] p-4 space-y-3">
-                  <p className="text-xs font-semibold text-[var(--sa-ink)]">
-                    Before you submit, please confirm:
-                  </p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs font-semibold text-[var(--sa-ink)]">
+                      Before you submit, please confirm:
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setDeclarationsChecked((prev) =>
+                          prev.map(() => !prev.every(Boolean))
+                        )
+                      }
+                      className="shrink-0 text-xs font-semibold text-[var(--sa-red)] hover:underline"
+                    >
+                      {declarationsChecked.every(Boolean) ? 'Uncheck all' : 'Check all'}
+                    </button>
+                  </div>
                   {REPORT_DECLARATIONS.map((text, i) => (
                     <label
                       key={i}
