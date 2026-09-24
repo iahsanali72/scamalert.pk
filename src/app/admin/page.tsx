@@ -400,7 +400,7 @@ export default function AdminPage() {
               { label: 'Total reports', value: stats.totalReports },
               { label: 'Pending', value: stats.pendingReports },
               { label: 'Resolved', value: stats.resolvedReports },
-              { label: 'Expired / blacklisted', value: stats.expiredUnresolvedReports },
+              { label: 'Expired / unresolved', value: stats.expiredUnresolvedReports },
               { label: 'Total users', value: stats.totalUsers },
             ].map((s) => (
               <div key={s.label} className="sa-card p-5">

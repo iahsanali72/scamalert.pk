@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'How to Verify an Online Seller Before You Pay',
   description:
-    'A practical checklist for verifying Pakistani online stores and sellers before you send payment — from checking the blacklist to spotting a personal-account red flag.',
+    'A practical checklist for verifying Pakistani online stores and sellers before you send payment — from checking unresolved cases to spotting a personal-account red flag.',
 };
 
 export default function VerifySellerGuidePage() {
@@ -39,7 +39,7 @@ export default function VerifySellerGuidePage() {
               </h2>
               <ol className="list-decimal space-y-3 pl-5">
                 <li>
-                  <strong>Check the directory and blacklist.</strong> Search
+                  <strong>Check the directory and unresolved cases.</strong> Search
                   the seller&apos;s handle in the{' '}
                   <Link
                     href="/"
@@ -48,7 +48,7 @@ export default function VerifySellerGuidePage() {
                     ScamAlert.pk brand directory
                   </Link>{' '}
                   — a track record of resolved disputes is a good sign; an
-                  entry on the blacklist is not.
+                  unresolved case on record is not.
                 </li>
                 <li>
                   <strong>Look at account history.</strong> A page created a

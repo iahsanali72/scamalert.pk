@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'Terms of service for using ScamAlert.pk to verify sellers and file fraud reports in Pakistan.',
+  description: 'Terms of service for using ScamAlert.pk to verify sellers and file complaint reports in Pakistan.',
 };
 
 export default function TermsPage() {

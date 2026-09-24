@@ -38,7 +38,7 @@ const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const SITE_NAME = 'ScamAlert.pk';
 const SITE_TITLE = 'ScamAlert.pk - Report Today, Protect Others';
 const SITE_DESCRIPTION =
-  'Verify Pakistani online stores and sellers before you pay, and file structured fraud disputes when something goes wrong. A free public database of reported scams, blacklisted brands, and dispute outcomes.';
+  'Verify Pakistani online stores and sellers before you pay, and file structured complaint reports when something goes wrong. A free public directory of buyer complaints, unresolved cases, and dispute outcomes.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -48,12 +48,12 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   keywords: [
-    'online scam Pakistan',
-    'report online fraud Pakistan',
+    'online scam awareness Pakistan',
+    'report online seller complaint Pakistan',
     'verify online seller Pakistan',
-    'blacklisted brands Pakistan',
-    'ecommerce scam Pakistan',
-    'fraud dispute Pakistan',
+    'unresolved seller complaints Pakistan',
+    'ecommerce dispute Pakistan',
+    'buyer complaint Pakistan',
   ],
   applicationName: SITE_NAME,
   authors: [{ name: SITE_NAME }],

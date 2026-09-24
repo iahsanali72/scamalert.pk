@@ -396,7 +396,7 @@ function ScamMeterBadge({
     return (
       <div className="flex flex-col items-end gap-1">
         <div className="px-2.5 py-1 rounded-md border text-xs font-mono font-bold flex items-center gap-2 bg-red-950 text-red-400 border-red-500/50">
-          <span>BLACKLISTED</span>
+          <span>UNRESOLVED</span>
           <span>0/100</span>
         </div>
 
@@ -1312,14 +1312,14 @@ const handleMarkResolved = async (id: string) => {
         { id: 'file-report', label: '+ File New Report' },
         { id: 'new-reports', label: 'Reports Feed' },
         { id: 'brands', label: 'Brand Directory' },
-        { id: 'blacklisted', label: 'Blacklist' },
+        { id: 'blacklisted', label: 'Unresolved Cases' },
       ]
     : [
         { id: 'overview', label: 'Overview' },
         { id: 'file-report', label: '+ File New Report' },
         { id: 'new-reports', label: 'Reports Feed' },
         { id: 'brands', label: 'Brand Directory' },
-        { id: 'blacklisted', label: 'Blacklist' },
+        { id: 'blacklisted', label: 'Unresolved Cases' },
       ];
 
   return (
@@ -2025,7 +2025,7 @@ const handleMarkResolved = async (id: string) => {
 
                 <p className="text-xs text-[var(--sa-graphite)]">
                   Register with your full details to submit verified
-                  fraud evidence and launch disputes.
+                  evidence and launch disputes.
                 </p>
               </div>
 
@@ -2297,7 +2297,7 @@ const handleMarkResolved = async (id: string) => {
                 <div className="relative overflow-hidden p-4 sm:p-7 md:p-10 lg:p-12 md:min-h-[330px]">
                   <div className="relative z-10 max-w-2xl space-y-4 md:space-y-5">
                     <div className="sa-mono text-[11px] uppercase tracking-[0.16em] text-[var(--sa-red-deep)] font-semibold">
-                      Pakistan Fraud & Scam Registry
+                      Pakistan Buyer Protection Platform
                     </div>
 
                     <h1 className="sa-display text-[30px] sm:text-[36px] md:text-[46px] lg:text-[52px] leading-[1.02] md:leading-[0.98] tracking-[-0.04em] md:tracking-[-0.045em] font-bold text-[var(--sa-ink)] max-w-xl">
@@ -2473,7 +2473,7 @@ const handleMarkResolved = async (id: string) => {
                 </span>
 
                 <h2 className="sa-display text-2xl md:text-3xl font-semibold tracking-tight text-[var(--sa-ink)]">
-                  File a Fraud or Scam Report
+                  File a Dispute Report
                 </h2>
 
                 <p className="text-sm text-[var(--sa-graphite)] leading-6 max-w-2xl">
@@ -2624,7 +2624,7 @@ const handleMarkResolved = async (id: string) => {
                       <option value="JazzCash">JazzCash</option>
                       <option value="EasyPaisa">EasyPaisa</option>
                       <option value="Bank Transfer">Bank Transfer</option>
-                      <option value="COD Fraud">COD Fraud</option>
+                      <option value="Cash on Delivery">Cash on Delivery</option>
                     </select>
                   </div>
                 </div>
@@ -3466,7 +3466,7 @@ const handleMarkResolved = async (id: string) => {
               {blacklistedBrands.length > 0 && filteredBlacklist.length === 0 && (
                 <div className="bg-[var(--sa-surface)] border border-[var(--sa-border)] rounded-[14px] shadow-[var(--sa-shadow-sm)] p-10 text-center">
                   <p className="text-sm text-[var(--sa-graphite)]">
-                    No blacklisted sellers match your search.
+                    No unresolved cases match your search.
                   </p>
                 </div>
               )}

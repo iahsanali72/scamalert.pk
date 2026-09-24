@@ -93,7 +93,7 @@ export default function SpotScamsGuidePage() {
                     href="/"
                     className="font-semibold text-[var(--sa-red)] hover:underline"
                   >
-                    ScamAlert.pk directory and blacklist
+                    ScamAlert.pk directory and unresolved cases
                   </Link>{' '}
                   before ordering.
                 </li>

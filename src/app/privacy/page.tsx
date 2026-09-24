@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'How ScamAlert.pk collects, uses, and protects your data when you file or view fraud reports.',
+  description: 'How ScamAlert.pk collects, uses, and protects your data when you file or view complaint reports.',
 };
 
 export default function PrivacyPolicyPage() {

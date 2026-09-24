@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'ScamAlert.pk - Report Today, Protect Others',
     short_name: 'ScamAlert.pk',
     description:
-      'Verify Pakistani online stores and sellers before you pay, and file structured fraud disputes when something goes wrong.',
+      'Verify Pakistani online stores and sellers before you pay, and file structured complaint reports when something goes wrong.',
     start_url: '/',
     display: 'standalone',
     background_color: '#f7f5f2',
