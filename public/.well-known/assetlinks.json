@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "pk.scamalert.twa",
+        "sha256_cert_fingerprints": ["64:EA:F7:5A:9D:24:0A:67:40:31:10:3D:CA:D5:B5:C8:C5:17:64:F9:8F:DE:61:A8:7C:93:5C:88:A5:27:BF:8A"]
+      }
+    }]
