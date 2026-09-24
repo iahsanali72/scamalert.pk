@@ -452,6 +452,14 @@ if (score >= 90) {
   );
 }
 
+const REPORT_DECLARATIONS = [
+  'I confirm that this report describes my genuine experience with this seller/business.',
+  'I confirm that the information I have provided is true and accurate to the best of my knowledge.',
+  'I understand that I am responsible for the content, allegations and evidence I submit.',
+  'I confirm that I have not knowingly submitted false, altered or misleading evidence.',
+  "I agree to ScamAlert.pk's Terms of Use and Content Policy.",
+];
+
 export default function ScamAlertApp() {
   const router = useRouter();
   const [supabase] = useState(() => createClient());
@@ -503,6 +511,9 @@ export default function ScamAlertApp() {
     useState('JazzCash');
   const [reportDescription, setReportDescription] = useState('');
   const [reportFiles, setReportFiles] = useState<File[]>([]);
+  const [declarationsChecked, setDeclarationsChecked] = useState<boolean[]>(
+    () => REPORT_DECLARATIONS.map(() => false)
+  );
   const [fileUploadError, setFileUploadError] = useState('');
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
@@ -695,6 +706,7 @@ const handleDiscardDraft = async () => {
   setReportBrandName(''); setReportHandle(''); setReportOrderNumber(''); setReportBrandEmail(''); setReportBrandWhatsapp('');
   setReportOrderDate(''); setReportAmount(''); setReportDescription(''); setReportFiles([]); setFileUploadError('');
   setReportPlatform('Instagram'); setReportPaymentMethod('JazzCash');
+  setDeclarationsChecked(REPORT_DECLARATIONS.map(() => false));
   setPendingReportDraft(null);
   localStorage.removeItem('scamalert_pending_report');
   await clearPendingReportFiles();
@@ -866,6 +878,12 @@ if (restoredDraft) {
     setReportSuccessMessage('');
     setAuthError('');
 
+    if (!declarationsChecked.every(Boolean)) {
+      setIsSubmittingReport(false);
+      setAuthError('Please accept all reporting declarations before submitting.');
+      return;
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setIsSubmittingReport(false); setShowAuthRequiredModal(true); return; }
 
@@ -883,6 +901,7 @@ if (restoredDraft) {
       p_amount_paid: Number(reportAmount),
       p_payment_method: reportPaymentMethod,
       p_description: reportDescription.trim(),
+      p_declarations_accepted: true,
     });
 
     if (error || !data?.length) {
@@ -938,6 +957,7 @@ if (restoredDraft) {
 
     setReportBrandName(''); setReportHandle(''); setReportOrderNumber(''); setReportBrandEmail(''); setReportBrandWhatsapp('');
     setReportOrderDate(''); setReportAmount(''); setReportDescription(''); setReportFiles([]); setFileUploadError(''); setPendingReportDraft(null);
+    setDeclarationsChecked(REPORT_DECLARATIONS.map(() => false));
     localStorage.removeItem('scamalert_pending_report');
     await clearPendingReportFiles();
     setReportSuccessMessage(`Report ${created.report_number} filed. The 72-hour review window has started. ${customerNotice} ${notice}${evidenceNotice}`);
@@ -1173,6 +1193,7 @@ if (restoredDraft) {
     setReportDescription('');
     setReportFiles([]);
     setFileUploadError('');
+    setDeclarationsChecked(REPORT_DECLARATIONS.map(() => false));
     setPendingReportDraft(null);
 
 localStorage.removeItem('scamalert_pending_report');
@@ -2721,6 +2742,30 @@ const handleMarkResolved = async (id: string) => {
                   </p>
                 </div>
 
+                <div className="border border-[var(--sa-border)] rounded-[12px] p-4 space-y-3">
+                  <p className="text-xs font-semibold text-[var(--sa-ink)]">
+                    Before you submit, please confirm:
+                  </p>
+                  {REPORT_DECLARATIONS.map((text, i) => (
+                    <label
+                      key={i}
+                      className="flex items-start gap-2.5 text-xs text-[var(--sa-graphite)] cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={declarationsChecked[i]}
+                        onChange={() =>
+                          setDeclarationsChecked((prev) =>
+                            prev.map((v, idx) => (idx === i ? !v : v))
+                          )
+                        }
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--sa-red)] cursor-pointer"
+                      />
+                      <span>{text}</span>
+                    </label>
+                  ))}
+                </div>
+
                 {authError && (
                   <div className="bg-[var(--sa-red-soft)] border border-[var(--sa-red)]/25 rounded-[10px] px-4 py-3">
                     <p className="text-sm font-medium text-[var(--sa-red-deep)]">
@@ -2731,7 +2776,7 @@ const handleMarkResolved = async (id: string) => {
 
 <button
                   type="submit"
-                  disabled={isSubmittingReport}
+                  disabled={isSubmittingReport || !declarationsChecked.every(Boolean)}
                   className="w-full bg-[var(--sa-red)] hover:bg-[var(--sa-red-deep)] text-white font-semibold py-3.5 rounded-[8px] text-sm transition cursor-pointer flex items-center justify-center min-h-[48px] shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {isSubmittingReport ? (
