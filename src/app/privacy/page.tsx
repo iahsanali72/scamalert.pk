@@ -150,14 +150,29 @@ export default function PrivacyPolicyPage() {
 
             <section>
               <h2 className="mb-3 text-xl font-bold text-[#172033]">
-                10. Your Choices
+                10. Your Choices and Account Deletion
               </h2>
               <p>
-                You may contact ScamAlert.pk regarding questions about your
-                personal information or requests concerning your account.
-                Certain information may need to be retained where necessary
-                for security, legal compliance, fraud prevention or the
-                integrity of reports and dispute records.
+                You can request deletion of your account and its associated
+                personal data (email, profile details, login) at any time
+                through our{' '}
+                <a href="/delete-account" className="font-semibold text-[#16835D] hover:underline">
+                  account deletion request page
+                </a>
+                , whether or not you are currently signed in. Deleting your
+                account also deletes any reports you filed, their evidence,
+                and any messages tied to them, since that content is directly
+                associated with your account.
+              </p>
+              <p className="mt-3">
+                Requests are reviewed manually before being completed, since
+                the request form is not behind a login and we take reasonable
+                steps to confirm it is really you before permanently deleting
+                anything. We aim to complete valid requests within a few
+                business days. Certain information may still need to be
+                retained where necessary for security, legal compliance,
+                fraud prevention or the integrity of reports and dispute
+                records not tied to the deleted account.
               </p>
             </section>
 

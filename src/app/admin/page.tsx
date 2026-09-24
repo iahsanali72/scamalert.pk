@@ -42,7 +42,17 @@ interface AdminUser {
 }
 
 type AuthState = 'checking' | 'signed-out' | 'not-admin' | 'admin';
-type Tab = 'overview' | 'reports' | 'users';
+type Tab = 'overview' | 'reports' | 'users' | 'deletions';
+
+interface DeletionRequest {
+  id: string;
+  user_id: string | null;
+  email: string;
+  reason: string | null;
+  status: 'pending' | 'completed' | 'rejected';
+  created_at: string;
+  processed_at: string | null;
+}
 
 interface ReportDetail {
   report: {
@@ -100,10 +110,12 @@ export default function AdminPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [reports, setReports] = useState<AdminReport[]>([]);
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [deletionRequests, setDeletionRequests] = useState<DeletionRequest[]>([]);
   const [reportFilter, setReportFilter] = useState<'all' | 'pending' | 'resolved' | 'expired'>('all');
   const [reportSearch, setReportSearch] = useState('');
   const [busyReportId, setBusyReportId] = useState<string | null>(null);
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
+  const [busyDeletionId, setBusyDeletionId] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [nowMs, setNowMs] = useState<number | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
@@ -138,26 +150,34 @@ export default function AdminPage() {
   };
 
   const loadAll = async () => {
-    const [statsRes, reportsRes, usersRes] = await Promise.all([
+    const [statsRes, reportsRes, usersRes, deletionsRes] = await Promise.all([
       fetch('/api/admin/stats', { cache: 'no-store' }),
       fetch('/api/admin/reports', { cache: 'no-store' }),
       fetch('/api/admin/users', { cache: 'no-store' }),
+      fetch('/api/admin/deletion-requests', { cache: 'no-store' }),
     ]);
 
-    if (statsRes.status === 403 || reportsRes.status === 403 || usersRes.status === 403) {
+    if (
+      statsRes.status === 403 ||
+      reportsRes.status === 403 ||
+      usersRes.status === 403 ||
+      deletionsRes.status === 403
+    ) {
       setAuthState('not-admin');
       return;
     }
 
-    const [statsData, reportsData, usersData] = await Promise.all([
+    const [statsData, reportsData, usersData, deletionsData] = await Promise.all([
       statsRes.json(),
       reportsRes.json(),
       usersRes.json(),
+      deletionsRes.json(),
     ]);
 
     setStats(statsData);
     setReports(reportsData.reports ?? []);
     setUsers(usersData.users ?? []);
+    setDeletionRequests(deletionsData.requests ?? []);
     setNowMs(Date.now());
     setAuthState('admin');
   };
@@ -237,6 +257,51 @@ export default function AdminPage() {
     }
   };
 
+  const handleDeleteUser = async (userId: string, email: string | null) => {
+    if (
+      !window.confirm(
+        `Permanently delete the account ${email ?? userId}? This also deletes their reports and evidence. This cannot be undone.`
+      )
+    )
+      return;
+    setBusyUserId(userId);
+    setError('');
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || 'Failed to delete account.');
+        return;
+      }
+      await loadAll();
+    } finally {
+      setBusyUserId(null);
+    }
+  };
+
+  const handleDeletionRequestStatus = async (
+    requestId: string,
+    status: 'completed' | 'rejected'
+  ) => {
+    setBusyDeletionId(requestId);
+    setError('');
+    try {
+      const res = await fetch(`/api/admin/deletion-requests/${requestId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || 'Failed to update request.');
+        return;
+      }
+      await loadAll();
+    } finally {
+      setBusyDeletionId(null);
+    }
+  };
+
   const isExpiredUnresolved = (r: AdminReport) =>
     r.status === 'pending' && nowMs !== null && new Date(r.public_at).getTime() <= nowMs;
 
@@ -301,19 +366,24 @@ export default function AdminPage() {
           </Link>
         </div>
         <nav className="mx-auto flex max-w-7xl gap-1 px-4 md:px-6">
-          {(['overview', 'reports', 'users'] as Tab[]).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`border-b-2 px-4 py-2.5 text-sm font-semibold capitalize transition ${
-                activeTab === tab
-                  ? 'border-[var(--sa-red)] text-[var(--sa-ink)]'
-                  : 'border-transparent text-[var(--sa-graphite)] hover:text-[var(--sa-ink)]'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+          {(['overview', 'reports', 'users', 'deletions'] as Tab[]).map((tab) => {
+            const pendingDeletions = deletionRequests.filter((r) => r.status === 'pending').length;
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`border-b-2 px-4 py-2.5 text-sm font-semibold capitalize transition ${
+                  activeTab === tab
+                    ? 'border-[var(--sa-red)] text-[var(--sa-ink)]'
+                    : 'border-transparent text-[var(--sa-graphite)] hover:text-[var(--sa-ink)]'
+                }`}
+              >
+                {tab === 'deletions' && pendingDeletions > 0
+                  ? `Deletions (${pendingDeletions})`
+                  : tab}
+              </button>
+            );
+          })}
         </nav>
       </header>
 
@@ -512,23 +582,32 @@ export default function AdminPage() {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      {u.isBanned ? (
+                      <div className="flex gap-2">
+                        {u.isBanned ? (
+                          <button
+                            disabled={busyUserId === u.id}
+                            onClick={() => handleBanToggle(u.id, 'unban')}
+                            className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1 text-xs font-semibold transition hover:border-[var(--sa-ink)] disabled:opacity-50"
+                          >
+                            Unban
+                          </button>
+                        ) : (
+                          <button
+                            disabled={busyUserId === u.id}
+                            onClick={() => handleBanToggle(u.id, 'ban')}
+                            className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1 text-xs font-semibold text-[var(--sa-red)] transition hover:border-[var(--sa-red)] disabled:opacity-50"
+                          >
+                            Ban
+                          </button>
+                        )}
                         <button
                           disabled={busyUserId === u.id}
-                          onClick={() => handleBanToggle(u.id, 'unban')}
-                          className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1 text-xs font-semibold transition hover:border-[var(--sa-ink)] disabled:opacity-50"
-                        >
-                          Unban
-                        </button>
-                      ) : (
-                        <button
-                          disabled={busyUserId === u.id}
-                          onClick={() => handleBanToggle(u.id, 'ban')}
+                          onClick={() => handleDeleteUser(u.id, u.email)}
                           className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1 text-xs font-semibold text-[var(--sa-red)] transition hover:border-[var(--sa-red)] disabled:opacity-50"
                         >
-                          Ban
+                          Delete
                         </button>
-                      )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -536,6 +615,84 @@ export default function AdminPage() {
                   <tr>
                     <td colSpan={8} className="px-4 py-8 text-center text-[var(--sa-graphite)]">
                       No users yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {activeTab === 'deletions' && (
+          <div className="sa-card overflow-x-auto">
+            <table className="w-full min-w-[700px] text-sm">
+              <thead>
+                <tr className="border-b border-[var(--sa-border)] text-left text-xs uppercase tracking-wide text-[var(--sa-graphite)]">
+                  <th className="px-4 py-3">Email</th>
+                  <th className="px-4 py-3">Reason</th>
+                  <th className="px-4 py-3">Requested</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {deletionRequests.map((r) => (
+                  <tr key={r.id} className="border-b border-[var(--sa-border)] last:border-0">
+                    <td className="px-4 py-3">{r.email}</td>
+                    <td className="px-4 py-3 max-w-xs truncate" title={r.reason ?? ''}>
+                      {r.reason ?? '—'}
+                    </td>
+                    <td className="px-4 py-3 text-[var(--sa-graphite)]">{formatDate(r.created_at)}</td>
+                    <td className="px-4 py-3">
+                      {r.status === 'pending' ? (
+                        <span className="rounded-full bg-[var(--sa-border)] px-2 py-0.5 text-xs font-semibold text-[var(--sa-graphite)]">
+                          Pending
+                        </span>
+                      ) : r.status === 'completed' ? (
+                        <span className="rounded-full bg-[var(--sa-green-soft)] px-2 py-0.5 text-xs font-semibold text-[var(--sa-green)]">
+                          Completed
+                        </span>
+                      ) : (
+                        <span className="rounded-full bg-[var(--sa-red-soft)] px-2 py-0.5 text-xs font-semibold text-[var(--sa-red-deep)]">
+                          Rejected
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      {r.status === 'pending' ? (
+                        <div className="flex flex-col gap-1.5">
+                          <p className="text-[11px] text-[var(--sa-graphite)]">
+                            Find &amp; delete the account in Users, then mark this:
+                          </p>
+                          <div className="flex gap-2">
+                            <button
+                              disabled={busyDeletionId === r.id}
+                              onClick={() => handleDeletionRequestStatus(r.id, 'completed')}
+                              className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1 text-xs font-semibold transition hover:border-[var(--sa-green)] hover:text-[var(--sa-green)] disabled:opacity-50"
+                            >
+                              Mark completed
+                            </button>
+                            <button
+                              disabled={busyDeletionId === r.id}
+                              onClick={() => handleDeletionRequestStatus(r.id, 'rejected')}
+                              className="rounded-[6px] border border-[var(--sa-border)] px-2.5 py-1 text-xs font-semibold text-[var(--sa-red)] transition hover:border-[var(--sa-red)] disabled:opacity-50"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-[var(--sa-graphite)]">
+                          {formatDate(r.processed_at)}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {deletionRequests.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-8 text-center text-[var(--sa-graphite)]">
+                      No deletion requests.
                     </td>
                   </tr>
                 )}

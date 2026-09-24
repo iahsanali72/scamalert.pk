@@ -1635,6 +1635,13 @@ const handleMarkResolved = async (id: string) => {
                       📊 User Dashboard
                     </button>
 
+                    <a
+                      href="/delete-account"
+                      className="w-full text-left px-4 py-2.5 text-xs text-[var(--sa-ink)] hover:bg-[#F2EFE9] transition cursor-pointer flex items-center gap-2"
+                    >
+                      🗑️ Delete Account
+                    </a>
+
                     <div className="border-t border-[#EAE6DE] my-1" />
 
                     <button
@@ -3523,6 +3530,7 @@ const handleMarkResolved = async (id: string) => {
               <a href="/how-to-verify-online-seller-pakistan" className="hover:text-[var(--sa-ink)] transition">Verify a Seller</a>
               <a href="/privacy" className="hover:text-[var(--sa-ink)] transition">Privacy Policy</a>
               <a href="/terms" className="hover:text-[var(--sa-ink)] transition">Terms of Service</a>
+              <a href="/delete-account" className="hover:text-[var(--sa-ink)] transition">Delete Account</a>
             </div>
             <div className="flex items-center gap-2">
               <a
