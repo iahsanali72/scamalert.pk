@@ -156,9 +156,7 @@ export default function RootLayout({
         <Script id="register-service-worker" strategy="afterInteractive">
           {`
             if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
-              window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(() => {});
-              });
+              navigator.serviceWorker.register('/sw.js').catch(() => {});
             }
           `}
         </Script>
