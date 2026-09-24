@@ -30,6 +30,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  themeColor: '#dc2f26',
 };
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://scamalert.pk';
@@ -152,6 +153,15 @@ export default function RootLayout({
             </Script>
           </>
         )}
+        <Script id="register-service-worker" strategy="afterInteractive">
+          {`
+            if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
+              window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+              });
+            }
+          `}
+        </Script>
         {children}
       </body>
     </html>
