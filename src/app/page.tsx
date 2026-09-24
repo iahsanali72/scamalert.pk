@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from "next/navigation";
 import type { User } from '@supabase/supabase-js';
 import { createClient } from '../utils/supabase/client';
@@ -514,6 +514,13 @@ export default function ScamAlertApp() {
   const [declarationsChecked, setDeclarationsChecked] = useState<boolean[]>(
     () => REPORT_DECLARATIONS.map(() => false)
   );
+  const agreeAllRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (!agreeAllRef.current) return;
+    const checkedCount = declarationsChecked.filter(Boolean).length;
+    agreeAllRef.current.indeterminate =
+      checkedCount > 0 && checkedCount < declarationsChecked.length;
+  }, [declarationsChecked]);
   const [fileUploadError, setFileUploadError] = useState('');
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
@@ -2742,41 +2749,44 @@ const handleMarkResolved = async (id: string) => {
                   </p>
                 </div>
 
-                <div className="border border-[var(--sa-border)] rounded-[12px] p-4 space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-xs font-semibold text-[var(--sa-ink)]">
-                      Before you submit, please confirm:
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setDeclarationsChecked((prev) =>
-                          prev.map(() => !prev.every(Boolean))
+                <div className="border border-[var(--sa-border)] rounded-[12px] overflow-hidden">
+                  <label className="flex items-center gap-2.5 px-4 py-3 bg-[var(--sa-paper)] cursor-pointer">
+                    <input
+                      ref={agreeAllRef}
+                      type="checkbox"
+                      checked={declarationsChecked.every(Boolean)}
+                      onChange={(e) =>
+                        setDeclarationsChecked(
+                          REPORT_DECLARATIONS.map(() => e.target.checked)
                         )
                       }
-                      className="shrink-0 text-xs font-semibold text-[var(--sa-red)] hover:underline"
-                    >
-                      {declarationsChecked.every(Boolean) ? 'Uncheck all' : 'Check all'}
-                    </button>
+                      className="h-4 w-4 shrink-0 accent-[var(--sa-red)] cursor-pointer"
+                    />
+                    <span className="text-xs font-semibold text-[var(--sa-ink)]">
+                      Agree to all
+                    </span>
+                  </label>
+
+                  <div className="border-t border-[var(--sa-border)] p-4 space-y-3">
+                    {REPORT_DECLARATIONS.map((text, i) => (
+                      <label
+                        key={i}
+                        className="flex items-start gap-2.5 text-xs text-[var(--sa-graphite)] cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={declarationsChecked[i]}
+                          onChange={() =>
+                            setDeclarationsChecked((prev) =>
+                              prev.map((v, idx) => (idx === i ? !v : v))
+                            )
+                          }
+                          className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--sa-red)] cursor-pointer"
+                        />
+                        <span>{text}</span>
+                      </label>
+                    ))}
                   </div>
-                  {REPORT_DECLARATIONS.map((text, i) => (
-                    <label
-                      key={i}
-                      className="flex items-start gap-2.5 text-xs text-[var(--sa-graphite)] cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={declarationsChecked[i]}
-                        onChange={() =>
-                          setDeclarationsChecked((prev) =>
-                            prev.map((v, idx) => (idx === i ? !v : v))
-                          )
-                        }
-                        className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--sa-red)] cursor-pointer"
-                      />
-                      <span>{text}</span>
-                    </label>
-                  ))}
                 </div>
 
                 {authError && (
